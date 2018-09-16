@@ -142,6 +142,17 @@ class FirebaseClient {
     };
   }
 
+  public async apiDelete(
+    resourceName: string,
+    params: IParamsDelete
+  ): Promise<IResponseDelete> {
+    const r = await this.tryGetResource(resourceName);
+    r.collection.doc(params.id).delete();
+    return {
+      data: params.previousData
+    };
+  }
+
   private sortAsc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
       const aValue = a[field].toString().toLowerCase();
@@ -221,6 +232,7 @@ async function providerApi(
     case UPDATE_MANY:
       return fb.apiUpdateMany(resourceName, params);
     case DELETE:
+      return fb.apiDelete(resourceName, params);
     default:
       return {};
   }

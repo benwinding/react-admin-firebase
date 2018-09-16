@@ -1,3 +1,5 @@
+// PARAMETERS
+
 interface IParamsGetList {
   pagination: {
     page: number;
@@ -56,6 +58,8 @@ interface IParamsGetManyReference {
   filter: {};
 }
 
+// RESPONSES
+
 interface IResponseGetList {
   data: Array<{}>;
   total: number;
@@ -70,7 +74,7 @@ interface IResponseCreate {
 }
 
 interface IResponseUpdate {
-  data: {};
+  data: { id: string };
 }
 
 interface IResponseUpdateMany {
