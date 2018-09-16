@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // In createRealtimeSaga.js
-const _1 = require("./");
-const observeRequest = (firebaseProvider) => (type, resource, params) => {
-    console.log("REALTIME!!", { type, resource, params });
+var _1 = require("./");
+var observeRequest = function (firebaseProvider) { return function (type, resource, params) {
+    console.log("REALTIME!!", { type: type, resource: resource, params: params });
     // Filtering so that only posts are updated in real time
     // Use your apollo client methods here or sockets or whatever else including the following very naive polling mechanism
     return {
-        subscribe(observer) {
-            const r = _1.fb.GetResource(resource);
-            const subscription = r.realtimeObservable.subscribe((newList) => {
+        subscribe: function (observer) {
+            var r = _1.fb.GetResource(resource);
+            var subscription = r.realtimeObservable.subscribe(function (newList) {
                 observer.next(newList);
             });
-            const sub = {
-                unsubscribe() {
+            var sub = {
+                unsubscribe: function () {
                     subscription.unsubscribe();
                     // Notify the saga that we cleaned up everything
                     observer.complete();
@@ -22,8 +22,8 @@ const observeRequest = (firebaseProvider) => (type, resource, params) => {
             return sub;
         }
     };
-};
-exports.default = (dataProvider) => {
-    console.log({ dataProvider });
+}; };
+exports.default = (function (dataProvider) {
+    console.log({ dataProvider: dataProvider });
     return observeRequest(dataProvider);
-};
+});
