@@ -2,6 +2,7 @@ import * as firebase from "firebase";
 import {
   CREATE,
   DELETE,
+  DELETE_MANY,
   GET_LIST,
   GET_MANY,
   GET_MANY_REFERENCE,
@@ -153,6 +154,21 @@ class FirebaseClient {
     };
   }
 
+  public async apiDeleteMany(
+    resourceName: string,
+    params: IParamsDeleteMany
+  ): Promise<IResponseDeleteMany> {
+    const r = await this.tryGetResource(resourceName);
+    const returnData = [];
+    const batch = this.db.batch();
+    for (const id of params.ids) {
+      batch.delete(r.collection.doc(id))
+      returnData.push({ id });
+    }
+    batch.commit();
+    return { data: returnData };
+  }
+
   private sortAsc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
       const aValue = a[field].toString().toLowerCase();
@@ -233,6 +249,8 @@ async function providerApi(
       return fb.apiUpdateMany(resourceName, params);
     case DELETE:
       return fb.apiDelete(resourceName, params);
+    case DELETE_MANY:
+      return fb.apiDeleteMany(resourceName, params);
     default:
       return {};
   }

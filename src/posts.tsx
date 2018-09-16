@@ -14,7 +14,8 @@ import {
   TextInput,
   ShowButton,
   EditButton,
-  DeleteButton
+  DeleteButton,
+  RichTextField
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
@@ -22,7 +23,7 @@ export const PostList = (props: {}) => (
   <List {...props}>
     <Datagrid>
       <TextField source="title" />
-      <TextField source="body" />
+      <RichTextField source="body" />
       <ShowButton />
       <EditButton />
       <DeleteButton />
