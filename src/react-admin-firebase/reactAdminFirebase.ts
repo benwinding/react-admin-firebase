@@ -10,13 +10,14 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 
-interface IResource {
+export interface IResource {
   path: string;
   collection: firebase.firestore.CollectionReference;
   observable: Observable<{}>;
   list: Array<{}>;
+  realtimeObservable: Observable<{}>;
 }
 
 class FirebaseClient {
@@ -37,6 +38,7 @@ class FirebaseClient {
       const path = inputPath;
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
+      const realtimeObservable = new Subject();
       observable.subscribe(
         (querySnapshot: firebase.firestore.QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
@@ -47,13 +49,20 @@ class FirebaseClient {
               };
             }
           );
+          realtimeObservable.next(newList);
           this.setList(newList, path);
           // The data has been set, so resolve the promise
           resolve();
         }
       );
       const list: Array<{}> = [];
-      const r: IResource = { collection, list, observable, path };
+      const r: IResource = { 
+        collection, 
+        list, 
+        observable, 
+        path, 
+        realtimeObservable 
+      };
       this.resources.push(r);
     });
   }
@@ -177,7 +186,7 @@ class FirebaseClient {
     const matches = [];
     for (const item of r.list) {
       for (const id of params.ids) {
-        if (id === item['id']) {
+        if (id === item["id"]) {
           matches.push(item);
         }
       }
@@ -195,7 +204,7 @@ class FirebaseClient {
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
-    const matches = data.filter((val) => val[targetField] === targetValue);
+    const matches = data.filter(val => val[targetField] === targetValue);
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
@@ -209,6 +218,17 @@ class FirebaseClient {
     const dataPage = matches.slice(pageStart, pageEnd);
     const total = matches.length;
     return { data: dataPage, total };
+  }
+
+  public GetResource(resourceName: string): IResource {
+    const matches: IResource[] = this.resources.filter(val => {
+      return val.path === resourceName;
+    });
+    if (matches.length < 1) {
+      throw new Error("Cant find resource with id");
+    }
+    const match: IResource = matches[0];
+    return match;
   }
 
   private sortAsc(data: Array<{}>, field: string) {
@@ -269,38 +289,38 @@ class FirebaseClient {
   }
 }
 
-let fb: FirebaseClient;
-async function providerApi(
-  type: string,
-  resourceName: string,
-  params: any
-): Promise<any> {
-  await fb.initPath(resourceName);
-  switch (type) {
-    case GET_MANY:
-      return fb.apiGetMany(resourceName, params);
-    case GET_MANY_REFERENCE:
-      return fb.apiGetManyReference(resourceName, params);
-    case GET_LIST:
-      return fb.apiGetList(resourceName, params);
-    case GET_ONE:
-      return fb.apiGetOne(resourceName, params);
-    case CREATE:
-      return fb.apiCreate(resourceName, params);
-    case UPDATE:
-      return fb.apiUpdate(resourceName, params);
-    case UPDATE_MANY:
-      return fb.apiUpdateMany(resourceName, params);
-    case DELETE:
-      return fb.apiDelete(resourceName, params);
-    case DELETE_MANY:
-      return fb.apiDeleteMany(resourceName, params);
-    default:
-      return {};
-  }
-}
+export let fb: FirebaseClient
 
 export function FirebaseProvider(config: {}): any {
   fb = new FirebaseClient(config);
+  async function providerApi(
+    type: string,
+    resourceName: string,
+    params: any
+  ): Promise<any> {
+    await fb.initPath(resourceName);
+    switch (type) {
+      case GET_MANY:
+        return fb.apiGetMany(resourceName, params);
+      case GET_MANY_REFERENCE:
+        return fb.apiGetManyReference(resourceName, params);
+      case GET_LIST:
+        return fb.apiGetList(resourceName, params);
+      case GET_ONE:
+        return fb.apiGetOne(resourceName, params);
+      case CREATE:
+        return fb.apiCreate(resourceName, params);
+      case UPDATE:
+        return fb.apiUpdate(resourceName, params);
+      case UPDATE_MANY:
+        return fb.apiUpdateMany(resourceName, params);
+      case DELETE:
+        return fb.apiDelete(resourceName, params);
+      case DELETE_MANY:
+        return fb.apiDeleteMany(resourceName, params);
+      default:
+        return {};
+    }
+  }
   return providerApi;
 }
