@@ -3,11 +3,11 @@ interface IParamsGetList {
     page: number,
     perPage: number    
   },
-  sort: {
+  sort?: {
     field: string,
     order: string
   }
-  filter: {}
+  filter?: {}
 }
 
 interface IParamsGetOne {

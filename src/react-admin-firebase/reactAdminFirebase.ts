@@ -58,13 +58,29 @@ class FirebaseClient {
     });
   }
 
-  public async apiGetList(resourceName: string): Promise<IResponseGetList> {
+  public async apiGetList(
+    resourceName: string,
+    params: IParamsGetList
+  ): Promise<IResponseGetList> {
     const r = await this.tryGetResource(resourceName);
-    const data = await r.then((resource: IResource) => resource.list);
-    const total = await r.list.length;
+    const data = r.list;
+    if (params.sort != null) {
+      const { field, order } = params.sort;
+      console.log("unsorted data:", data.map((val) => val[field]));
+      if (order === "ASC") {
+        this.sortAsc(data, field);
+      } else {
+        this.sortDesc(data, field);
+      }
+      console.log("sorted data:", data.map((val) => val[field]));
+    }
+    const pageStart = (params.pagination.page-1) * params.pagination.perPage;
+    const pageEnd = pageStart + params.pagination.perPage;
+    const dataPage = data.slice(pageStart, pageEnd);
+    const total = r.list.length;
     return {
-      data,
-      total,
+      data: dataPage,
+      total
     };
   }
 
@@ -78,6 +94,34 @@ class FirebaseClient {
     return this.tryGetResource(resourceName).then(
       (resource: IResource) => resource.list.length
     );
+  }
+
+  private sortAsc(data: Array<{}>, field: string) {
+    data.sort((a: {}, b: {}) => {
+      const aValue = a[field].toString().toLowerCase();
+      const bValue = b[field].toString().toLowerCase();
+      if (aValue < bValue) {
+        return -1;
+      }
+      if (aValue > bValue) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
+  private sortDesc(data: Array<{}>, field: string) {
+    data.sort((a: {}, b: {}) => {
+      const aValue = a[field].toString().toLowerCase();
+      const bValue = b[field].toString().toLowerCase();
+      if (aValue > bValue) {
+        return -1;
+      }
+      if (aValue < bValue) {
+        return 1;
+      }
+      return 0;
+    });
   }
 
   private setList(newList: Array<{}>, resourceName: string): Promise<any> {
@@ -115,17 +159,13 @@ let fb: FirebaseClient;
 async function providerApi(
   type: string,
   resourceName: string,
-  params: {}
-): IResponse {
+  params: any
+): Promise<any> {
   switch (type) {
     case GET_MANY:
     case GET_MANY_REFERENCE:
     case GET_LIST:
-      return fb.getList(resourceName);
-      return {
-        data: await fb.getList(resourceName),
-        total: await fb.getTotal(resourceName)
-      };
+      return fb.apiGetList(resourceName, params);
     case GET_ONE:
     case CREATE:
     case UPDATE:
