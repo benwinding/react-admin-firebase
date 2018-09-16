@@ -70,7 +70,7 @@ class FirebaseClient {
         this.sortDesc(data, field);
       }
     }
-    const pageStart = (params.pagination.page-1) * params.pagination.perPage;
+    const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = data.slice(pageStart, pageEnd);
     const total = r.list.length;
@@ -85,23 +85,25 @@ class FirebaseClient {
     params: IParamsGetOne
   ): Promise<IResponseGetOne> {
     const r = await this.tryGetResource(resourceName);
-    const data = r.list.filter((val: {id:string}) => val.id === params.id);
+    const data = r.list.filter((val: { id: string }) => val.id === params.id);
     if (data.length < 1) {
       throw Error("No id found matching: " + params.id);
     }
     return { data: data[0] };
   }
 
-  public getList(resourceName: string): Promise<Array<{}>> {
-    return this.tryGetResource(resourceName).then(
-      (resource: IResource) => resource.list
-    );
-  }
-
-  public getTotal(resourceName: string): Promise<number> {
-    return this.tryGetResource(resourceName).then(
-      (resource: IResource) => resource.list.length
-    );
+  public async apiGetCreate(
+    resourceName: string,
+    params: IParamsCreate
+  ): Promise<IResponseCreate> {
+    const r = await this.tryGetResource(resourceName);
+    const docRef = await r.collection.add(params.data);
+    return {
+      data: {
+        ...params.data,
+        id: docRef.id
+      }
+    };
   }
 
   private sortAsc(data: Array<{}>, field: string) {
@@ -176,6 +178,7 @@ async function providerApi(
     case GET_ONE:
       return fb.apiGetOne(resourceName, params);
     case CREATE:
+      return fb.apiGetCreate(resourceName, params);
     case UPDATE:
     case DELETE:
     default:

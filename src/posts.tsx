@@ -5,10 +5,14 @@ import {
   Datagrid,
   List,
   Show,
+  Create,
   SimpleShowLayout,
+  SimpleForm,
   TextField,
+  TextInput,
   ShowButton
 } from "react-admin";
+import RichTextInput from "ra-input-rich-text";
 
 export const PostList = (props: {}) => (
   <List {...props}>
@@ -29,4 +33,13 @@ export const PostShow = (props: {}) => (
       <TextField source="body" />
     </SimpleShowLayout>
   </Show>
+);
+
+export const PostCreate = (props: {}) => (
+  <Create {...props}>
+    <SimpleForm>
+      <TextInput source="title" />
+      <RichTextInput source="body" />
+    </SimpleForm>
+  </Create>
 );

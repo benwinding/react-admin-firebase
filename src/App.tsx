@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 // import * as  jsonServerProvider from 'ra-data-json-server';
 import * as React from 'react';
-import { PostList, PostShow } from './posts';
+import { PostList, PostShow, PostCreate } from './posts';
 
 // import jsonServerProvider from 'ra-data-json-server';
 import { Admin, Resource } from 'react-admin';
@@ -17,14 +17,12 @@ const config = {
 };
 
 const firebaseProvider = FirebaseProvider(config, ['posts']);
-// const dataProvider = jsonServerProvider('http://jsonplaceholder.typicode.com');
 
 class App extends React.Component {
   public render() {
     return (
-      // <Admin dataProvider={dataProvider}>
       <Admin dataProvider={firebaseProvider}>
-        <Resource name="posts" list={PostList} show={PostShow}/>
+        <Resource name="posts" list={PostList} show={PostShow} create={PostCreate}/>
       </Admin>
     );
   }

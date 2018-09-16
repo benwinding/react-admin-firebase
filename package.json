@@ -7,6 +7,7 @@
     "firebase": "^5.5.0",
     "prop-types": "^15.6.2",
     "ra-data-json-server": "^2.3.1",
+    "ra-input-rich-text": "^2.3.0",
     "ra-realtime": "^2.3.1",
     "react": "^16.5.1",
     "react-admin": "^2.3.1",
