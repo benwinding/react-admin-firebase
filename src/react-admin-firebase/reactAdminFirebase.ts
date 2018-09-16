@@ -6,7 +6,8 @@ import {
   GET_MANY,
   GET_MANY_REFERENCE,
   GET_ONE,
-  UPDATE
+  UPDATE,
+  UPDATE_MANY
 } from "react-admin";
 import { Observable } from "rxjs";
 
@@ -28,7 +29,7 @@ class FirebaseClient {
   }
 
   public async initPath(inputPath: string) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (inputPath == null) {
         return;
       }
@@ -122,6 +123,25 @@ class FirebaseClient {
     };
   }
 
+  public async apiUpdateMany(
+    resourceName: string,
+    params: IParamsUpdateMany
+  ): Promise<IResponseUpdateMany> {
+    delete params.data.id;
+    const r = await this.tryGetResource(resourceName);
+    const returnData = [];
+    for (const id of params.ids) {
+      r.collection.doc(id).set(params.data);
+      returnData.push({
+        ...params.data,
+        id
+      });
+    }
+    return {
+      data: returnData
+    };
+  }
+
   private sortAsc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
       const aValue = a[field].toString().toLowerCase();
@@ -198,6 +218,8 @@ async function providerApi(
       return fb.apiCreate(resourceName, params);
     case UPDATE:
       return fb.apiUpdate(resourceName, params);
+    case UPDATE_MANY:
+      return fb.apiUpdateMany(resourceName, params);
     case DELETE:
     default:
       return {};

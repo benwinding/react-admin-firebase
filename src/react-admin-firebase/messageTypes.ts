@@ -1,98 +1,95 @@
 interface IParamsGetList {
   pagination: {
-    page: number,
-    perPage: number    
-  },
+    page: number;
+    perPage: number;
+  };
   sort?: {
-    field: string,
-    order: string
-  }
-  filter?: {}
+    field: string;
+    order: string;
+  };
+  filter?: {};
 }
 
 interface IParamsGetOne {
-  id: string
+  id: string;
 }
 
 interface IParamsCreate {
-  data: {}
+  data: {};
 }
 
 interface IParamsUpdate {
-  id: string,
-  data: { id:string },
-  previousData: {},
+  id: string;
+  data: { id: string };
+  previousData: {};
 }
 
 interface IParamsUpdateMany {
-  ids: string[],
-  data: {}
+  ids: string[];
+  data: {
+    id: string;
+  };
 }
 
 interface IParamsDelete {
-  id: string,
-  previousData: {},
+  id: string;
+  previousData: {};
 }
 
 interface IParamsDeleteMany {
-  ids: string[],
+  ids: string[];
 }
 
 interface IParamsGetMany {
-  ids: string[],
-}    
+  ids: string[];
+}
 
 interface IParamsGetManyReference {
   pagination: {
-    page: number,
-    perPage: number    
-  },
+    page: number;
+    perPage: number;
+  };
   sort: {
-    field: string,
-    order: string
-  }
-  filter: {}
-}    
-
-
-
+    field: string;
+    order: string;
+  };
+  filter: {};
+}
 
 interface IResponseGetList {
-  data: Array<{}>,
-  total: number
+  data: Array<{}>;
+  total: number;
 }
 
 interface IResponseGetOne {
-  data: {}
+  data: {};
 }
 
 interface IResponseCreate {
-  data: {}
+  data: {};
 }
 
 interface IResponseUpdate {
-  data: {}  
+  data: {};
 }
 
 interface IResponseUpdateMany {
-  data: Array<{}>
+  data: Array<{}>;
 }
 
 interface IResponseDelete {
-  data: {}
+  data: {};
 }
 
 interface IResponseDeleteMany {
-  data: Array<{}>
+  data: Array<{}>;
 }
 
 interface IResponseGetMany {
-  data: Array<{}>
-}    
+  data: Array<{}>;
+}
 
 interface IResponseGetManyReference {
-  data: Array<{}>,
-  total: number
-}    
-
-
+  data: Array<{}>;
+  total: number;
+}
