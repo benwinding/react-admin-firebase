@@ -1,5 +1,5 @@
 // In createRealtimeSaga.js
-import { fb } from './reactAdminFirebase';
+import { fb } from './';
 
 const observeRequest = (firebaseProvider: any) => (
   type: any,
