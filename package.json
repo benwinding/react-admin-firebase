@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.1.1",
+  "version": "0.1.4",
   "dependencies": {
     "@google-cloud/firestore": "^0.17.0",
     "firebase": "^5.5.0",
@@ -10,7 +10,8 @@
     "react-admin": "^2.3.1",
     "ra-input-rich-text": "^2.3.0",
     "rxjs": "^6.3.2"
-  },
+  },  
+  "main": "dist",
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "tsc",

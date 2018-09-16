@@ -269,4 +269,4 @@ function FirebaseProvider(config) {
     }
     return providerApi;
 }
-exports.FirebaseProvider = FirebaseProvider;
+exports.default = FirebaseProvider;

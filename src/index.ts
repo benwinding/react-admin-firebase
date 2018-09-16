@@ -291,7 +291,7 @@ class FirebaseClient {
 
 export let fb: FirebaseClient
 
-export function FirebaseProvider(config: {}): any {
+export default function FirebaseProvider(config: {}): any {
   fb = new FirebaseClient(config);
   async function providerApi(
     type: string,
