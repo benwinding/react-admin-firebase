@@ -1,9 +1,9 @@
 A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. 
 
 ## Features
-[x] Dynamic caching of resources
-[x] All methods implemented
-[ ] Realtime updates
+- [x] Dynamic caching of resources
+- [x] All methods implemented
+- [ ] Realtime updates
 
 ## Simple Demo
 
