@@ -9,6 +9,7 @@
   },
   "rules": {
     "no-console": false,
-    "ordered-imports": false
+    "ordered-imports": false,
+    "no-string-literal": false
   }
 }

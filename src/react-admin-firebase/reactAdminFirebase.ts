@@ -171,12 +171,12 @@ class FirebaseClient {
 
   private sortAsc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field].toString().toLowerCase();
-      const bValue = b[field].toString().toLowerCase();
-      if (aValue < bValue) {
+      const aValue = a[field]? a[field].toString().toLowerCase() : '';
+      const bValue = b[field]? b[field].toString().toLowerCase() : '';
+      if (aValue > bValue) {
         return -1;
       }
-      if (aValue > bValue) {
+      if (aValue < bValue) {
         return 1;
       }
       return 0;
@@ -185,12 +185,12 @@ class FirebaseClient {
 
   private sortDesc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field].toString().toLowerCase();
-      const bValue = b[field].toString().toLowerCase();
-      if (aValue > bValue) {
+      const aValue = a[field] ? a[field].toString().toLowerCase() : '';
+      const bValue = b[field] ? b[field].toString().toLowerCase() : '';
+      if (aValue < bValue) {
         return -1;
       }
-      if (aValue < bValue) {
+      if (aValue > bValue) {
         return 1;
       }
       return 0;
