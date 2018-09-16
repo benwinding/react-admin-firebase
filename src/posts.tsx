@@ -6,21 +6,24 @@ import {
   List,
   Show,
   Create,
+  Edit,
+  DisabledInput,
   SimpleShowLayout,
   SimpleForm,
   TextField,
   TextInput,
-  ShowButton
+  ShowButton,
+  EditButton
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
 export const PostList = (props: {}) => (
   <List {...props}>
     <Datagrid>
-      <TextField source="id" />
       <TextField source="title" />
       <TextField source="body" />
       <ShowButton />
+      <EditButton />
     </Datagrid>
   </List>
 );
@@ -42,4 +45,14 @@ export const PostCreate = (props: {}) => (
       <RichTextInput source="body" />
     </SimpleForm>
   </Create>
+);
+
+export const PostEdit = (props: {}) => (
+  <Edit {...props}>
+    <SimpleForm>
+      <DisabledInput source="id" />
+      <TextInput source="title" />
+      <RichTextInput source="body" />
+    </SimpleForm>
+  </Edit>
 );

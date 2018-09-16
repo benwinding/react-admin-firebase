@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 // import * as  jsonServerProvider from 'ra-data-json-server';
 import * as React from 'react';
-import { PostList, PostShow, PostCreate } from './posts';
+import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
 
 // import jsonServerProvider from 'ra-data-json-server';
 import { Admin, Resource } from 'react-admin';
@@ -16,13 +16,13 @@ const config = {
   // messagingSenderId: "653484435936",
 };
 
-const firebaseProvider = FirebaseProvider(config, ['posts']);
+const firebaseProvider = FirebaseProvider(config);
 
 class App extends React.Component {
   public render() {
     return (
       <Admin dataProvider={firebaseProvider}>
-        <Resource name="posts" list={PostList} show={PostShow} create={PostCreate}/>
+        <Resource name="posts" list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
       </Admin>
     );
   }

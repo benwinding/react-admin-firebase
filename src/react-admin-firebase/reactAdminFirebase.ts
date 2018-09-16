@@ -22,10 +22,13 @@ class FirebaseClient {
   private app: firebase.app.App;
   private resources: IResource[] = [];
 
-  constructor(private firebaseConfig: {}, private pathsArray: string[]) {
+  constructor(private firebaseConfig: {}) {
     this.app = firebase.initializeApp(this.firebaseConfig);
     this.db = this.app.firestore();
-    this.pathsArray.forEach(inputPath => {
+  }
+
+  public async initPath(inputPath: string) {
+    return new Promise((resolve) => {
       if (inputPath == null) {
         return;
       }
@@ -43,15 +46,12 @@ class FirebaseClient {
             }
           );
           this.setList(newList, path);
+          // The data has been set, so resolve the promise
+          resolve();
         }
       );
       const list: Array<{}> = [];
-      const r: IResource = {
-        collection,
-        list,
-        observable,
-        path
-      };
+      const r: IResource = { collection, list, observable, path };
       this.resources.push(r);
     });
   }
@@ -92,7 +92,7 @@ class FirebaseClient {
     return { data: data[0] };
   }
 
-  public async apiGetCreate(
+  public async apiCreate(
     resourceName: string,
     params: IParamsCreate
   ): Promise<IResponseCreate> {
@@ -102,6 +102,22 @@ class FirebaseClient {
       data: {
         ...params.data,
         id: docRef.id
+      }
+    };
+  }
+
+  public async apiUpdate(
+    resourceName: string,
+    params: IParamsUpdate
+  ): Promise<IResponseUpdate> {
+    const id = params.id;
+    delete params.data.id;
+    const r = await this.tryGetResource(resourceName);
+    r.collection.doc(id).set(params.data);
+    return {
+      data: {
+        ...params.data,
+        id
       }
     };
   }
@@ -170,6 +186,7 @@ async function providerApi(
   resourceName: string,
   params: any
 ): Promise<any> {
+  await fb.initPath(resourceName);
   switch (type) {
     case GET_MANY:
     case GET_MANY_REFERENCE:
@@ -178,15 +195,16 @@ async function providerApi(
     case GET_ONE:
       return fb.apiGetOne(resourceName, params);
     case CREATE:
-      return fb.apiGetCreate(resourceName, params);
+      return fb.apiCreate(resourceName, params);
     case UPDATE:
+      return fb.apiUpdate(resourceName, params);
     case DELETE:
     default:
       return {};
   }
 }
 
-export function FirebaseProvider(config: {}, pathList: string[]): any {
-  fb = new FirebaseClient(config, pathList);
+export function FirebaseProvider(config: {}): any {
+  fb = new FirebaseClient(config);
   return providerApi;
 }

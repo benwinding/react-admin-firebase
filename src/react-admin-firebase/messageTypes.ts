@@ -20,7 +20,7 @@ interface IParamsCreate {
 
 interface IParamsUpdate {
   id: string,
-  data: {},
+  data: { id:string },
   previousData: {},
 }
 
