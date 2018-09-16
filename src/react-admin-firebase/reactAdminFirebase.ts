@@ -162,17 +162,35 @@ class FirebaseClient {
     const returnData = [];
     const batch = this.db.batch();
     for (const id of params.ids) {
-      batch.delete(r.collection.doc(id))
+      batch.delete(r.collection.doc(id));
       returnData.push({ id });
     }
     batch.commit();
     return { data: returnData };
   }
 
+  public async apiGetMany(
+    resourceName: string,
+    params: IParamsGetMany
+  ): Promise<IResponseGetMany> {
+    const r = await this.tryGetResource(resourceName);
+    const matches = [];
+    for (const item of r.list) {
+      for (const id of params.ids) {
+        if (id === item['id']) {
+          matches.push(item);
+        }
+      }
+    }
+    return {
+      data: matches
+    };
+  }
+
   private sortAsc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field]? a[field].toString().toLowerCase() : '';
-      const bValue = b[field]? b[field].toString().toLowerCase() : '';
+      const aValue = a[field] ? a[field].toString().toLowerCase() : "";
+      const bValue = b[field] ? b[field].toString().toLowerCase() : "";
       if (aValue > bValue) {
         return -1;
       }
@@ -185,8 +203,8 @@ class FirebaseClient {
 
   private sortDesc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field] ? a[field].toString().toLowerCase() : '';
-      const bValue = b[field] ? b[field].toString().toLowerCase() : '';
+      const aValue = a[field] ? a[field].toString().toLowerCase() : "";
+      const bValue = b[field] ? b[field].toString().toLowerCase() : "";
       if (aValue < bValue) {
         return -1;
       }

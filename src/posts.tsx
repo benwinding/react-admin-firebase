@@ -36,7 +36,7 @@ export const PostShow = (props: {}) => (
     <SimpleShowLayout>
       <TextField source="id" />
       <TextField source="title" />
-      <TextField source="body" />
+      <RichTextField source="body" />
     </SimpleShowLayout>
   </Show>
 );
