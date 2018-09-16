@@ -8,6 +8,7 @@
     ]
   },
   "rules": {
-    "no-console": false
+    "no-console": false,
+    "ordered-imports": false
   }
 }

@@ -43,8 +43,6 @@ class FirebaseClient {
             }
           );
           this.setList(newList, path);
-          // tslint:disable-next-line:no-console
-          console.log(newList);
         }
       );
       const list: Array<{}> = [];
@@ -66,13 +64,11 @@ class FirebaseClient {
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
-      console.log("unsorted data:", data.map((val) => val[field]));
       if (order === "ASC") {
         this.sortAsc(data, field);
       } else {
         this.sortDesc(data, field);
       }
-      console.log("sorted data:", data.map((val) => val[field]));
     }
     const pageStart = (params.pagination.page-1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
@@ -82,6 +78,18 @@ class FirebaseClient {
       data: dataPage,
       total
     };
+  }
+
+  public async apiGetOne(
+    resourceName: string,
+    params: IParamsGetOne
+  ): Promise<IResponseGetOne> {
+    const r = await this.tryGetResource(resourceName);
+    const data = r.list.filter((val: {id:string}) => val.id === params.id);
+    if (data.length < 1) {
+      throw Error("No id found matching: " + params.id);
+    }
+    return { data: data[0] };
   }
 
   public getList(resourceName: string): Promise<Array<{}>> {
@@ -148,8 +156,7 @@ class FirebaseClient {
       collection.onSnapshot(observer)
     );
     observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
-      // tslint:disable-next-line:no-console
-      console.log("getCollectionObservable", querySnapshot);
+      console.log("Observable List Changed:", querySnapshot);
     });
     return observable;
   }
@@ -167,6 +174,7 @@ async function providerApi(
     case GET_LIST:
       return fb.apiGetList(resourceName, params);
     case GET_ONE:
+      return fb.apiGetOne(resourceName, params);
     case CREATE:
     case UPDATE:
     case DELETE:

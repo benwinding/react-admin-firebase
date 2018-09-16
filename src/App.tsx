@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-var-requires
 // import * as  jsonServerProvider from 'ra-data-json-server';
 import * as React from 'react';
-import { PostList } from './posts';
+import { PostList, PostShow } from './posts';
 
 // import jsonServerProvider from 'ra-data-json-server';
 import { Admin, Resource } from 'react-admin';
@@ -24,7 +24,7 @@ class App extends React.Component {
     return (
       // <Admin dataProvider={dataProvider}>
       <Admin dataProvider={firebaseProvider}>
-        <Resource name="posts" list={PostList} />
+        <Resource name="posts" list={PostList} show={PostShow}/>
       </Admin>
     );
   }
