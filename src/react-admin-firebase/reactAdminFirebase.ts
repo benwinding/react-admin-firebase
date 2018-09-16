@@ -187,6 +187,30 @@ class FirebaseClient {
     };
   }
 
+  public async apiGetManyReference(
+    resourceName: string,
+    params: IParamsGetManyReference
+  ): Promise<IResponseGetManyReference> {
+    const r = await this.tryGetResource(resourceName);
+    const data = r.list;
+    const targetField = params.target;
+    const targetValue = params.id;
+    const matches = data.filter((val) => val[targetField] === targetValue);
+    if (params.sort != null) {
+      const { field, order } = params.sort;
+      if (order === "ASC") {
+        this.sortAsc(matches, field);
+      } else {
+        this.sortDesc(matches, field);
+      }
+    }
+    const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
+    const pageEnd = pageStart + params.pagination.perPage;
+    const dataPage = matches.slice(pageStart, pageEnd);
+    const total = matches.length;
+    return { data: dataPage, total };
+  }
+
   private sortAsc(data: Array<{}>, field: string) {
     data.sort((a: {}, b: {}) => {
       const aValue = a[field] ? a[field].toString().toLowerCase() : "";
@@ -254,7 +278,9 @@ async function providerApi(
   await fb.initPath(resourceName);
   switch (type) {
     case GET_MANY:
+      return fb.apiGetMany(resourceName, params);
     case GET_MANY_REFERENCE:
+      return fb.apiGetManyReference(resourceName, params);
     case GET_LIST:
       return fb.apiGetList(resourceName, params);
     case GET_ONE:
