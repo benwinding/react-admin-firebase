@@ -346,9 +346,10 @@ var FirebaseClient = /** @class */ (function () {
         var observable = rxjs_1.Observable.create(function (observer) {
             return collection.onSnapshot(observer);
         });
-        observable.subscribe(function (querySnapshot) {
-            console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
-        });
+        // LOGGING
+        // observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
+        //   console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
+        // });
         return observable;
     };
     return FirebaseClient;
