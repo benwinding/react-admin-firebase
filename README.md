@@ -91,3 +91,4 @@ const options = {
 const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 ...
 ```
+[Full Demo Project](https://github.com/benwinding/demo-react-admin-firebase)
