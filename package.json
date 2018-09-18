@@ -1,12 +1,14 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "dependencies": {
     "firebase": "^5.5.0",
     "react-admin": "^2.3.1",
     "rxjs": "^6.3.2"
-  },  
+  },
+  "homepage": "https://github.com/benwinding/react-admin-firebase",
+  "email": "hello@benwinding.com",
   "main": "dist",
   "scripts": {
     "start": "react-scripts-ts start",
@@ -14,6 +16,7 @@
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
   },
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^10.9.4",
     "typescript": "^3.0.3"
