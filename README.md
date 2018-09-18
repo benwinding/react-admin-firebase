@@ -3,7 +3,7 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
 ## Features
 - [x] Dynamic caching of resources
 - [x] All methods implemented
-- [ ] Realtime updates
+- [x] Realtime updates, using ra-realtime
 
 ## Simple Demo
 
@@ -12,7 +12,10 @@ import * as React from 'react';
 import { Admin, Resource } from 'react-admin';
 
 import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
-import { FirebaseProvider } from 'ra-data-firebase';
+import {
+  FirebaseRealTimeSaga,
+  FirebaseDataProvider
+} from 'react-admin-firebase';
 
 const config = {
   apiKey: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -23,13 +26,15 @@ const config = {
   messagingSenderId: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
 };
 
-const firebaseProvider = FirebaseProvider(config);
+const dataProvider = FirebaseDataProvider(config);
+const firebaseRealtime = FirebaseRealTimeSaga(dataProvider);
 
 class App extends React.Component {
   public render() {
     return (
       <Admin 
         dataProvider={firebaseProvider} 
+        customSagas={[firebaseRealtime]}
       >
         <Resource name="posts" list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
       </Admin>
