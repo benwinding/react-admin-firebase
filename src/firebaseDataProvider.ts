@@ -278,9 +278,10 @@ class FirebaseClient {
     const observable: any = Observable.create((observer: any) =>
       collection.onSnapshot(observer)
     );
-    observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
-      console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
-    });
+    // LOGGING
+    // observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
+    //   console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
+    // });
     return observable;
   }
 }
