@@ -13,15 +13,15 @@ const observeRequest = (firebaseProvider: any) => (
   return {
     subscribe(observer: any) {
       const r = fb.GetResource(resource);
-      const subscription = r.realtimeObservable.subscribe((newList) => {
-        observer.next(newList);
-      });
+      // const subscription = r.realtimeObservable.subscribe((newList) => {
+      //   observer.next(newList);
+      // });
       const sub = {
-        unsubscribe() {
-          subscription.unsubscribe();
-          // Notify the saga that we cleaned up everything
-          observer.complete();
-        }
+        // unsubscribe() {
+        //   subscription.unsubscribe();
+        //   // Notify the saga that we cleaned up everything
+        //   observer.complete();
+        // }
       };
       return sub;
     }    

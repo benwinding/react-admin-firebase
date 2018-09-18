@@ -9,15 +9,15 @@ var observeRequest = function (firebaseProvider) { return function (type, resour
     return {
         subscribe: function (observer) {
             var r = _1.fb.GetResource(resource);
-            var subscription = r.realtimeObservable.subscribe(function (newList) {
-                observer.next(newList);
-            });
+            // const subscription = r.realtimeObservable.subscribe((newList) => {
+            //   observer.next(newList);
+            // });
             var sub = {
-                unsubscribe: function () {
-                    subscription.unsubscribe();
-                    // Notify the saga that we cleaned up everything
-                    observer.complete();
-                }
+            // unsubscribe() {
+            //   subscription.unsubscribe();
+            //   // Notify the saga that we cleaned up everything
+            //   observer.complete();
+            // }
             };
             return sub;
         }

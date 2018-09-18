@@ -67,12 +67,10 @@ var FirebaseClient = /** @class */ (function () {
                         var path = inputPath;
                         var collection = _this.db.collection(path);
                         var observable = _this.getCollectionObservable(collection);
-                        var realtimeObservable = new rxjs_1.Subject();
                         observable.subscribe(function (querySnapshot) {
                             var newList = querySnapshot.docs.map(function (doc) {
                                 return __assign({}, doc.data(), { id: doc.id });
                             });
-                            realtimeObservable.next(newList);
                             _this.setList(newList, path);
                             // The data has been set, so resolve the promise
                             resolve();
@@ -83,7 +81,6 @@ var FirebaseClient = /** @class */ (function () {
                             list: list,
                             observable: observable,
                             path: path,
-                            realtimeObservable: realtimeObservable
                         };
                         _this.resources.push(r);
                     })];
@@ -130,7 +127,7 @@ var FirebaseClient = /** @class */ (function () {
                         r = _a.sent();
                         data = r.list.filter(function (val) { return val.id === params.id; });
                         if (data.length < 1) {
-                            throw Error("No id found matching: " + params.id);
+                            throw Error("react-admin-firebase: No id found matching: " + params.id);
                         }
                         return [2 /*return*/, { data: data[0] }];
                 }
@@ -294,7 +291,7 @@ var FirebaseClient = /** @class */ (function () {
             return val.path === resourceName;
         });
         if (matches.length < 1) {
-            throw new Error("Cant find resource with id");
+            throw new Error("react-admin-firebase: Cant find resource with id");
         }
         var match = matches[0];
         return match;
@@ -338,7 +335,7 @@ var FirebaseClient = /** @class */ (function () {
                     return val.path === resourceName;
                 });
                 if (matches.length < 1) {
-                    throw new Error("Cant find resource with id");
+                    throw new Error("react-admin-firebase: Cant find resource with id");
                 }
                 match = matches[0];
                 return [2 /*return*/, match];
@@ -350,7 +347,7 @@ var FirebaseClient = /** @class */ (function () {
             return collection.onSnapshot(observer);
         });
         observable.subscribe(function (querySnapshot) {
-            console.log("Observable List Changed:", querySnapshot);
+            console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
         });
         return observable;
     };

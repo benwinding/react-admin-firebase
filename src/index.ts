@@ -17,7 +17,6 @@ export interface IResource {
   collection: firebase.firestore.CollectionReference;
   observable: Observable<{}>;
   list: Array<{}>;
-  realtimeObservable: Observable<{}>;
 }
 
 class FirebaseClient {
@@ -38,7 +37,6 @@ class FirebaseClient {
       const path = inputPath;
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
-      const realtimeObservable = new Subject();
       observable.subscribe(
         (querySnapshot: firebase.firestore.QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
@@ -49,7 +47,6 @@ class FirebaseClient {
               };
             }
           );
-          realtimeObservable.next(newList);
           this.setList(newList, path);
           // The data has been set, so resolve the promise
           resolve();
@@ -61,7 +58,6 @@ class FirebaseClient {
         list, 
         observable, 
         path, 
-        realtimeObservable 
       };
       this.resources.push(r);
     });
@@ -98,7 +94,7 @@ class FirebaseClient {
     const r = await this.tryGetResource(resourceName);
     const data = r.list.filter((val: { id: string }) => val.id === params.id);
     if (data.length < 1) {
-      throw Error("No id found matching: " + params.id);
+      throw Error("react-admin-firebase: No id found matching: " + params.id);
     }
     return { data: data[0] };
   }
@@ -225,7 +221,7 @@ class FirebaseClient {
       return val.path === resourceName;
     });
     if (matches.length < 1) {
-      throw new Error("Cant find resource with id");
+      throw new Error("react-admin-firebase: Cant find resource with id");
     }
     const match: IResource = matches[0];
     return match;
@@ -270,7 +266,7 @@ class FirebaseClient {
       return val.path === resourceName;
     });
     if (matches.length < 1) {
-      throw new Error("Cant find resource with id");
+      throw new Error("react-admin-firebase: Cant find resource with id");
     }
     const match: IResource = matches[0];
     return match;
@@ -283,7 +279,7 @@ class FirebaseClient {
       collection.onSnapshot(observer)
     );
     observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
-      console.log("Observable List Changed:", querySnapshot);
+      console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
     });
     return observable;
   }
