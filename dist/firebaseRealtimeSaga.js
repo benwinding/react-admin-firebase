@@ -4,7 +4,11 @@ var ra_realtime_1 = require("ra-realtime");
 var firebaseDataProvider_1 = require("./firebaseDataProvider");
 var observeRequest = function (dataProvider, options) { return function (type, resource, params) {
     // If the paths are explicitly set in options
-    if (options && Array.isArray(options.observe) && !options.observe.includes(resource)) {
+    if (options && Array.isArray(options.watch) && !options.watch.includes(resource)) {
+        // Then don't observe it, if it's not set
+        return;
+    }
+    if (options && Array.isArray(options.dontwatch) && options.dontwatch.includes(resource)) {
         // Then don't observe it, if it's not set
         return;
     }

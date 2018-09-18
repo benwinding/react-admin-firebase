@@ -1,4 +1,4 @@
-A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. 
+A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. Built from Typescript!
 
 ## Features
 - [x] Dynamic caching of resources
@@ -27,6 +27,7 @@ const config = {
 };
 
 const dataProvider = FirebaseDataProvider(config);
+// Optional realtime updates in lists and datagrids
 const firebaseRealtime = FirebaseRealTimeSaga(dataProvider);
 
 class App extends React.Component {
