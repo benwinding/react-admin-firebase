@@ -1,7 +1,7 @@
 import realtimeSaga from "ra-realtime";
 import {
   fb
-} from './index';
+} from './firebaseDataProvider';
 
 const observeRequest = (dataProvider, options) => (type, resource, params) => {  
   // If the paths are explicitly set in options
