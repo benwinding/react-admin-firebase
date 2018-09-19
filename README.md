@@ -1,17 +1,19 @@
 A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework.
 
-`yarn add react-admin-firebase` 
-
-or
-
-`npm install --save react-admin-firebase`
-
 ## Features
 - [x] Dynamic caching of resources
 - [x] All methods implemented
 - [x] Realtime updates, using ra-realtime
     - Implicitly watches all GET_LIST routes using observables and the firebase sdk
     - Optional watch array or dontwatch array
+
+## Get Started
+
+`yarn add react-admin-firebase` 
+
+or
+
+`npm install --save react-admin-firebase`
 
 ## Demo Basic
 A simple example based on the [React Admin Tutorial](https://marmelab.com/react-admin/Tutorial.html).
