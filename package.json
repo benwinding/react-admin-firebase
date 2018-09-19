@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "dependencies": {
     "firebase": "^5.5.0",
     "ra-realtime": "^2.3.1",
@@ -12,6 +12,7 @@
   "email": "hello@benwinding.com",
   "main": "dist",
   "scripts": {
+    "deploy": "yarn build && npm publish",
     "start": "react-scripts-ts start",
     "build": "tsc",
     "test": "react-scripts-ts test --env=jsdom",

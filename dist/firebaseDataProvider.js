@@ -46,7 +46,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var firebase = require("firebase");
+var firebase = require("firebase/app");
+require("firebase/firestore");
 var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
 var FirebaseClient = /** @class */ (function () {
