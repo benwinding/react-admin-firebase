@@ -1,4 +1,10 @@
-A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. Built from Typescript!
+A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework.
+
+`yarn add react-admin-firebase` 
+
+or
+
+`npm install --save react-admin-firebase`
 
 ## Features
 - [x] Dynamic caching of resources
