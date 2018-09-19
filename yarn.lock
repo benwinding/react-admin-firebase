@@ -1031,6 +1031,12 @@ ra-language-english@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/ra-language-english/-/ra-language-english-2.3.0.tgz#d25247bd148a57b02ff0480a66388220ee72ef16"
 
+ra-realtime@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/ra-realtime/-/ra-realtime-2.3.1.tgz#15e2dd168113e55bf200fa3be712b0133f30208d"
+  dependencies:
+    lodash "~4.17.5"
+
 ra-ui-materialui@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/ra-ui-materialui/-/ra-ui-materialui-2.3.1.tgz#fc58252db9b26e071fcaf045b30f865b2b7a7b07"
