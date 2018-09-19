@@ -55,6 +55,8 @@ var FirebaseClient = /** @class */ (function () {
         this.resources = [];
         this.app = firebase.initializeApp(this.firebaseConfig);
         this.db = this.app.firestore();
+        var settings = { /* your settings... */ timestampsInSnapshots: true };
+        this.db.settings(settings);
     }
     FirebaseClient.prototype.initPath = function (inputPath) {
         return __awaiter(this, void 0, void 0, function () {

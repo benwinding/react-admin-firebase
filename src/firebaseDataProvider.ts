@@ -27,6 +27,8 @@ class FirebaseClient {
   constructor(private firebaseConfig: {}) {
     this.app = firebase.initializeApp(this.firebaseConfig);
     this.db = this.app.firestore();
+    const settings = {/* your settings... */ timestampsInSnapshots: true };
+    this.db.settings(settings);
   }
 
   public async initPath(inputPath: string) {
