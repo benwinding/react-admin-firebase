@@ -1,11 +1,11 @@
-A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework.
+A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. It maps collections from the Firebase database (Firestore) to your react-admin application.
 
 ## Features
 - [x] Dynamic caching of resources
-- [x] All methods implemented
+- [x] All methods implemented; `(GET, POST, GET_LIST ect...)`
 - [x] Realtime updates, using ra-realtime
-    - Implicitly watches all GET_LIST routes using observables and the firebase sdk
-    - Optional watch array or dontwatch array
+    - Implicitly watches all GET_LIST routes using observables with the firebase sdk
+    - Optional watch collection array or dontwatch collection array
 
 ## Get Started
 
