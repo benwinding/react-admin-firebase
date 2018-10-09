@@ -1,4 +1,4 @@
-A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. It maps collections from the Firebase database (Firestore) to your react-admin application.
+A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. It maps collections from the Firebase database (Firestore) to your react-admin application. It's an [npm package](https://www.npmjs.com/package/react-admin-firebase).
 
 ## Features
 - [x] Dynamic caching of resources
@@ -8,7 +8,6 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
     - Optional watch collection array or dontwatch collection array
 
 ## Get Started
-
 `yarn add react-admin-firebase` 
 
 or
