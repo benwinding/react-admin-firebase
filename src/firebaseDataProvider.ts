@@ -1,5 +1,5 @@
 import * as firebase from "firebase/app";
-import 'firebase/firestore';
+import "firebase/firestore";
 
 import {
   CREATE,
@@ -29,7 +29,7 @@ class FirebaseClient {
   constructor(private firebaseConfig: {}) {
     this.app = firebase.initializeApp(this.firebaseConfig);
     this.db = this.app.firestore();
-    const settings = {/* your settings... */ timestampsInSnapshots: true };
+    const settings = { /* your settings... */ timestampsInSnapshots: true };
     this.db.settings(settings);
   }
 
@@ -57,11 +57,11 @@ class FirebaseClient {
         }
       );
       const list: Array<{}> = [];
-      const r: IResource = { 
-        collection, 
-        list, 
-        observable, 
-        path, 
+      const r: IResource = {
+        collection,
+        list,
+        observable,
+        path
       };
       this.resources.push(r);
     });
@@ -290,7 +290,7 @@ class FirebaseClient {
   }
 }
 
-export let fb: FirebaseClient
+export let fb: FirebaseClient;
 
 export default function FirebaseProvider(config: {}): any {
   fb = new FirebaseClient(config);
