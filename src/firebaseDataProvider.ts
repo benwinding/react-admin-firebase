@@ -45,10 +45,14 @@ class FirebaseClient {
         (querySnapshot: firebase.firestore.QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
             (doc: firebase.firestore.QueryDocumentSnapshot) => {
-              return {
-                ...doc.data(),
-                id: doc.id
-              };
+              const data = doc.data();
+              Object.keys(data).forEach(key => {
+                const value = data[key];
+                if (value.toDate && value.toDate instanceof Function) {
+                  data[key] = value.toDate().toISOString();
+                }
+              });
+              return { id: doc.id, ...data };
             }
           );
           this.setList(newList, path);
@@ -108,11 +112,10 @@ class FirebaseClient {
     params: IParamsCreate
   ): Promise<IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
-    const docRef = await r.collection.add(params.data);
+    r.collection.add(params.data);
     return {
       data: {
-        ...params.data,
-        id: docRef.id
+        ...params.data
       }
     };
   }
@@ -124,7 +127,7 @@ class FirebaseClient {
     const id = params.id;
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
-    await r.collection.doc(id).set(params.data);
+    r.collection.doc(id).update(params.data);
     return {
       data: {
         ...params.data,
@@ -141,7 +144,7 @@ class FirebaseClient {
     const r = await this.tryGetResource(resourceName);
     const returnData = [];
     for (const id of params.ids) {
-      r.collection.doc(id).set(params.data);
+      r.collection.doc(id).update(params.data);
       returnData.push({
         ...params.data,
         id
