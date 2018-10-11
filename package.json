@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "dependencies": {
     "firebase": "^5.5.0",
     "ra-realtime": "^2.3.1",

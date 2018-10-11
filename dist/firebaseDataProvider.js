@@ -72,7 +72,14 @@ var FirebaseClient = /** @class */ (function () {
                         var observable = _this.getCollectionObservable(collection);
                         observable.subscribe(function (querySnapshot) {
                             var newList = querySnapshot.docs.map(function (doc) {
-                                return __assign({}, doc.data(), { id: doc.id });
+                                var data = doc.data();
+                                Object.keys(data).forEach(function (key) {
+                                    var value = data[key];
+                                    if (value.toDate && value.toDate instanceof Function) {
+                                        data[key] = value.toDate().toISOString();
+                                    }
+                                });
+                                return __assign({ id: doc.id }, data);
                             });
                             _this.setList(newList, path);
                             // The data has been set, so resolve the promise
@@ -83,7 +90,7 @@ var FirebaseClient = /** @class */ (function () {
                             collection: collection,
                             list: list,
                             observable: observable,
-                            path: path,
+                            path: path
                         };
                         _this.resources.push(r);
                     })];
@@ -139,17 +146,15 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.apiCreate = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var r, docRef;
+            var r;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
-                        return [4 /*yield*/, r.collection.add(params.data)];
-                    case 2:
-                        docRef = _a.sent();
+                        r.collection.add(params.data);
                         return [2 /*return*/, {
-                                data: __assign({}, params.data, { id: docRef.id })
+                                data: __assign({}, params.data)
                             }];
                 }
             });
@@ -166,9 +171,7 @@ var FirebaseClient = /** @class */ (function () {
                         return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
-                        return [4 /*yield*/, r.collection.doc(id).set(params.data)];
-                    case 2:
-                        _a.sent();
+                        r.collection.doc(id).update(params.data);
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: id })
                             }];
@@ -189,7 +192,7 @@ var FirebaseClient = /** @class */ (function () {
                         returnData = [];
                         for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
                             id = _a[_i];
-                            r.collection.doc(id).set(params.data);
+                            r.collection.doc(id).update(params.data);
                             returnData.push(__assign({}, params.data, { id: id }));
                         }
                         return [2 /*return*/, {
