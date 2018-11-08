@@ -146,15 +146,17 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.apiCreate = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var r;
+            var r, doc;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
-                        r.collection.add(params.data);
+                        return [4 /*yield*/, r.collection.add(params.data)];
+                    case 2:
+                        doc = _a.sent();
                         return [2 /*return*/, {
-                                data: __assign({}, params.data)
+                                data: __assign({}, params.data, { id: doc.id })
                             }];
                 }
             });

@@ -112,10 +112,11 @@ class FirebaseClient {
     params: IParamsCreate
   ): Promise<IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
-    r.collection.add(params.data);
+    const doc = await r.collection.add(params.data);
     return {
       data: {
-        ...params.data
+        ...params.data,
+        id: doc.id
       }
     };
   }
