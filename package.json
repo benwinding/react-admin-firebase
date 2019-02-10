@@ -1,10 +1,10 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.2.8",
+  "version": "0.3.0",
   "dependencies": {
     "firebase": "^5.5.0",
-    "ra-realtime": "^2.3.1",
+    "ra-realtime": "^2.6.0",
     "react-admin": "^2.3.1",
     "rxjs": "^6.3.2"
   },
@@ -13,10 +13,8 @@
   "main": "dist",
   "scripts": {
     "deploy": "yarn build && npm publish",
-    "start": "react-scripts-ts start",
-    "build": "tsc",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "build": "rm -rf dist && tsc",
+    "watch": "tsc -w --project tsconfig.dev.json"
   },
   "license": "MIT",
   "devDependencies": {

@@ -50,14 +50,16 @@ var firebase = require("firebase/app");
 require("firebase/firestore");
 var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
+// UTILS
+function isEmptyObj(obj) {
+    return JSON.stringify(obj) == '{}';
+}
 var FirebaseClient = /** @class */ (function () {
     function FirebaseClient(firebaseConfig) {
         this.firebaseConfig = firebaseConfig;
         this.resources = [];
         this.app = firebase.initializeApp(this.firebaseConfig);
         this.db = this.app.firestore();
-        var settings = { /* your settings... */ timestampsInSnapshots: true };
-        this.db.settings(settings);
     }
     FirebaseClient.prototype.initPath = function (inputPath) {
         return __awaiter(this, void 0, void 0, function () {
@@ -99,7 +101,7 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.apiGetList = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var r, data, _a, field, order, pageStart, pageEnd, dataPage, total;
+            var r, data, _a, field, order, filteredData, pageStart, pageEnd, dataPage, total;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
@@ -108,16 +110,18 @@ var FirebaseClient = /** @class */ (function () {
                         data = r.list;
                         if (params.sort != null) {
                             _a = params.sort, field = _a.field, order = _a.order;
-                            if (order === "ASC") {
-                                this.sortAsc(data, field);
+                            if (order === 'ASC') {
+                                this.sortArray(data, field, 'asc');
                             }
                             else {
-                                this.sortDesc(data, field);
+                                this.sortArray(data, field, 'desc');
                             }
                         }
+                        console.log('apiGetList', { resourceName: resourceName, resource: r, params: params });
+                        filteredData = this.filterArray(data, params.filter);
                         pageStart = (params.pagination.page - 1) * params.pagination.perPage;
                         pageEnd = pageStart + params.pagination.perPage;
-                        dataPage = data.slice(pageStart, pageEnd);
+                        dataPage = filteredData.slice(pageStart, pageEnd);
                         total = r.list.length;
                         return [2 /*return*/, {
                                 data: dataPage,
@@ -137,7 +141,7 @@ var FirebaseClient = /** @class */ (function () {
                         r = _a.sent();
                         data = r.list.filter(function (val) { return val.id === params.id; });
                         if (data.length < 1) {
-                            throw Error("react-admin-firebase: No id found matching: " + params.id);
+                            throw Error('react-admin-firebase: No id found matching: ' + params.id);
                         }
                         return [2 /*return*/, { data: data[0] }];
                 }
@@ -243,22 +247,14 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.apiGetMany = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var r, matches, _i, _a, item, _b, _c, id;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var r, ids, matches;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
-                        r = _d.sent();
-                        matches = [];
-                        for (_i = 0, _a = r.list; _i < _a.length; _i++) {
-                            item = _a[_i];
-                            for (_b = 0, _c = params.ids; _b < _c.length; _b++) {
-                                id = _c[_b];
-                                if (id === item["id"]) {
-                                    matches.push(item);
-                                }
-                            }
-                        }
+                        r = _a.sent();
+                        ids = new Set(params.ids);
+                        matches = r.list.filter(function (item) { return ids.has(item['id']); });
                         return [2 /*return*/, {
                                 data: matches
                             }];
@@ -280,11 +276,11 @@ var FirebaseClient = /** @class */ (function () {
                         matches = data.filter(function (val) { return val[targetField] === targetValue; });
                         if (params.sort != null) {
                             _a = params.sort, field = _a.field, order = _a.order;
-                            if (order === "ASC") {
-                                this.sortAsc(matches, field);
+                            if (order === 'ASC') {
+                                this.sortArray(data, field, 'asc');
                             }
                             else {
-                                this.sortDesc(matches, field);
+                                this.sortArray(data, field, 'desc');
                             }
                         }
                         pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -301,36 +297,38 @@ var FirebaseClient = /** @class */ (function () {
             return val.path === resourceName;
         });
         if (matches.length < 1) {
-            throw new Error("react-admin-firebase: Cant find resource with id");
+            throw new Error('react-admin-firebase: Cant find resource with id');
         }
         var match = matches[0];
         return match;
     };
-    FirebaseClient.prototype.sortAsc = function (data, field) {
+    FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
-            var aValue = a[field] ? a[field].toString().toLowerCase() : "";
-            var bValue = b[field] ? b[field].toString().toLowerCase() : "";
+            var aValue = a[field] ? a[field].toString().toLowerCase() : '';
+            var bValue = b[field] ? b[field].toString().toLowerCase() : '';
             if (aValue > bValue) {
-                return -1;
+                return dir === 'asc' ? -1 : 1;
             }
             if (aValue < bValue) {
-                return 1;
+                return dir === 'asc' ? 1 : -1;
             }
             return 0;
         });
     };
-    FirebaseClient.prototype.sortDesc = function (data, field) {
-        data.sort(function (a, b) {
-            var aValue = a[field] ? a[field].toString().toLowerCase() : "";
-            var bValue = b[field] ? b[field].toString().toLowerCase() : "";
-            if (aValue < bValue) {
-                return -1;
+    FirebaseClient.prototype.filterArray = function (data, filterFields) {
+        if (isEmptyObj(filterFields)) {
+            return data;
+        }
+        var fieldNames = Object.keys(filterFields);
+        return data.filter(function (item) { return fieldNames.reduce(function (previousMatched, fieldName) {
+            var fieldSearchText = filterFields[fieldName].toLowerCase();
+            var dataFieldValue = item[fieldName];
+            if (dataFieldValue == null) {
+                return false;
             }
-            if (aValue > bValue) {
-                return 1;
-            }
-            return 0;
-        });
+            var currentIsMatched = dataFieldValue.toLowerCase().includes(fieldSearchText);
+            return previousMatched || currentIsMatched;
+        }, false); });
     };
     FirebaseClient.prototype.setList = function (newList, resourceName) {
         return this.tryGetResource(resourceName).then(function (resource) {
@@ -345,7 +343,7 @@ var FirebaseClient = /** @class */ (function () {
                     return val.path === resourceName;
                 });
                 if (matches.length < 1) {
-                    throw new Error("react-admin-firebase: Cant find resource with id");
+                    throw new Error('react-admin-firebase: Cant find resource with id');
                 }
                 match = matches[0];
                 return [2 /*return*/, match];

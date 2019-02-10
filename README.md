@@ -3,6 +3,7 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
 ## Features
 - [x] Dynamic caching of resources
 - [x] All methods implemented; `(GET, POST, GET_LIST ect...)`
+- [x] Filtering, sorting etc...
 - [x] Realtime updates, using ra-realtime
     - Implicitly watches all GET_LIST routes using observables with the firebase sdk
     - Optional watch collection array or dontwatch collection array
