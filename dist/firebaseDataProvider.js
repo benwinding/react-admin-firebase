@@ -177,7 +177,9 @@ var FirebaseClient = /** @class */ (function () {
                         return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
-                        r.collection.doc(id).update(params.data);
+                        return [4 /*yield*/, r.collection.doc(id).update(params.data)];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: id })
                             }];

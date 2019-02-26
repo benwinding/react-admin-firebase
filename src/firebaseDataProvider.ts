@@ -134,7 +134,7 @@ class FirebaseClient {
     const id = params.id;
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
-    r.collection.doc(id).update(params.data);
+    await r.collection.doc(id).update(params.data);
     return {
       data: {
         ...params.data,
