@@ -59,7 +59,9 @@ var FirebaseClient = /** @class */ (function () {
         this.firebaseConfig = firebaseConfig;
         this.resources = [];
         //wait on user stuff
-        this.app = firebase.initializeApp(this.firebaseConfig);
+        this.app = !firebase.apps.length
+            ? firebase.initializeApp(firebaseConfig)
+            : firebase.app();
         this.db = this.app.firestore();
     }
     FirebaseClient.prototype.initPath = function (inputPath) {
@@ -169,24 +171,18 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.apiUpdate = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var id, r, _a, _b, _c, _d, _e;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var id, r;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         id = params.id;
                         delete params.data.id;
                         return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
-                        r = _f.sent();
-                        _b = (_a = console).log;
-                        _c = ["fbDP:"];
-                        _e = (_d = JSON).stringify;
-                        return [4 /*yield*/, firebase.auth().currentUser.getIdTokenResult()];
-                    case 2:
-                        _b.apply(_a, _c.concat([_e.apply(_d, [(_f.sent()).claims])]));
+                        r = _a.sent();
                         return [4 /*yield*/, r.collection.doc(id).update(params.data)];
-                    case 3:
-                        _f.sent();
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: id })
                             }];

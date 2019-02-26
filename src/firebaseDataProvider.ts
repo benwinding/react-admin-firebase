@@ -34,7 +34,9 @@ class FirebaseClient {
 
   constructor(private firebaseConfig: {}) {
     //wait on user stuff
-    this.app = firebase.initializeApp(this.firebaseConfig);
+    this.app = !firebase.apps.length
+      ? firebase.initializeApp(firebaseConfig)
+      : firebase.app();
     this.db = this.app.firestore();
   }
 
@@ -135,12 +137,6 @@ class FirebaseClient {
     const id = params.id;
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
-    console.log(
-      "fbDP:",
-      JSON.stringify(
-        (await firebase.auth().currentUser!.getIdTokenResult()).claims
-      )
-    );
 
     await r.collection.doc(id).update(params.data);
     return {
