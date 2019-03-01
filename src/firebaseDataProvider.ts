@@ -33,7 +33,10 @@ class FirebaseClient {
   private resources: IResource[] = [];
 
   constructor(private firebaseConfig: {}) {
-    this.app = firebase.initializeApp(this.firebaseConfig);
+    //wait on user stuff
+    this.app = !firebase.apps.length
+      ? firebase.initializeApp(firebaseConfig)
+      : firebase.app();
     this.db = this.app.firestore();
   }
 
@@ -134,7 +137,8 @@ class FirebaseClient {
     const id = params.id;
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
-    r.collection.doc(id).update(params.data);
+
+    await r.collection.doc(id).update(params.data);
     return {
       data: {
         ...params.data,

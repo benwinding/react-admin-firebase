@@ -58,7 +58,10 @@ var FirebaseClient = /** @class */ (function () {
     function FirebaseClient(firebaseConfig) {
         this.firebaseConfig = firebaseConfig;
         this.resources = [];
-        this.app = firebase.initializeApp(this.firebaseConfig);
+        //wait on user stuff
+        this.app = !firebase.apps.length
+            ? firebase.initializeApp(firebaseConfig)
+            : firebase.app();
         this.db = this.app.firestore();
     }
     FirebaseClient.prototype.initPath = function (inputPath) {
@@ -177,7 +180,9 @@ var FirebaseClient = /** @class */ (function () {
                         return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
-                        r.collection.doc(id).update(params.data);
+                        return [4 /*yield*/, r.collection.doc(id).update(params.data)];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: id })
                             }];
