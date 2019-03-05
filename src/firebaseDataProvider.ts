@@ -92,7 +92,6 @@ class FirebaseClient {
         this.sortArray(data, field, 'desc');
       }
     }
-    console.log('apiGetList', { resourceName, resource: r, params})
     let filteredData = this.filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
