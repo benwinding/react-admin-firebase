@@ -1,5 +1,5 @@
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 import {
   CREATE,
@@ -11,8 +11,8 @@ import {
   GET_ONE,
   UPDATE,
   UPDATE_MANY
-} from 'react-admin';
-import { Observable, Subject } from 'rxjs';
+} from "react-admin";
+import { Observable, Subject } from "rxjs";
 
 export interface IResource {
   path: string;
@@ -24,7 +24,7 @@ export interface IResource {
 // UTILS
 
 function isEmptyObj(obj) {
-  return JSON.stringify(obj) == '{}';
+  return JSON.stringify(obj) == "{}";
 }
 
 class FirebaseClient {
@@ -35,6 +35,21 @@ class FirebaseClient {
   constructor(private firebaseConfig: {}) {
     this.app = firebase.initializeApp(this.firebaseConfig);
     this.db = this.app.firestore();
+  }
+
+  private parseFireStoreDocument(
+    doc: firebase.firestore.QueryDocumentSnapshot
+  ): {} {
+    const data = doc.data();
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      if (value && value.toDate && value.toDate instanceof Function) {
+        data[key] = value.toDate().toISOString();
+      }
+    });
+    // React Admin requires an id field on every document,
+    // So we can just using the firestore document id
+    return { id: doc.id, ...data };
   }
 
   public async initPath(inputPath: string) {
@@ -48,16 +63,8 @@ class FirebaseClient {
       observable.subscribe(
         (querySnapshot: firebase.firestore.QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
-            (doc: firebase.firestore.QueryDocumentSnapshot) => {
-              const data = doc.data();
-              Object.keys(data).forEach(key => {
-                const value = data[key];
-                if (value.toDate && value.toDate instanceof Function) {
-                  data[key] = value.toDate().toISOString();
-                }
-              });
-              return { id: doc.id, ...data };
-            }
+            (doc: firebase.firestore.QueryDocumentSnapshot) =>
+              this.parseFireStoreDocument(doc)
           );
           this.setList(newList, path);
           // The data has been set, so resolve the promise
@@ -83,13 +90,13 @@ class FirebaseClient {
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
-      if (order === 'ASC') {
-        this.sortArray(data, field, 'asc');
+      if (order === "ASC") {
+        this.sortArray(data, field, "asc");
       } else {
-        this.sortArray(data, field, 'desc');
+        this.sortArray(data, field, "desc");
       }
     }
-    console.log('apiGetList', { resourceName, resource: r, params})
+    console.log("apiGetList", { resourceName, resource: r, params });
     let filteredData = this.filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
@@ -108,7 +115,7 @@ class FirebaseClient {
     const r = await this.tryGetResource(resourceName);
     const data = r.list.filter((val: { id: string }) => val.id === params.id);
     if (data.length < 1) {
-      throw Error('react-admin-firebase: No id found matching: ' + params.id);
+      throw Error("react-admin-firebase: No id found matching: " + params.id);
     }
     return { data: data[0] };
   }
@@ -194,7 +201,7 @@ class FirebaseClient {
   ): Promise<IResponseGetMany> {
     const r = await this.tryGetResource(resourceName);
     const ids = new Set(params.ids);
-    const matches = r.list.filter(item => ids.has(item['id']));
+    const matches = r.list.filter(item => ids.has(item["id"]));
     return {
       data: matches
     };
@@ -211,10 +218,10 @@ class FirebaseClient {
     const matches = data.filter(val => val[targetField] === targetValue);
     if (params.sort != null) {
       const { field, order } = params.sort;
-      if (order === 'ASC') {
-        this.sortArray(data, field, 'asc');
+      if (order === "ASC") {
+        this.sortArray(data, field, "asc");
       } else {
-        this.sortArray(data, field, 'desc');
+        this.sortArray(data, field, "desc");
       }
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -229,46 +236,55 @@ class FirebaseClient {
       return val.path === resourceName;
     });
     if (matches.length < 1) {
-      throw new Error('react-admin-firebase: Cant find resource with id');
+      throw new Error("react-admin-firebase: Cant find resource with id");
     }
     const match: IResource = matches[0];
     return match;
   }
 
-  private sortArray(data: Array<{}>, field: string, dir: 'asc' | 'desc') {
+  private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field] ? a[field].toString().toLowerCase() : '';
-      const bValue = b[field] ? b[field].toString().toLowerCase() : '';
+      const aValue = a[field] ? a[field].toString().toLowerCase() : "";
+      const bValue = b[field] ? b[field].toString().toLowerCase() : "";
       if (aValue > bValue) {
-        return dir === 'asc' ? -1 : 1;
+        return dir === "asc" ? -1 : 1;
       }
       if (aValue < bValue) {
-        return dir === 'asc' ? 1 : -1;
+        return dir === "asc" ? 1 : -1;
       }
       return 0;
     });
   }
 
-  private filterArray(data: Array<{}>, filterFields: { [field: string]: string }) {
+  private filterArray(
+    data: Array<{}>,
+    filterFields: { [field: string]: string }
+  ) {
     if (isEmptyObj(filterFields)) {
       return data;
     }
     const fieldNames = Object.keys(filterFields);
-    return data.filter(item => fieldNames.reduce((previousMatched, fieldName) => {
-      const fieldSearchText = filterFields[fieldName].toLowerCase();
-      const dataFieldValue = item[fieldName];
-      if (dataFieldValue == null) {
-        return false;
-      }
-      const currentIsMatched = dataFieldValue.toLowerCase().includes(fieldSearchText);
-      return previousMatched || currentIsMatched;
-    }, false));
+    return data.filter(item =>
+      fieldNames.reduce((previousMatched, fieldName) => {
+        const fieldSearchText = filterFields[fieldName].toLowerCase();
+        const dataFieldValue = item[fieldName];
+        if (dataFieldValue == null) {
+          return false;
+        }
+        const currentIsMatched = dataFieldValue
+          .toLowerCase()
+          .includes(fieldSearchText);
+        return previousMatched || currentIsMatched;
+      }, false)
+    );
   }
 
-  private setList(newList: Array<{}>, resourceName: string): Promise<any> {
-    return this.tryGetResource(resourceName).then((resource: IResource) => {
-      resource.list = newList;
-    });
+  private async setList(
+    newList: Array<{}>,
+    resourceName: string
+  ): Promise<void> {
+    const resource = await this.tryGetResource(resourceName);
+    resource.list = newList;
   }
 
   private async tryGetResource(resourceName: string) {
@@ -276,7 +292,7 @@ class FirebaseClient {
       return val.path === resourceName;
     });
     if (matches.length < 1) {
-      throw new Error('react-admin-firebase: Cant find resource with id');
+      throw new Error("react-admin-firebase: Cant find resource with id");
     }
     const match: IResource = matches[0];
     return match;
@@ -284,10 +300,10 @@ class FirebaseClient {
 
   private getCollectionObservable(
     collection: firebase.firestore.CollectionReference
-  ): Observable<any> {
-    const observable: any = Observable.create((observer: any) =>
-      collection.onSnapshot(observer)
-    );
+  ): Observable<firebase.firestore.QuerySnapshot> {
+    const observable: Observable<
+      firebase.firestore.QuerySnapshot
+    > = Observable.create((observer: any) => collection.onSnapshot(observer));
     // LOGGING
     // observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
     //   console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
@@ -298,7 +314,7 @@ class FirebaseClient {
 
 export let fb: FirebaseClient;
 
-export default function FirebaseProvider(config: {}): any {
+export default function FirebaseProvider(config: {}) {
   fb = new FirebaseClient(config);
   async function providerApi(
     type: string,

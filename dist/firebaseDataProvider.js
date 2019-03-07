@@ -52,7 +52,7 @@ var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
 // UTILS
 function isEmptyObj(obj) {
-    return JSON.stringify(obj) == '{}';
+    return JSON.stringify(obj) == "{}";
 }
 var FirebaseClient = /** @class */ (function () {
     function FirebaseClient(firebaseConfig) {
@@ -61,6 +61,18 @@ var FirebaseClient = /** @class */ (function () {
         this.app = firebase.initializeApp(this.firebaseConfig);
         this.db = this.app.firestore();
     }
+    FirebaseClient.prototype.parseFireStoreDocument = function (doc) {
+        var data = doc.data();
+        Object.keys(data).forEach(function (key) {
+            var value = data[key];
+            if (value && value.toDate && value.toDate instanceof Function) {
+                data[key] = value.toDate().toISOString();
+            }
+        });
+        // React Admin requires an id field on every document,
+        // So we can just using the firestore document id
+        return __assign({ id: doc.id }, data);
+    };
     FirebaseClient.prototype.initPath = function (inputPath) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -74,14 +86,7 @@ var FirebaseClient = /** @class */ (function () {
                         var observable = _this.getCollectionObservable(collection);
                         observable.subscribe(function (querySnapshot) {
                             var newList = querySnapshot.docs.map(function (doc) {
-                                var data = doc.data();
-                                Object.keys(data).forEach(function (key) {
-                                    var value = data[key];
-                                    if (value.toDate && value.toDate instanceof Function) {
-                                        data[key] = value.toDate().toISOString();
-                                    }
-                                });
-                                return __assign({ id: doc.id }, data);
+                                return _this.parseFireStoreDocument(doc);
                             });
                             _this.setList(newList, path);
                             // The data has been set, so resolve the promise
@@ -110,14 +115,14 @@ var FirebaseClient = /** @class */ (function () {
                         data = r.list;
                         if (params.sort != null) {
                             _a = params.sort, field = _a.field, order = _a.order;
-                            if (order === 'ASC') {
-                                this.sortArray(data, field, 'asc');
+                            if (order === "ASC") {
+                                this.sortArray(data, field, "asc");
                             }
                             else {
-                                this.sortArray(data, field, 'desc');
+                                this.sortArray(data, field, "desc");
                             }
                         }
-                        console.log('apiGetList', { resourceName: resourceName, resource: r, params: params });
+                        console.log("apiGetList", { resourceName: resourceName, resource: r, params: params });
                         filteredData = this.filterArray(data, params.filter);
                         pageStart = (params.pagination.page - 1) * params.pagination.perPage;
                         pageEnd = pageStart + params.pagination.perPage;
@@ -141,7 +146,7 @@ var FirebaseClient = /** @class */ (function () {
                         r = _a.sent();
                         data = r.list.filter(function (val) { return val.id === params.id; });
                         if (data.length < 1) {
-                            throw Error('react-admin-firebase: No id found matching: ' + params.id);
+                            throw Error("react-admin-firebase: No id found matching: " + params.id);
                         }
                         return [2 /*return*/, { data: data[0] }];
                 }
@@ -254,7 +259,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 1:
                         r = _a.sent();
                         ids = new Set(params.ids);
-                        matches = r.list.filter(function (item) { return ids.has(item['id']); });
+                        matches = r.list.filter(function (item) { return ids.has(item["id"]); });
                         return [2 /*return*/, {
                                 data: matches
                             }];
@@ -276,11 +281,11 @@ var FirebaseClient = /** @class */ (function () {
                         matches = data.filter(function (val) { return val[targetField] === targetValue; });
                         if (params.sort != null) {
                             _a = params.sort, field = _a.field, order = _a.order;
-                            if (order === 'ASC') {
-                                this.sortArray(data, field, 'asc');
+                            if (order === "ASC") {
+                                this.sortArray(data, field, "asc");
                             }
                             else {
-                                this.sortArray(data, field, 'desc');
+                                this.sortArray(data, field, "desc");
                             }
                         }
                         pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -297,20 +302,20 @@ var FirebaseClient = /** @class */ (function () {
             return val.path === resourceName;
         });
         if (matches.length < 1) {
-            throw new Error('react-admin-firebase: Cant find resource with id');
+            throw new Error("react-admin-firebase: Cant find resource with id");
         }
         var match = matches[0];
         return match;
     };
     FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
-            var aValue = a[field] ? a[field].toString().toLowerCase() : '';
-            var bValue = b[field] ? b[field].toString().toLowerCase() : '';
+            var aValue = a[field] ? a[field].toString().toLowerCase() : "";
+            var bValue = b[field] ? b[field].toString().toLowerCase() : "";
             if (aValue > bValue) {
-                return dir === 'asc' ? -1 : 1;
+                return dir === "asc" ? -1 : 1;
             }
             if (aValue < bValue) {
-                return dir === 'asc' ? 1 : -1;
+                return dir === "asc" ? 1 : -1;
             }
             return 0;
         });
@@ -320,19 +325,32 @@ var FirebaseClient = /** @class */ (function () {
             return data;
         }
         var fieldNames = Object.keys(filterFields);
-        return data.filter(function (item) { return fieldNames.reduce(function (previousMatched, fieldName) {
-            var fieldSearchText = filterFields[fieldName].toLowerCase();
-            var dataFieldValue = item[fieldName];
-            if (dataFieldValue == null) {
-                return false;
-            }
-            var currentIsMatched = dataFieldValue.toLowerCase().includes(fieldSearchText);
-            return previousMatched || currentIsMatched;
-        }, false); });
+        return data.filter(function (item) {
+            return fieldNames.reduce(function (previousMatched, fieldName) {
+                var fieldSearchText = filterFields[fieldName].toLowerCase();
+                var dataFieldValue = item[fieldName];
+                if (dataFieldValue == null) {
+                    return false;
+                }
+                var currentIsMatched = dataFieldValue
+                    .toLowerCase()
+                    .includes(fieldSearchText);
+                return previousMatched || currentIsMatched;
+            }, false);
+        });
     };
     FirebaseClient.prototype.setList = function (newList, resourceName) {
-        return this.tryGetResource(resourceName).then(function (resource) {
-            resource.list = newList;
+        return __awaiter(this, void 0, void 0, function () {
+            var resource;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
+                    case 1:
+                        resource = _a.sent();
+                        resource.list = newList;
+                        return [2 /*return*/];
+                }
+            });
         });
     };
     FirebaseClient.prototype.tryGetResource = function (resourceName) {
@@ -343,7 +361,7 @@ var FirebaseClient = /** @class */ (function () {
                     return val.path === resourceName;
                 });
                 if (matches.length < 1) {
-                    throw new Error('react-admin-firebase: Cant find resource with id');
+                    throw new Error("react-admin-firebase: Cant find resource with id");
                 }
                 match = matches[0];
                 return [2 /*return*/, match];
@@ -351,9 +369,7 @@ var FirebaseClient = /** @class */ (function () {
         });
     };
     FirebaseClient.prototype.getCollectionObservable = function (collection) {
-        var observable = rxjs_1.Observable.create(function (observer) {
-            return collection.onSnapshot(observer);
-        });
+        var observable = rxjs_1.Observable.create(function (observer) { return collection.onSnapshot(observer); });
         // LOGGING
         // observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
         //   console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
