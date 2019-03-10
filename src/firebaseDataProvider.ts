@@ -13,7 +13,6 @@ import {
   UPDATE_MANY
 } from "react-admin";
 import { Observable } from "rxjs";
-import { ENV } from 'config/env.dev';
 
 export interface IResource {
   path: string;
@@ -28,10 +27,20 @@ function isEmptyObj(obj) {
   return JSON.stringify(obj) == "{}";
 }
 
+function log(description: string, obj: {}) {
+  if (ISDEBUG) {
+    console.log(description, obj);
+  }
+}
+
+var ISDEBUG = false;
+
 class FirebaseClient {
   private db: firebase.firestore.Firestore;
   private app: firebase.app.App;
-  private resources: IResource[] = [];
+  private resources: {
+    [resourceName: string]: IResource;
+  } = {};
 
   constructor(private firebaseConfig: {}) {
     this.app = firebase.initializeApp(this.firebaseConfig);
@@ -53,12 +62,12 @@ class FirebaseClient {
     return { id: doc.id, ...data };
   }
 
-  public async initPath(inputPath: string) {
+  public async initPath(path: string): Promise<void> {
     return new Promise(resolve => {
-      if (inputPath == null) {
-        return;
+      const hasBeenInited = this.resources[path];
+      if (hasBeenInited) {
+        return resolve();
       }
-      const path = inputPath;
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
       observable.subscribe(
@@ -79,7 +88,8 @@ class FirebaseClient {
         observable,
         path
       };
-      this.resources.push(r);
+      this.resources[path] = r;
+      log("initPath", { path, r, "this.resources": this.resources });
     });
   }
 
@@ -97,9 +107,7 @@ class FirebaseClient {
         this.sortArray(data, field, "desc");
       }
     }
-    if (ENV.debug) {
-      console.log("apiGetList", { resourceName, resource: r, params });
-    }
+    log("apiGetList", { resourceName, resource: r, params });
     let filteredData = this.filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
@@ -116,11 +124,14 @@ class FirebaseClient {
     params: IParamsGetOne
   ): Promise<IResponseGetOne> {
     const r = await this.tryGetResource(resourceName);
+    log("apiGetOne", { resourceName, resource: r, params });
     const data = r.list.filter((val: { id: string }) => val.id === params.id);
     if (data.length < 1) {
-      throw Error("react-admin-firebase: No id found matching: " + params.id);
+      throw new Error(
+        "react-admin-firebase: No id found matching: " + params.id
+      );
     }
-    return { data: data[0] };
+    return { data: data.pop() };
   }
 
   public async apiCreate(
@@ -128,6 +139,7 @@ class FirebaseClient {
     params: IParamsCreate
   ): Promise<IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
+    log("apiCreate", { resourceName, resource: r, params });
     const doc = await r.collection.add(params.data);
     return {
       data: {
@@ -144,6 +156,7 @@ class FirebaseClient {
     const id = params.id;
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
+    log("apiUpdate", { resourceName, resource: r, params });
     r.collection.doc(id).update(params.data);
     return {
       data: {
@@ -159,6 +172,7 @@ class FirebaseClient {
   ): Promise<IResponseUpdateMany> {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
+    log("apiUpdateMany", { resourceName, resource: r, params });
     const returnData = [];
     for (const id of params.ids) {
       r.collection.doc(id).update(params.data);
@@ -177,6 +191,7 @@ class FirebaseClient {
     params: IParamsDelete
   ): Promise<IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
+    log("apiDelete", { resourceName, resource: r, params });
     r.collection.doc(params.id).delete();
     return {
       data: params.previousData
@@ -188,6 +203,7 @@ class FirebaseClient {
     params: IParamsDeleteMany
   ): Promise<IResponseDeleteMany> {
     const r = await this.tryGetResource(resourceName);
+    log("apiDeleteMany", { resourceName, resource: r, params });
     const returnData = [];
     const batch = this.db.batch();
     for (const id of params.ids) {
@@ -203,6 +219,7 @@ class FirebaseClient {
     params: IParamsGetMany
   ): Promise<IResponseGetMany> {
     const r = await this.tryGetResource(resourceName);
+    log("apiGetMany", { resourceName, resource: r, params });
     const ids = new Set(params.ids);
     const matches = r.list.filter(item => ids.has(item["id"]));
     return {
@@ -215,6 +232,7 @@ class FirebaseClient {
     params: IParamsGetManyReference
   ): Promise<IResponseGetManyReference> {
     const r = await this.tryGetResource(resourceName);
+    log("apiGetManyReference", { resourceName, resource: r, params });
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
@@ -235,17 +253,10 @@ class FirebaseClient {
   }
 
   public GetResource(resourceName: string): IResource {
-    const matches: IResource[] = this.resources.filter(val => {
-      return val.path === resourceName;
-    });
-    if (matches.length < 1) {
-      throw new Error("react-admin-firebase: Cant find resource with id");
-    }
-    const match: IResource = matches[0];
-    return match;
+    return this.tryGetResource(resourceName);
   }
 
-  private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
+  private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
     data.sort((a: {}, b: {}) => {
       const aValue = a[field] ? a[field].toString().toLowerCase() : "";
       const bValue = b[field] ? b[field].toString().toLowerCase() : "";
@@ -262,7 +273,7 @@ class FirebaseClient {
   private filterArray(
     data: Array<{}>,
     filterFields: { [field: string]: string }
-  ) {
+  ): Array<{}> {
     if (isEmptyObj(filterFields)) {
       return data;
     }
@@ -290,15 +301,14 @@ class FirebaseClient {
     resource.list = newList;
   }
 
-  private async tryGetResource(resourceName: string) {
-    const matches: IResource[] = this.resources.filter(val => {
-      return val.path === resourceName;
-    });
-    if (matches.length < 1) {
-      throw new Error("react-admin-firebase: Cant find resource with id");
+  private tryGetResource(resourceName: string): IResource {
+    const resource: IResource = this.resources[resourceName];
+    if (!resource) {
+      throw new Error(
+        `react-admin-firebase: Cant find resource: "${resourceName}"`
+      );
     }
-    const match: IResource = matches[0];
-    return match;
+    return resource;
   }
 
   private getCollectionObservable(
@@ -308,16 +318,14 @@ class FirebaseClient {
       firebase.firestore.QuerySnapshot
     > = Observable.create((observer: any) => collection.onSnapshot(observer));
     // LOGGING
-    // observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
-    //   console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
-    // });
     return observable;
   }
 }
 
 export let fb: FirebaseClient;
 
-export default function FirebaseProvider(config: {}) {
+export default function FirebaseProvider(config: {}, isDebug?: boolean) {
+  ISDEBUG = isDebug;
   fb = new FirebaseClient(config);
   async function providerApi(
     type: string,

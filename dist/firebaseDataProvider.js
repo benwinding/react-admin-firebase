@@ -54,10 +54,16 @@ var rxjs_1 = require("rxjs");
 function isEmptyObj(obj) {
     return JSON.stringify(obj) == "{}";
 }
+function log(description, obj) {
+    if (ISDEBUG) {
+        console.log(description, obj);
+    }
+}
+var ISDEBUG = false;
 var FirebaseClient = /** @class */ (function () {
     function FirebaseClient(firebaseConfig) {
         this.firebaseConfig = firebaseConfig;
-        this.resources = [];
+        this.resources = {};
         this.app = firebase.initializeApp(this.firebaseConfig);
         this.db = this.app.firestore();
     }
@@ -73,15 +79,15 @@ var FirebaseClient = /** @class */ (function () {
         // So we can just using the firestore document id
         return __assign({ id: doc.id }, data);
     };
-    FirebaseClient.prototype.initPath = function (inputPath) {
+    FirebaseClient.prototype.initPath = function (path) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, new Promise(function (resolve) {
-                        if (inputPath == null) {
-                            return;
+                        var hasBeenInited = _this.resources[path];
+                        if (hasBeenInited) {
+                            return resolve();
                         }
-                        var path = inputPath;
                         var collection = _this.db.collection(path);
                         var observable = _this.getCollectionObservable(collection);
                         observable.subscribe(function (querySnapshot) {
@@ -99,7 +105,8 @@ var FirebaseClient = /** @class */ (function () {
                             observable: observable,
                             path: path
                         };
-                        _this.resources.push(r);
+                        _this.resources[path] = r;
+                        log("initPath", { path: path, r: r, "this.resources": _this.resources });
                     })];
             });
         });
@@ -122,7 +129,7 @@ var FirebaseClient = /** @class */ (function () {
                                 this.sortArray(data, field, "desc");
                             }
                         }
-                        console.log("apiGetList", { resourceName: resourceName, resource: r, params: params });
+                        log("apiGetList", { resourceName: resourceName, resource: r, params: params });
                         filteredData = this.filterArray(data, params.filter);
                         pageStart = (params.pagination.page - 1) * params.pagination.perPage;
                         pageEnd = pageStart + params.pagination.perPage;
@@ -144,11 +151,12 @@ var FirebaseClient = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
+                        log("apiGetOne", { resourceName: resourceName, resource: r, params: params });
                         data = r.list.filter(function (val) { return val.id === params.id; });
                         if (data.length < 1) {
-                            throw Error("react-admin-firebase: No id found matching: " + params.id);
+                            throw new Error("react-admin-firebase: No id found matching: " + params.id);
                         }
-                        return [2 /*return*/, { data: data[0] }];
+                        return [2 /*return*/, { data: data.pop() }];
                 }
             });
         });
@@ -161,6 +169,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
+                        log("apiCreate", { resourceName: resourceName, resource: r, params: params });
                         return [4 /*yield*/, r.collection.add(params.data)];
                     case 2:
                         doc = _a.sent();
@@ -182,6 +191,7 @@ var FirebaseClient = /** @class */ (function () {
                         return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
+                        log("apiUpdate", { resourceName: resourceName, resource: r, params: params });
                         r.collection.doc(id).update(params.data);
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: id })
@@ -200,6 +210,7 @@ var FirebaseClient = /** @class */ (function () {
                         return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _b.sent();
+                        log("apiUpdateMany", { resourceName: resourceName, resource: r, params: params });
                         returnData = [];
                         for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
                             id = _a[_i];
@@ -221,6 +232,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
+                        log("apiDelete", { resourceName: resourceName, resource: r, params: params });
                         r.collection.doc(params.id).delete();
                         return [2 /*return*/, {
                                 data: params.previousData
@@ -237,6 +249,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _b.sent();
+                        log("apiDeleteMany", { resourceName: resourceName, resource: r, params: params });
                         returnData = [];
                         batch = this.db.batch();
                         for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
@@ -258,6 +271,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
+                        log("apiGetMany", { resourceName: resourceName, resource: r, params: params });
                         ids = new Set(params.ids);
                         matches = r.list.filter(function (item) { return ids.has(item["id"]); });
                         return [2 /*return*/, {
@@ -275,6 +289,7 @@ var FirebaseClient = /** @class */ (function () {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _b.sent();
+                        log("apiGetManyReference", { resourceName: resourceName, resource: r, params: params });
                         data = r.list;
                         targetField = params.target;
                         targetValue = params.id;
@@ -298,14 +313,7 @@ var FirebaseClient = /** @class */ (function () {
         });
     };
     FirebaseClient.prototype.GetResource = function (resourceName) {
-        var matches = this.resources.filter(function (val) {
-            return val.path === resourceName;
-        });
-        if (matches.length < 1) {
-            throw new Error("react-admin-firebase: Cant find resource with id");
-        }
-        var match = matches[0];
-        return match;
+        return this.tryGetResource(resourceName);
     };
     FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
@@ -354,31 +362,21 @@ var FirebaseClient = /** @class */ (function () {
         });
     };
     FirebaseClient.prototype.tryGetResource = function (resourceName) {
-        return __awaiter(this, void 0, void 0, function () {
-            var matches, match;
-            return __generator(this, function (_a) {
-                matches = this.resources.filter(function (val) {
-                    return val.path === resourceName;
-                });
-                if (matches.length < 1) {
-                    throw new Error("react-admin-firebase: Cant find resource with id");
-                }
-                match = matches[0];
-                return [2 /*return*/, match];
-            });
-        });
+        var resource = this.resources[resourceName];
+        if (!resource) {
+            throw new Error("react-admin-firebase: Cant find resource: \"" + resourceName + "\"");
+        }
+        return resource;
     };
     FirebaseClient.prototype.getCollectionObservable = function (collection) {
         var observable = rxjs_1.Observable.create(function (observer) { return collection.onSnapshot(observer); });
         // LOGGING
-        // observable.subscribe((querySnapshot: firebase.firestore.QuerySnapshot) => {
-        //   console.log("react-admin-firebase: Observable List Changed:", querySnapshot);
-        // });
         return observable;
     };
     return FirebaseClient;
 }());
-function FirebaseProvider(config) {
+function FirebaseProvider(config, isDebug) {
+    ISDEBUG = isDebug;
     exports.fb = new FirebaseClient(config);
     function providerApi(type, resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {

@@ -1,10 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "paths": {
-      "@environment": ["config/env.prod"]
-    }
+    "preserveConstEnums": false,
+    "sourceMap": false
   }
 }
