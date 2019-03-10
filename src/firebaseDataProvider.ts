@@ -12,7 +12,8 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { Observable, Subject } from "rxjs";
+import { Observable } from "rxjs";
+import { ENV } from 'config/env.dev';
 
 export interface IResource {
   path: string;
@@ -96,7 +97,9 @@ class FirebaseClient {
         this.sortArray(data, field, "desc");
       }
     }
-    console.log("apiGetList", { resourceName, resource: r, params });
+    if (ENV.debug) {
+      console.log("apiGetList", { resourceName, resource: r, params });
+    }
     let filteredData = this.filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
