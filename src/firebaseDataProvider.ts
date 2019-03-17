@@ -57,7 +57,7 @@ class FirebaseClient {
     params: IParamsGetOne
   ): Promise<IResponseGetOne> {
     console.log("apiGetOne", { resourceName, params });
-    const r = await this.rm.TryGetResource(resourceName);
+    const r = await this.rm.TryGetResource(resourceName, params);
     const data = r.list.filter((val: { id: string }) => val.id === params.id);
     if (data.length < 1) {
       throw new Error(
@@ -90,7 +90,7 @@ class FirebaseClient {
   ): Promise<IResponseUpdate> {
     const id = params.id;
     delete params.data.id;
-    const r = await this.rm.TryGetResource(resourceName);
+    const r = await this.rm.TryGetResource(resourceName, params);
     console.log("apiUpdate", { resourceName, resource: r, params });
     r.collection.doc(id).update(params.data);
     return {
@@ -125,7 +125,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsDelete
   ): Promise<IResponseDelete> {
-    const r = await this.rm.TryGetResource(resourceName);
+    const r = await this.rm.TryGetResource(resourceName, params);
     console.log("apiDelete", { resourceName, resource: r, params });
     r.collection.doc(params.id).delete();
     return {
@@ -166,7 +166,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsGetManyReference
   ): Promise<IResponseGetManyReference> {
-    const r = await this.rm.TryGetResource(resourceName);
+    const r = await this.rm.TryGetResource(resourceName, params);
     console.log("apiGetManyReference", { resourceName, resource: r, params });
     const data = r.list;
     const targetField = params.target;

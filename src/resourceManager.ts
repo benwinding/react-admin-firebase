@@ -8,6 +8,10 @@ export interface IResource {
   list: Array<{}>;
 }
 
+export interface IResourceParams {
+  id: string;
+}
+
 export class ResourceManager {
   private resourcesRoot: {
     [resourceName: string]: IResource;
@@ -18,10 +22,13 @@ export class ResourceManager {
 
   constructor(private db: firebase.firestore.Firestore) {}
 
-  public async TryGetResource(resourceName: string): Promise<IResource> {
+  public async TryGetResource(
+    resourceName: string,
+    params?: IResourceParams
+  ): Promise<IResource> {
     const isNested = this.IsNested(resourceName);
     if (isNested) {
-      return this.TryGetNestedResource(resourceName);
+      return this.TryGetNestedResource(resourceName, params);
     } else {
       return this.TryGetRootResource(resourceName);
     }
@@ -40,15 +47,18 @@ export class ResourceManager {
     }
     throw new Error(
       `react-admin-firebase: the resource "${resourceName}" could not be inited`
-    );    
+    );
   }
 
   private IsNested(resourceName: string): boolean {
     return resourceName.includes("*");
   }
 
-  private async TryGetNestedResource(resourceName: string): Promise<IResource> {
-    const firebasePath = this.getFirebasePath(resourceName, window.location.hash);
+  private async TryGetNestedResource(
+    resourceName: string,
+    params: IResourceParams
+  ): Promise<IResource> {
+    const firebasePath = this.getFirebasePath(resourceName, params);
     const resource: IResource = this.resourcesNested[firebasePath];
     if (resource) {
       return resource;
@@ -144,22 +154,20 @@ export class ResourceManager {
     return { id: doc.id, ...data };
   }
 
-  private getFirebasePath(resourceName: string, locationHash: string) {
-    return this.getNestedPath(resourceName, locationHash).join("/");
+  private getFirebasePath(resourceName: string, params: IResourceParams) {
+    return this.getNestedPath(resourceName, params).join("/");
   }
 
-  private getReactAdminPath(resourceName: string, locationHash: string) {
-    return this.getNestedPath(resourceName, locationHash).join("");
+  private getReactAdminPath(resourceName: string, params: IResourceParams) {
+    return this.getNestedPath(resourceName, params).join("");
   }
 
-  private getNestedPath(resourceName: string, locationHash: string): string[] {
+  private getNestedPath(
+    resourceName: string,
+    params: IResourceParams
+  ): string[] {
     const resourcePaths = resourceName.split("*");
-    const hashParts = locationHash.split("/");
-    if (hashParts.length < 2) {
-      return;
-    }
-    const resourcePathFull = hashParts[1];
-    const resourceId1 = resourcePathFull.match("posts(.*)sub")[1];
+    const resourceId1 = params.id;
     return [resourcePaths[0], resourceId1, resourcePaths[1]];
   }
 
