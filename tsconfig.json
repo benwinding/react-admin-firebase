@@ -4,7 +4,8 @@
     "outDir": "dist",
     "module": "commonjs",
     "target": "es5",
-    "lib": ["es6", "es2016", "dom"]
+    "lib": ["es6", "es2016", "dom"],
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "node_modules",
