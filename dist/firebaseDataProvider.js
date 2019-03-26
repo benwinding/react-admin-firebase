@@ -103,6 +103,8 @@ var FirebaseClient = /** @class */ (function () {
                                 var data = doc.data();
                                 Object.keys(data).forEach(function (key) {
                                     var value = data[key];
+                                    if (value === null || value === undefined)
+                                        return;
                                     if (value.toDate && value.toDate instanceof Function) {
                                         data[key] = value.toDate().toISOString();
                                     }
