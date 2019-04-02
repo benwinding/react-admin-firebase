@@ -10,6 +10,7 @@
 A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. It maps collections from the Firebase database (Firestore) to your react-admin application. It's an [npm package](https://www.npmjs.com/package/react-admin-firebase)!
 
 ## Features
+- [x] Firebase Authenticated Login (email, password)
 - [x] Dynamic caching of resources
 - [x] All methods implemented; `(GET, POST, GET_LIST ect...)`
 - [x] Filtering, sorting etc...
