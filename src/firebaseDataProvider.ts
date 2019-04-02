@@ -43,7 +43,11 @@ class FirebaseClient {
   } = {};
 
   constructor(private firebaseConfig: {}) {
-    this.app = firebase.initializeApp(this.firebaseConfig);
+    if (!firebase.apps.length) {
+      this.app = firebase.initializeApp(firebaseConfig);
+    } else {
+      this.app = firebase.app();
+    }
     this.db = this.app.firestore();
   }
 
@@ -324,8 +328,11 @@ class FirebaseClient {
 
 export let fb: FirebaseClient;
 
-export default function FirebaseProvider(config: {}, isDebug?: boolean) {
-  ISDEBUG = isDebug;
+export default function FirebaseProvider(config: {}) {
+  if (!config) {
+    throw new Error('Please pass the Firebase config.json object to the FirebaseDataProvider');
+  }
+  ISDEBUG = config['debug'];
   fb = new FirebaseClient(config);
   async function providerApi(
     type: string,

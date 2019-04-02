@@ -36,3 +36,4 @@ var observeRequest = function (dataProvider, options) { return function (type, r
 exports.default = (function (dataProvider, options) {
     return ra_realtime_1.default(observeRequest(dataProvider, options));
 });
+//# sourceMappingURL=firebaseRealtimeSaga.js.map

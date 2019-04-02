@@ -64,7 +64,12 @@ var FirebaseClient = /** @class */ (function () {
     function FirebaseClient(firebaseConfig) {
         this.firebaseConfig = firebaseConfig;
         this.resources = {};
-        this.app = firebase.initializeApp(this.firebaseConfig);
+        if (!firebase.apps.length) {
+            this.app = firebase.initializeApp(firebaseConfig);
+        }
+        else {
+            this.app = firebase.app();
+        }
         this.db = this.app.firestore();
     }
     FirebaseClient.prototype.parseFireStoreDocument = function (doc) {
@@ -375,8 +380,11 @@ var FirebaseClient = /** @class */ (function () {
     };
     return FirebaseClient;
 }());
-function FirebaseProvider(config, isDebug) {
-    ISDEBUG = isDebug;
+function FirebaseProvider(config) {
+    if (!config) {
+        throw new Error('Please pass the Firebase config.json object to the FirebaseDataProvider');
+    }
+    ISDEBUG = config['debug'];
     exports.fb = new FirebaseClient(config);
     function providerApi(type, resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
@@ -415,3 +423,4 @@ function FirebaseProvider(config, isDebug) {
     return providerApi;
 }
 exports.default = FirebaseProvider;
+//# sourceMappingURL=firebaseDataProvider.js.map
