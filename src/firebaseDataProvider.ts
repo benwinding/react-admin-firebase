@@ -42,7 +42,7 @@ class FirebaseClient {
     [resourceName: string]: IResource;
   } = {};
 
-  constructor(private firebaseConfig: {}) {
+  constructor(firebaseConfig: {}) {
     if (!firebase.apps.length) {
       this.app = firebase.initializeApp(firebaseConfig);
     } else {

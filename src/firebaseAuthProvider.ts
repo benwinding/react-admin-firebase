@@ -5,7 +5,7 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
 
 function log(description: string, obj?: {}) {
   if (ISDEBUG) {
-    console.log('FirebaseAuthProvider: ' + description, obj);
+    console.log("FirebaseAuthProvider: " + description, obj);
   }
 }
 
@@ -15,7 +15,7 @@ class AuthClient {
   app: firebase.app.App;
   auth: firebase.auth.Auth;
 
-  constructor(firebaseConfig) {
+  constructor(firebaseConfig: {}) {
     log("Auth Client: initializing...");
     if (!firebase.apps.length) {
       this.app = firebase.initializeApp(firebaseConfig);
@@ -70,28 +70,29 @@ class AuthClient {
 
 function SetUpAuth(config: {}) {
   if (!config) {
-    throw new Error('Please pass the Firebase config.json object to the FirebaseAuthProvider');
+    throw new Error(
+      "Please pass the Firebase config.json object to the FirebaseAuthProvider"
+    );
   }
-  ISDEBUG = config['debug'];
+  ISDEBUG = config["debug"];
   const auth = new AuthClient(config);
 
-  return async (type, params) => {
+  return async function(type: string, params: {}) {
     log("Auth Event: ", { type, params });
-    switch (type) {
-      case AUTH_LOGIN:
-        await auth.HandleAuthLogin(params);
-        break;
-      case AUTH_LOGOUT:
-        await auth.HandleAuthLogout(params);
-        break;
-      case AUTH_ERROR:
-        await auth.HandleAuthError(params);
-        break;
-      case AUTH_CHECK:
-        await auth.HandleAuthCheck(params);
-        break;
-      default:
-        throw new Error("Unhandled auth type:" + type);
+
+    {
+      switch (type) {
+        case AUTH_LOGIN:
+          await auth.HandleAuthLogin(params);
+        case AUTH_LOGOUT:
+          await auth.HandleAuthLogout(params);
+        case AUTH_ERROR:
+          await auth.HandleAuthError(params);
+        case AUTH_CHECK:
+          await auth.HandleAuthCheck(params);
+        default:
+          throw new Error("Unhandled auth type:" + type);
+      }
     }
   };
 }
