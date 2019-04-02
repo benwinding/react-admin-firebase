@@ -23,5 +23,9 @@
     "build-types": "tsc --project tsconfig.types.json",
     "watch": "tsc -w --project tsconfig.json"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@firebase/app-types": "^0.3.7",
+    "@firebase/util": "^0.2.11"
+  }
 }
