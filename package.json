@@ -1,22 +1,22 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "dependencies": {
-    "@types/firebase": "^3.2.1",
-    "@types/node": "^10.9.4",
     "firebase": "^5.5.0",
     "ra-realtime": "^2.6.0",
     "react": "^16.8.6",
     "react-admin": "^2.3.1",
     "react-dom": "^16.8.6",
-    "rxjs": "^6.3.2",
-    "typescript": "^3.0.3"
+    "rxjs": "^6.3.2"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.3.7",
+    "@types/firebase": "^3.2.1",
+    "@types/node": "^10.9.4",
     "@firebase/util": "^0.2.11",
-    "microbundle": "^0.11.0"
+    "microbundle": "^0.11.0",
+    "typescript": "^3.0.3"
   },
   "homepage": "https://github.com/benwinding/react-admin-firebase",
   "email": "hello@benwinding.com",

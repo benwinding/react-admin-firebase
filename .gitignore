@@ -9,6 +9,9 @@
 # production
 /build
 
+# ignore dist now
+dist
+
 # misc
 .DS_Store
 .env.local
