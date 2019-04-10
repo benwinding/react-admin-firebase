@@ -1,4 +1,4 @@
-import * as firebase from "firebase/app";
+import * as firebase from "firebase";
 import "firebase/firestore";
 
 import {
@@ -144,7 +144,11 @@ class FirebaseClient {
   ): Promise<IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
-    const doc = await r.collection.add(params.data);
+    const doc = await r.collection.add({
+      ...params.data,
+      createdate: firebase.firestore.FieldValue.serverTimestamp(),
+      lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+    });
     return {
       data: {
         ...params.data,
@@ -161,7 +165,10 @@ class FirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
-    r.collection.doc(id).update(params.data);
+    r.collection.doc(id).update({
+      ...params.data,
+      lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+    });
     return {
       data: {
         ...params.data,
@@ -179,7 +186,10 @@ class FirebaseClient {
     log("apiUpdateMany", { resourceName, resource: r, params });
     const returnData = [];
     for (const id of params.ids) {
-      r.collection.doc(id).update(params.data);
+      r.collection.doc(id).update({
+        ...params.data,
+        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      });
       returnData.push({
         ...params.data,
         id
@@ -330,9 +340,11 @@ export let fb: FirebaseClient;
 
 export default function FirebaseProvider(config: {}) {
   if (!config) {
-    throw new Error('Please pass the Firebase config.json object to the FirebaseDataProvider');
+    throw new Error(
+      "Please pass the Firebase config.json object to the FirebaseDataProvider"
+    );
   }
-  ISDEBUG = config['debug'];
+  ISDEBUG = config["debug"];
   fb = new FirebaseClient(config);
   async function providerApi(
     type: string,
