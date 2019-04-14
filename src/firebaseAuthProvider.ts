@@ -52,6 +52,7 @@ class AuthClient {
       log("HandleAuthCheck: user is still logged in", { user });
     } catch (e) {
       log("HandleAuthCheck: ", { e });
+      throw new Error("Auth check error: " + e);
     }
   }
 
