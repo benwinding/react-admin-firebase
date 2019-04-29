@@ -1,5 +1,9 @@
-import * as firebase from "firebase";
+// import * as firebase from "firebase";
+import * as firebaseApp from "firebase/app";
 import "firebase/auth";
+
+import { FirebaseApp } from "@firebase/app-types";
+import { FirebaseAuth } from "@firebase/auth-types";
 
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
 
@@ -12,17 +16,17 @@ function log(description: string, obj?: {}) {
 var ISDEBUG = false;
 
 class AuthClient {
-  app: firebase.app.App;
-  auth: firebase.auth.Auth;
+  app: FirebaseApp;
+  auth: FirebaseAuth;
 
   constructor(firebaseConfig: {}) {
     log("Auth Client: initializing...");
-    if (!firebase.apps.length) {
-      this.app = firebase.initializeApp(firebaseConfig);
+    if (!firebaseApp.apps.length) {
+      this.app = firebaseApp.initializeApp(firebaseConfig);
     } else {
-      this.app = firebase.app();
+      this.app = firebaseApp.app();
     }
-    this.auth = firebase.auth();
+    this.auth = firebaseApp.auth();
   }
 
   async HandleAuthLogin(params) {

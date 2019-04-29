@@ -1,4 +1,4 @@
-import * as firebase from "firebase";
+import * as firebaseApp from "firebase/app";
 import "firebase/firestore";
 
 import {
@@ -43,10 +43,10 @@ class FirebaseClient {
   } = {};
 
   constructor(firebaseConfig: {}) {
-    if (!firebase.apps.length) {
-      this.app = firebase.initializeApp(firebaseConfig);
+    if (!firebaseApp.apps.length) {
+      this.app = firebaseApp.initializeApp(firebaseConfig);
     } else {
-      this.app = firebase.app();
+      this.app = firebaseApp.app();
     }
     this.db = this.app.firestore();
   }
@@ -146,8 +146,8 @@ class FirebaseClient {
     log("apiCreate", { resourceName, resource: r, params });
     const doc = await r.collection.add({
       ...params.data,
-      createdate: firebase.firestore.FieldValue.serverTimestamp(),
-      lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      createdate: firebaseApp.firestore.FieldValue.serverTimestamp(),
+      lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
     });
     return {
       data: {
@@ -167,7 +167,7 @@ class FirebaseClient {
     log("apiUpdate", { resourceName, resource: r, params });
     r.collection.doc(id).update({
       ...params.data,
-      lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+      lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
     });
     return {
       data: {
@@ -188,7 +188,7 @@ class FirebaseClient {
     for (const id of params.ids) {
       r.collection.doc(id).update({
         ...params.data,
-        lastupdate: firebase.firestore.FieldValue.serverTimestamp()
+        lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
       });
       returnData.push({
         ...params.data,
