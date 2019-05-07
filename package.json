@@ -3,12 +3,12 @@
   "description": "A firebase data provider for the React Admin framework",
   "version": "0.5.2",
   "dependencies": {
-    "firebase": "^5.5.0",
-    "ra-realtime": "^2.6.0",
-    "react": "^16.8.6",
-    "react-admin": "^2.3.1",
-    "react-dom": "^16.8.6",
-    "rxjs": "^6.3.2"
+    "firebase": "^5.x",
+    "ra-realtime": "^2.x",
+    "react": "^16.x",
+    "react-admin": "^2.x",
+    "react-dom": "^16.x",
+    "rxjs": "^6.x"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.3.9",
