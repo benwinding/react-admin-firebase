@@ -64,7 +64,7 @@ class FirebaseClient {
     //wait on user stuff
     this.app = !firebase.apps.length
       ? firebase.initializeApp(firebaseConfig)
-      : firebase.app();
+      : firebase.app(firebaseConfig["projectId"]);
     this.db = this.app.firestore();
   }
 
