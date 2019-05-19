@@ -11,7 +11,7 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
 
 ## Features
 - [x] Firestore Dataprovider _(details below)_
-- [x] Firebase Authenticated Login (email, password)
+- [x] Firebase AuthProvider (email, password)
 - [ ] Firebase storage upload functionality
 
 ## Firestore Dataprovider Features
@@ -29,7 +29,7 @@ or
 
 `npm install --save react-admin-firebase`
 
-## Demo Basic
+## Demos Basic
 A simple example based on the [React Admin Tutorial](https://marmelab.com/react-admin/Tutorial.html).
 
 - [Demo Project (javascript)](https://github.com/benwinding/demo-react-admin-firebase)
@@ -39,7 +39,7 @@ A simple example based on the [React Admin Tutorial](https://marmelab.com/react-
 - Create a `posts` collection in the firebase firestore database
 - Get config credentials using the dashboard
 
-### Code
+## Data Provider
 
 ``` javascript
 import * as React from 'react';
@@ -73,8 +73,38 @@ class App extends React.Component {
 
 export default App;
 ```
+## Auth Provider
+Using the `FirebaseAuthProvider` you can allow authentication in the application.
 
-## (Optional) Realtime Updates!
+``` javascript
+...
+import {
+  FirebaseAuthProvider,
+  FirebaseDataProvider
+} from 'react-admin-firebase';
+...
+const dataProvider = FirebaseDataProvider(config);
+const authProvider = FirebaseAuthProvider(config);
+
+class App extends React.Component {
+  public render() {
+    return (
+      <Admin 
+        dataProvider={dataProvider}
+        authProvider={authProvider}
+      >
+        <Resource name="posts" list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
+      </Admin>
+    );
+  }
+}
+
+export default App;
+```
+#### Note
+To get the currently logged in user run `const user = await authProvider('AUTH_GETCURRENT')`, this will return the firebase user object, or null if there is no currently logged in user.
+
+## Realtime Updates!
 Get realtime updates from the firebase server instantly on your tables, with minimal overheads, using rxjs observables!
 
 ``` javascript
@@ -103,7 +133,7 @@ class App extends React.Component {
 export default App;
 ```
 
-## (Optional) Realtime Options
+### Realtime Options
 Trigger realtime on only some routes using the options object.
 
 ``` javascript
