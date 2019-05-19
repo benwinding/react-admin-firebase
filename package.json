@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "dependencies": {
     "firebase": "^5.x",
     "ra-realtime": "^2.x",
@@ -31,7 +31,7 @@
     "watch": "tsc -w --project tsconfig.json"
   },
   "main": "dist/index.js",
-  "types": "dist/types.d.ts",
+  "types": "dist/index.d.ts",
   "umd:main": "dist/index.umd.js",
   "source": "src/index.ts"
 }
