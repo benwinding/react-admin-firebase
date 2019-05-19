@@ -71,6 +71,16 @@ class AuthClient {
       });
     });
   }
+
+  async HandleGetCurrent() {
+    try {
+      const user = await this.getUserLogin();
+      log("HandleGetCurrent: current user", { user });
+    } catch (e) {
+      log("HandleGetCurrent: no user is logged in", { e });
+      return null;
+    }
+  }
 }
 
 function SetUpAuth(config: {}) {
@@ -95,6 +105,8 @@ function SetUpAuth(config: {}) {
           await auth.HandleAuthError(params);
         case AUTH_CHECK:
           await auth.HandleAuthCheck(params);
+        case 'AUTH_GETCURRENT':
+          await auth.HandleGetCurrent();
         default:
           throw new Error("Unhandled auth type:" + type);
       }
