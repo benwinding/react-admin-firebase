@@ -32,6 +32,9 @@ or
 ## Demo Basic
 A simple example based on the [React Admin Tutorial](https://marmelab.com/react-admin/Tutorial.html).
 
+- [Demo Project (javascript)](https://github.com/benwinding/demo-react-admin-firebase)
+- [Demo Project (typescript)](https://github.com/benwinding/react-admin-firebase-demo-typescript)
+
 ### Prerequisits
 - Create a `posts` collection in the firebase firestore database
 - Get config credentials using the dashboard
@@ -113,4 +116,3 @@ const options = {
 const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 ...
 ```
-[Full Demo Project](https://github.com/benwinding/demo-react-admin-firebase)
