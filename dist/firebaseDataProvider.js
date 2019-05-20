@@ -82,9 +82,10 @@ var FirebaseClient = /** @class */ (function () {
         this.firebaseConfig = firebaseConfig;
         this.resources = [];
         //wait on user stuff
+        var id = firebaseConfig["projectId"];
         this.app = !firebase.apps.length
-            ? firebase.initializeApp(firebaseConfig)
-            : firebase.app(firebaseConfig["projectId"]);
+            ? firebase.initializeApp(firebaseConfig, id)
+            : firebase.app(id);
         this.db = this.app.firestore();
     }
     FirebaseClient.prototype.initPath = function (inputPath) {
