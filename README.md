@@ -14,6 +14,8 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
 - [x] Firebase AuthProvider (email, password)
 - [ ] Firebase storage upload functionality
 
+_Pull requests welcome!!_
+
 ## Firestore Dataprovider Features
 - [x] Dynamic caching of resources
 - [x] All methods implemented; `(GET, POST, GET_LIST ect...)`
@@ -146,3 +148,12 @@ const options = {
 const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 ...
 ```
+
+### Develop `react-admin-firebase` Locally!
+
+1. `git clone https://github.com/benwinding/react-admin-firebase`
+2. `yarn && yarn watch`
+3. _(open another terminal)_ 
+4. `cd src-demo && yarn && yarn start`
+
+Now all local changes in the library source code can be tested immediately in the demo app.

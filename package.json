@@ -27,8 +27,7 @@
   "license": "MIT",
   "scripts": {
     "build": "microbundle",
-    "watch-micro": "microbundle watch",
-    "watch": "tsc -w --project tsconfig.json"
+    "watch": "microbundle watch"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
