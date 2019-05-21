@@ -1,6 +1,18 @@
 import * as firebaseApp from "firebase/app";
 import "firebase/firestore";
 
+// Firebase types
+import {
+  CollectionReference,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  FirebaseFirestore
+} from "@firebase/firestore-types";
+import { FirebaseApp } from '@firebase/app-types';
+interface FirebaseAppFirestore extends FirebaseApp {
+  firestore(): FirebaseFirestore;
+}
+
 import {
   CREATE,
   DELETE,
@@ -16,7 +28,7 @@ import { Observable } from "rxjs";
 
 export interface IResource {
   path: string;
-  collection: firebase.firestore.CollectionReference;
+  collection: CollectionReference;
   observable: Observable<{}>;
   list: Array<{}>;
 }
@@ -36,8 +48,8 @@ function log(description: string, obj: {}) {
 var ISDEBUG = false;
 
 class FirebaseClient {
-  private db: firebase.firestore.Firestore;
-  private app: firebase.app.App;
+  private db: FirebaseFirestore;
+  private app: FirebaseAppFirestore;
   private resources: {
     [resourceName: string]: IResource;
   } = {};
@@ -52,7 +64,7 @@ class FirebaseClient {
   }
 
   private parseFireStoreDocument(
-    doc: firebase.firestore.QueryDocumentSnapshot
+    doc: QueryDocumentSnapshot
   ): {} {
     const data = doc.data();
     Object.keys(data).forEach(key => {
@@ -75,9 +87,9 @@ class FirebaseClient {
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
       observable.subscribe(
-        (querySnapshot: firebase.firestore.QuerySnapshot) => {
+        (querySnapshot: QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
-            (doc: firebase.firestore.QueryDocumentSnapshot) =>
+            (doc: QueryDocumentSnapshot) =>
               this.parseFireStoreDocument(doc)
           );
           this.setList(newList, path);
@@ -326,10 +338,10 @@ class FirebaseClient {
   }
 
   private getCollectionObservable(
-    collection: firebase.firestore.CollectionReference
-  ): Observable<firebase.firestore.QuerySnapshot> {
+    collection: CollectionReference
+  ): Observable<QuerySnapshot> {
     const observable: Observable<
-      firebase.firestore.QuerySnapshot
+      QuerySnapshot
     > = Observable.create((observer: any) => collection.onSnapshot(observer));
     // LOGGING
     return observable;
