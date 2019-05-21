@@ -6,14 +6,7 @@ import { FirebaseApp } from "@firebase/app-types";
 import { FirebaseAuth } from "@firebase/auth-types";
 
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
-
-function log(description: string, obj?: {}) {
-  if (ISDEBUG) {
-    console.log("FirebaseAuthProvider: " + description, obj);
-  }
-}
-
-var ISDEBUG = false;
+import { log, EnableLogging } from "logger";
 
 class AuthClient {
   app: FirebaseApp;
@@ -89,8 +82,10 @@ function SetUpAuth(config: {}) {
       "Please pass the Firebase config.json object to the FirebaseAuthProvider"
     );
   }
-  ISDEBUG = config["debug"];
   const auth = new AuthClient(config);
+  if (config['debug']) {
+    EnableLogging();
+  }
 
   return async function(type: string, params: {}) {
     log("Auth Event: ", { type, params });

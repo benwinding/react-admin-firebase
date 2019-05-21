@@ -2,12 +2,7 @@ import * as firebaseApp from "firebase/app";
 import "firebase/firestore";
 
 // Firebase types
-import {
-  CollectionReference,
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-  FirebaseFirestore
-} from "@firebase/firestore-types";
+import { FirebaseFirestore } from "@firebase/firestore-types";
 import { FirebaseApp } from '@firebase/app-types';
 interface FirebaseAppFirestore extends FirebaseApp {
   firestore(): FirebaseFirestore;
@@ -24,35 +19,13 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { Observable } from "rxjs";
-
-export interface IResource {
-  path: string;
-  collection: CollectionReference;
-  observable: Observable<{}>;
-  list: Array<{}>;
-}
-
-// UTILS
-
-function isEmptyObj(obj) {
-  return JSON.stringify(obj) == "{}";
-}
-
-function log(description: string, obj: {}) {
-  if (ISDEBUG) {
-    console.log(description, obj);
-  }
-}
-
-var ISDEBUG = false;
+import { IResource, ResourceManager } from "resourceManager";
+import { log, EnableLogging } from "logger";
 
 class FirebaseClient {
   private db: FirebaseFirestore;
   private app: FirebaseAppFirestore;
-  private resources: {
-    [resourceName: string]: IResource;
-  } = {};
+  private rm: ResourceManager;
 
   constructor(firebaseConfig: {}) {
     if (!firebaseApp.apps.length) {
@@ -61,52 +34,7 @@ class FirebaseClient {
       this.app = firebaseApp.app();
     }
     this.db = this.app.firestore();
-  }
-
-  private parseFireStoreDocument(
-    doc: QueryDocumentSnapshot
-  ): {} {
-    const data = doc.data();
-    Object.keys(data).forEach(key => {
-      const value = data[key];
-      if (value && value.toDate && value.toDate instanceof Function) {
-        data[key] = value.toDate().toISOString();
-      }
-    });
-    // React Admin requires an id field on every document,
-    // So we can just using the firestore document id
-    return { id: doc.id, ...data };
-  }
-
-  public async initPath(path: string): Promise<void> {
-    return new Promise(resolve => {
-      const hasBeenInited = this.resources[path];
-      if (hasBeenInited) {
-        return resolve();
-      }
-      const collection = this.db.collection(path);
-      const observable = this.getCollectionObservable(collection);
-      observable.subscribe(
-        (querySnapshot: QuerySnapshot) => {
-          const newList = querySnapshot.docs.map(
-            (doc: QueryDocumentSnapshot) =>
-              this.parseFireStoreDocument(doc)
-          );
-          this.setList(newList, path);
-          // The data has been set, so resolve the promise
-          resolve();
-        }
-      );
-      const list: Array<{}> = [];
-      const r: IResource = {
-        collection,
-        list,
-        observable,
-        path
-      };
-      this.resources[path] = r;
-      log("initPath", { path, r, "this.resources": this.resources });
-    });
+    this.rm = new ResourceManager(this.db);
   }
 
   public async apiGetList(
@@ -118,13 +46,13 @@ class FirebaseClient {
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        this.sortArray(data, field, "asc");
+        sortArray(data, field, "asc");
       } else {
-        this.sortArray(data, field, "desc");
+        sortArray(data, field, "desc");
       }
     }
     log("apiGetList", { resourceName, resource: r, params });
-    let filteredData = this.filterArray(data, params.filter);
+    let filteredData = filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
@@ -266,9 +194,9 @@ class FirebaseClient {
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        this.sortArray(data, field, "asc");
+        sortArray(data, field, "asc");
       } else {
-        this.sortArray(data, field, "desc");
+        sortArray(data, field, "desc");
       }
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -279,72 +207,11 @@ class FirebaseClient {
   }
 
   public GetResource(resourceName: string): IResource {
-    return this.tryGetResource(resourceName);
+    return this.rm.GetResource(resourceName);
   }
 
-  private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
-    data.sort((a: {}, b: {}) => {
-      const aValue = a[field] ? a[field].toString().toLowerCase() : "";
-      const bValue = b[field] ? b[field].toString().toLowerCase() : "";
-      if (aValue > bValue) {
-        return dir === "asc" ? -1 : 1;
-      }
-      if (aValue < bValue) {
-        return dir === "asc" ? 1 : -1;
-      }
-      return 0;
-    });
-  }
-
-  private filterArray(
-    data: Array<{}>,
-    filterFields: { [field: string]: string }
-  ): Array<{}> {
-    if (isEmptyObj(filterFields)) {
-      return data;
-    }
-    const fieldNames = Object.keys(filterFields);
-    return data.filter(item =>
-      fieldNames.reduce((previousMatched, fieldName) => {
-        const fieldSearchText = filterFields[fieldName].toLowerCase();
-        const dataFieldValue = item[fieldName];
-        if (dataFieldValue == null) {
-          return false;
-        }
-        const currentIsMatched = dataFieldValue
-          .toLowerCase()
-          .includes(fieldSearchText);
-        return previousMatched || currentIsMatched;
-      }, false)
-    );
-  }
-
-  private async setList(
-    newList: Array<{}>,
-    resourceName: string
-  ): Promise<void> {
-    const resource = await this.tryGetResource(resourceName);
-    resource.list = newList;
-  }
-
-  private tryGetResource(resourceName: string): IResource {
-    const resource: IResource = this.resources[resourceName];
-    if (!resource) {
-      throw new Error(
-        `react-admin-firebase: Cant find resource: "${resourceName}"`
-      );
-    }
-    return resource;
-  }
-
-  private getCollectionObservable(
-    collection: CollectionReference
-  ): Observable<QuerySnapshot> {
-    const observable: Observable<
-      QuerySnapshot
-    > = Observable.create((observer: any) => collection.onSnapshot(observer));
-    // LOGGING
-    return observable;
+  private tryGetResource(resourceName: string): Promise<IResource> {
+    return this.rm.TryGetResourcePromise(resourceName);
   }
 }
 
@@ -356,14 +223,15 @@ export default function FirebaseProvider(config: {}) {
       "Please pass the Firebase config.json object to the FirebaseDataProvider"
     );
   }
-  ISDEBUG = config["debug"];
+  if (config['debug']) {
+    EnableLogging();
+  }
   fb = new FirebaseClient(config);
   async function providerApi(
     type: string,
     resourceName: string,
     params: any
   ): Promise<any> {
-    await fb.initPath(resourceName);
     switch (type) {
       case GET_MANY:
         return fb.apiGetMany(resourceName, params);
