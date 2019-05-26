@@ -29,7 +29,8 @@
   "scripts": {
     "build": "microbundle",
     "watch": "microbundle watch",
-    "start": "cd src-demo && yarn add react-admin-firebase@file:.. && yarn start"
+    "cp-dist": "watch cp -r ./dist/ ./src-demo/node_modules/react-admin-firebase/dist/",
+    "start": "cd src-demo && yarn && yarn start"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

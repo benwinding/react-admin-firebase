@@ -2,7 +2,13 @@
 
 export function log(description: string, obj?: {}) {
   if (ISDEBUG) {
-    console.log(description, obj);
+    console.log("react-admin-firebase: ", description, obj);
+  }
+}
+
+export function logError(description: string, obj?: {}) {
+  if (ISDEBUG) {
+    console.error("react-admin-firebase: ", description, obj);
   }
 }
 

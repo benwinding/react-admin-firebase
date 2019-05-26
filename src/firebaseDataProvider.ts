@@ -21,7 +21,7 @@ import {
   UPDATE_MANY
 } from "react-admin";
 import { IResource, ResourceManager } from "resourceManager";
-import { log, EnableLogging } from "logger";
+import { log, EnableLogging, logError } from "logger";
 
 export interface RAFirebaseOptions {
   rootRef?: string;
@@ -111,9 +111,11 @@ class FirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
-    await r.collection.doc(id).update({
+    r.collection.doc(id).update({
       ...params.data,
       lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
+    }).catch((error) => {
+      logError("apiUpdate error", { error });
     });
     return {
       data: {
@@ -131,16 +133,18 @@ class FirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
-    const returnData = await Promise.all(ids.map(async (id) => {
-      await r.collection.doc(id).update({
+    const returnData = ids.map((id) => {
+      r.collection.doc(id).update({
         ...params.data,
         lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
+      }).catch((error) => {
+        logError("apiUpdateMany error", { error });
       });
       return {
         ...params.data,
         id
       };
-    }));
+    });
     return {
       data: returnData
     };
@@ -152,7 +156,10 @@ class FirebaseClient {
   ): Promise<IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
-    await r.collection.doc(params.id).delete();
+    r.list = r.list.filter((doc) => doc["id"] !== params.id);
+    r.collection.doc(params.id).delete().catch((error) => {
+      logError("apiDelete error", {error});
+    });
     return {
       data: params.previousData
     };
@@ -170,7 +177,9 @@ class FirebaseClient {
       batch.delete(r.collection.doc(id));
       returnData.push({ id });
     }
-    await batch.commit();
+    batch.commit().catch((error) => {
+      logError("apiDeleteMany error", { error });
+    });
     return { data: returnData };
   }
 
