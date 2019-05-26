@@ -7,6 +7,7 @@ import { FirebaseApp } from '@firebase/app-types';
 interface FirebaseAppFirestore extends FirebaseApp {
   firestore(): FirebaseFirestore;
 }
+import { sortArray, filterArray } from "./arrayHelpers";
 
 import {
   CREATE,
@@ -42,6 +43,7 @@ class FirebaseClient {
     params: IParamsGetList
   ): Promise<IResponseGetList> {
     const r = await this.tryGetResource(resourceName);
+    console.log("SADASDASDASDASD")
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;

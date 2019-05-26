@@ -2,7 +2,7 @@ function isEmptyObj(obj) {
   return JSON.stringify(obj) == "{}";
 }
 
-function sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
+export function sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
   data.sort((a: {}, b: {}) => {
     const aValue = a[field] ? a[field].toString().toLowerCase() : "";
     const bValue = b[field] ? b[field].toString().toLowerCase() : "";
@@ -16,7 +16,7 @@ function sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
   });
 }
 
-function filterArray(
+export function filterArray(
   data: Array<{}>,
   filterFields: { [field: string]: string }
 ): Array<{}> {

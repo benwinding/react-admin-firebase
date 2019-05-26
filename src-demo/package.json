@@ -5,9 +5,9 @@
   "dependencies": {
     "ra-input-rich-text": "^2.3.0",
     "react": "^16.5.1",
+    "react-admin-firebase": "file:..",
     "react-dom": "^16.5.1",
     "react-scripts": "1.1.5",
-    "react-admin-firebase": "file:..",
     "redux-saga": "^0.16.0"
   },
   "scripts": {
