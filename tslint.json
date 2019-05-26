@@ -1,5 +1,5 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "extends": ["tslint:recommended"],
   "linterOptions": {
     "exclude": [
       "config/**/*.js",
@@ -12,6 +12,9 @@
     "ordered-imports": false,
     "no-string-literal": false,
     "no-empty": false,
-    "object-literal-sort-keys": false
+    "object-literal-sort-keys": false,
+    "no-floating-promises": true,
+    "trailing-comma": false,
+    "interface-name": false
   }
 }

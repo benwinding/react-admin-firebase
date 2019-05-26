@@ -6,6 +6,7 @@ export function log(description: string, obj?: {}) {
   }
 }
 
+// tslint:disable-next-line: no-var-keyword
 var ISDEBUG = false;
 
 export function EnableLogging() {

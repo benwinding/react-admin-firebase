@@ -47,8 +47,8 @@ interface IParamsGetMany {
 }
 
 interface IParamsGetManyReference {
-  target: string,
-  id: string,
+  target: string;
+  id: string;
   pagination: {
     page: number;
     perPage: number;

@@ -3,7 +3,7 @@ import "firebase/firestore";
 
 // Firebase types
 import { FirebaseFirestore } from "@firebase/firestore-types";
-import { FirebaseApp } from '@firebase/app-types';
+import { FirebaseApp } from "@firebase/app-types";
 interface FirebaseAppFirestore extends FirebaseApp {
   firestore(): FirebaseFirestore;
 }
@@ -22,6 +22,11 @@ import {
 } from "react-admin";
 import { IResource, ResourceManager } from "resourceManager";
 import { log, EnableLogging } from "logger";
+
+export interface RAFirebaseOptions {
+  rootRef?: string;
+  logging?: boolean;
+}
 
 class FirebaseClient {
   private db: FirebaseFirestore;
@@ -43,7 +48,6 @@ class FirebaseClient {
     params: IParamsGetList
   ): Promise<IResponseGetList> {
     const r = await this.tryGetResource(resourceName);
-    console.log("SADASDASDASDASD")
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -54,7 +58,7 @@ class FirebaseClient {
       }
     }
     log("apiGetList", { resourceName, resource: r, params });
-    let filteredData = filterArray(data, params.filter);
+    const filteredData = filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
@@ -107,7 +111,7 @@ class FirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
-    r.collection.doc(id).update({
+    await r.collection.doc(id).update({
       ...params.data,
       lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
     });
@@ -126,17 +130,17 @@ class FirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
-    const returnData = [];
-    for (const id of params.ids) {
-      r.collection.doc(id).update({
+    const ids = params.ids;
+    const returnData = await Promise.all(ids.map(async (id) => {
+      await r.collection.doc(id).update({
         ...params.data,
         lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
       });
-      returnData.push({
+      return {
         ...params.data,
         id
-      });
-    }
+      };
+    }));
     return {
       data: returnData
     };
@@ -148,7 +152,7 @@ class FirebaseClient {
   ): Promise<IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
-    r.collection.doc(params.id).delete();
+    await r.collection.doc(params.id).delete();
     return {
       data: params.previousData
     };
@@ -166,7 +170,7 @@ class FirebaseClient {
       batch.delete(r.collection.doc(id));
       returnData.push({ id });
     }
-    batch.commit();
+    await batch.commit();
     return { data: returnData };
   }
 
@@ -177,7 +181,7 @@ class FirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = new Set(params.ids);
-    const matches = r.list.filter(item => ids.has(item["id"]));
+    const matches = r.list.filter((item) => ids.has(item["id"]));
     return {
       data: matches
     };
@@ -192,7 +196,7 @@ class FirebaseClient {
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
-    const matches = data.filter(val => val[targetField] === targetValue);
+    const matches = data.filter((val) => val[targetField] === targetValue);
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
@@ -219,13 +223,13 @@ class FirebaseClient {
 
 export let fb: FirebaseClient;
 
-export default function FirebaseProvider(config: {}) {
+export default function FirebaseProvider(config: {}, options?: RAFirebaseOptions) {
   if (!config) {
     throw new Error(
       "Please pass the Firebase config.json object to the FirebaseDataProvider"
     );
   }
-  if (config['debug']) {
+  if (config["debug"]) {
     EnableLogging();
   }
   fb = new FirebaseClient(config);

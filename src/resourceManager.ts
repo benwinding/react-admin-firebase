@@ -26,7 +26,7 @@ export class ResourceManager {
   }
 
   public async initPath(path: string): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const hasBeenInited = this.resources[path];
       if (hasBeenInited) {
         return resolve();
@@ -34,12 +34,12 @@ export class ResourceManager {
       const collection = this.db.collection(path);
       const observable = this.getCollectionObservable(collection);
       observable.subscribe(
-        (querySnapshot: QuerySnapshot) => {
+        async (querySnapshot: QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
             (doc: QueryDocumentSnapshot) =>
               this.parseFireStoreDocument(doc)
           );
-          this.setList(newList, path);
+          await this.setList(newList, path);
           // The data has been set, so resolve the promise
           resolve();
         }
@@ -81,7 +81,7 @@ export class ResourceManager {
     doc: QueryDocumentSnapshot
   ): {} {
     const data = doc.data();
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       const value = data[key];
       if (value && value.toDate && value.toDate instanceof Function) {
         data[key] = value.toDate().toISOString();
@@ -91,7 +91,6 @@ export class ResourceManager {
     // So we can just using the firestore document id
     return { id: doc.id, ...data };
   }
-
 
   private async setList(
     newList: Array<{}>,
