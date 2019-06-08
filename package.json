@@ -16,12 +16,14 @@
     "@firebase/firestore-types": "^1.2.0",
     "@firebase/util": "^0.2.11",
     "@types/firebase": "^3.2.1",
+    "@types/jest": "^24.0.13",
     "@types/node": "^10.9.4",
     "@types/react": "^16.8.13",
     "@types/rx": "^4.1.1",
     "firebase-mock": "^2.2.10",
     "jest": "^24.8.0",
     "microbundle": "^0.11.0",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.16.0",
     "typescript": "^3.0.3"
   },
@@ -32,7 +34,8 @@
     "build": "microbundle",
     "watch": "microbundle watch",
     "cp-dist": "watch cp -r ./dist/ ./src-demo/node_modules/react-admin-firebase/",
-    "start": "cd src-demo && yarn && yarn start"
+    "start": "cd src-demo && yarn && yarn start",
+    "test": "jest --watchAll"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

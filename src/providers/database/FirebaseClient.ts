@@ -1,9 +1,8 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
 import { ResourceManager, IResource } from "./ResourceManager";
 import { RAFirebaseOptions } from "index";
-import { log } from "console";
-import { sortArray, filterArray } from "misc/arrayHelpers";
-import { logError } from "misc/logger";
+import { log, logError } from "../../misc/logger";
+import { sortArray, filterArray } from "../../misc/arrayHelpers";
 import { IFirebase } from "./firebase/Firebase.interface";
 
 export class FirebaseClient {
