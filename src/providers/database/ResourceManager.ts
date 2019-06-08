@@ -6,10 +6,12 @@ import {
   FirebaseFirestore
 } from "@firebase/firestore-types";
 import { Observable } from "rxjs";
-import { log } from "logger";
+import { RAFirebaseOptions } from "index";
+import { log } from "console";
 
 export interface IResource {
   path: string;
+  pathAbsolute: string;
   collection: CollectionReference;
   observable: Observable<{}>;
   list: Array<{}>;
@@ -21,17 +23,40 @@ export class ResourceManager {
   } = {};
 
   constructor(
-    private db: FirebaseFirestore
-  ) {
+    private db: FirebaseFirestore,
+    private options: RAFirebaseOptions
+  ) { }
+
+  public GetResource(relativePath: string): IResource {
+    const resource: IResource = this.resources[relativePath];
+    if (!resource) {
+      throw new Error(
+        `react-admin-firebase: Cant find resource: "${relativePath}"`
+      );
+    }
+    return resource;
   }
 
-  public async initPath(path: string): Promise<void> {
+  public async TryGetResourcePromise(relativePath: string): Promise<IResource> {
+    await this.initPath(relativePath);
+    const resource: IResource = this.resources[relativePath];
+    if (!resource) {
+      throw new Error(
+        `react-admin-firebase: Cant find resource: "${relativePath}"`
+      );
+    }
+    return resource;
+  }
+
+  private async initPath(relativePath: string): Promise<void> {
+    const absolutePath = this.getAbsolutePath(relativePath);
+    log("resourceManager.initPath:::", { absolutePath });
     return new Promise((resolve) => {
-      const hasBeenInited = this.resources[path];
+      const hasBeenInited = this.resources[relativePath];
       if (hasBeenInited) {
         return resolve();
       }
-      const collection = this.db.collection(path);
+      const collection = this.db.collection(absolutePath);
       const observable = this.getCollectionObservable(collection);
       observable.subscribe(
         async (querySnapshot: QuerySnapshot) => {
@@ -39,7 +64,7 @@ export class ResourceManager {
             (doc: QueryDocumentSnapshot) =>
               this.parseFireStoreDocument(doc)
           );
-          await this.setList(newList, path);
+          await this.setList(newList, absolutePath);
           // The data has been set, so resolve the promise
           resolve();
         }
@@ -49,32 +74,20 @@ export class ResourceManager {
         collection,
         list,
         observable,
-        path
+        path: relativePath,
+        pathAbsolute: absolutePath
       };
-      this.resources[path] = r;
-      log("initPath", { path, r, "this.resources": this.resources });
+      this.resources[relativePath] = r;
+      log("initPath", { absolutePath, r, "this.resources": this.resources });
     });
   }
 
-  public GetResource(resourceName: string): IResource {
-    const resource: IResource = this.resources[resourceName];
-    if (!resource) {
-      throw new Error(
-        `react-admin-firebase: Cant find resource: "${resourceName}"`
-      );
+  private getAbsolutePath(relativePath: string): string {
+    let absolutePath = relativePath;
+    if (this.options.rootRef) {
+      absolutePath = this.options.rootRef + "/" + relativePath;
     }
-    return resource;
-  }
-
-  public async TryGetResourcePromise(resourceName: string): Promise<IResource> {
-    await this.initPath(resourceName);
-    const resource: IResource = this.resources[resourceName];
-    if (!resource) {
-      throw new Error(
-        `react-admin-firebase: Cant find resource: "${resourceName}"`
-      );
-    }
-    return resource;
+    return absolutePath;
   }
 
   private parseFireStoreDocument(

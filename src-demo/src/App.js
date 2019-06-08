@@ -6,11 +6,15 @@ import {
   FirebaseAuthProvider
 } from "react-admin-firebase";
 
-import { firebaseConfig as config } from './FIREBASE_CONFIG';
-config.debug = true;
+import { firebaseConfig } from './FIREBASE_CONFIG';
+firebaseConfig["debug"] = true;
+const options = {
+  logging: true,
+  rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP'
+}
 
-const authProvider = FirebaseAuthProvider(config);
-const dataProvider = FirebaseDataProvider(config);
+const authProvider = FirebaseAuthProvider(firebaseConfig);
+const dataProvider = FirebaseDataProvider(firebaseConfig, options);
 
 class App extends React.Component {
   render() {

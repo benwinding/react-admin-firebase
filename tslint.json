@@ -1,5 +1,4 @@
 {
-  "extends": ["tslint:recommended"],
   "linterOptions": {
     "exclude": [
       "config/**/*.js",
@@ -15,6 +14,10 @@
     "object-literal-sort-keys": false,
     "no-floating-promises": true,
     "trailing-comma": false,
-    "interface-name": false
+    "interface-name": false,
+    "whitespace": [
+      true,
+      "check-module"
+    ]
   }
 }

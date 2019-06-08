@@ -12,16 +12,18 @@
   },
   "devDependencies": {
     "@firebase/app-types": "^0.3.9",
-    "@firebase/firestore-types": "^1.2.0",    
-    "@firebase/auth-types": "^0.6.0",    
+    "@firebase/auth-types": "^0.6.0",
+    "@firebase/firestore-types": "^1.2.0",
     "@firebase/util": "^0.2.11",
     "@types/firebase": "^3.2.1",
     "@types/node": "^10.9.4",
-    "@types/rx": "^4.1.1",
     "@types/react": "^16.8.13",
+    "@types/rx": "^4.1.1",
+    "firebase-mock": "^2.2.10",
+    "jest": "^24.8.0",
     "microbundle": "^0.11.0",
-    "typescript": "^3.0.3",
-    "tslint": "^5.16.0"
+    "tslint": "^5.16.0",
+    "typescript": "^3.0.3"
   },
   "homepage": "https://github.com/benwinding/react-admin-firebase",
   "email": "hello@benwinding.com",
@@ -29,7 +31,7 @@
   "scripts": {
     "build": "microbundle",
     "watch": "microbundle watch",
-    "cp-dist": "watch cp -r ./dist/ ./src-demo/node_modules/react-admin-firebase/dist/",
+    "cp-dist": "watch cp -r ./dist/ ./src-demo/node_modules/react-admin-firebase/",
     "start": "cd src-demo && yarn && yarn start"
   },
   "main": "dist/index.js",

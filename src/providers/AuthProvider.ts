@@ -6,7 +6,7 @@ import { FirebaseApp } from "@firebase/app-types";
 import { FirebaseAuth } from "@firebase/auth-types";
 
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
-import { log, EnableLogging } from "logger";
+import { log, EnableLogging } from "../misc/logger";
 
 class AuthClient {
   private app: FirebaseApp;
@@ -41,7 +41,7 @@ class AuthClient {
     await this.auth.signOut();
   }
 
-  public async HandleAuthError(params) {}
+  public async HandleAuthError(params) { }
 
   public async HandleAuthCheck(params) {
     try {
@@ -76,7 +76,7 @@ class AuthClient {
   }
 }
 
-function SetUpAuth(config: {}) {
+export function AuthProvider(config: {}) {
   if (!config) {
     throw new Error(
       "Please pass the Firebase config.json object to the FirebaseAuthProvider"
@@ -107,5 +107,3 @@ function SetUpAuth(config: {}) {
     }
   };
 }
-
-export default SetUpAuth;

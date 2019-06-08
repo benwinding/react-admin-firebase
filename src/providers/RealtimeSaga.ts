@@ -1,7 +1,5 @@
 import realtimeSaga from "ra-realtime";
-import {
-  fb
-} from "./firebaseDataProvider";
+import { fb } from "./DataProvider";
 
 const observeRequest = (dataProvider, options) => (type, resource, params) => {
   // If the paths are explicitly set in options
@@ -37,6 +35,6 @@ const observeRequest = (dataProvider, options) => (type, resource, params) => {
   };
 };
 
-export default (dataProvider, options) => {
+export function RealtimeSaga(dataProvider, options) {
   return realtimeSaga(observeRequest(dataProvider, options));
-};
+}
