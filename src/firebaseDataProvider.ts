@@ -43,7 +43,6 @@ class FirebaseClient {
     params: IParamsGetList
   ): Promise<IResponseGetList> {
     const r = await this.tryGetResource(resourceName);
-    console.log("SADASDASDASDASD")
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
