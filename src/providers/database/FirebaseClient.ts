@@ -3,7 +3,7 @@ import { ResourceManager, IResource } from "./ResourceManager";
 import { RAFirebaseOptions } from "index";
 import { log, logError } from "../../misc/logger";
 import { sortArray, filterArray } from "../../misc/arrayHelpers";
-import { IFirebase } from "./firebase/Firebase.interface";
+import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
 import { messageTypes } from '../../misc/messageTypes'
 
@@ -12,10 +12,10 @@ export class FirebaseClient implements IFirebaseClient {
   private rm: ResourceManager;
 
   constructor(
-    private firebase: IFirebase,
+    private fireWrapper: IFirebaseWrapper,
     private options: RAFirebaseOptions
   ) {
-    this.db = firebase.db();
+    this.db = fireWrapper.db();
     this.rm = new ResourceManager(this.db, this.options);
   }
   public async apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList> {
@@ -56,8 +56,8 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiCreate", { resourceName, resource: r, params });
     const doc = await r.collection.add({
       ...params.data,
-      createdate: this.firebase.serverTimestamp(),
-      lastupdate: this.firebase.serverTimestamp()
+      createdate: this.fireWrapper.serverTimestamp(),
+      lastupdate: this.fireWrapper.serverTimestamp()
     });
     return {
       data: {
@@ -73,7 +73,7 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiUpdate", { resourceName, resource: r, params });
     r.collection.doc(id).update({
       ...params.data,
-      lastupdate: this.firebase.serverTimestamp()
+      lastupdate: this.fireWrapper.serverTimestamp()
     }).catch((error) => {
       logError("apiUpdate error", { error });
     });
@@ -92,7 +92,7 @@ export class FirebaseClient implements IFirebaseClient {
     const returnData = ids.map((id) => {
       r.collection.doc(id).update({
         ...params.data,
-        lastupdate: this.firebase.serverTimestamp()
+        lastupdate: this.fireWrapper.serverTimestamp()
       }).catch((error) => {
         logError("apiUpdateMany error", { error });
       });

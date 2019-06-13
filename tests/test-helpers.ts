@@ -13,6 +13,10 @@ export async function deleteCollection(db: FirebaseFirestore, collectionName: st
   await Promise.all(allDocs.docs.map(doc => doc.ref.delete()));
 }
 
+export async function createDoc(db: FirebaseFirestore, collectionName: string, docName: string, obj: {}): Promise<void> {
+  await db.collection(collectionName).doc(docName).set(obj);
+}
+
 export async function getDocsFromCollection(db: FirebaseFirestore, collectionName: string): Promise<any[]> {
   const allDocs = await db.collection(collectionName).get();
   const docsData = await Promise.all(allDocs.docs.map(doc => {

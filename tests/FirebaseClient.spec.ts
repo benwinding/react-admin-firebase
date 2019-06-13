@@ -1,10 +1,11 @@
 import { FirebaseClient } from "../src/providers/database/FirebaseClient";
+import { deleteCollection, getDocsFromCollection, createDoc } from "./test-helpers";
 import { IFirebaseClient } from "../src/providers/database/IFirebaseClient";
-import { FirebaseStub } from "../src/providers/database/firebase/Firebase.stub";
-import { delayPromise, deleteCollection, getDocsFromCollection } from "./test-helpers";
+import { FirebaseWrapperStub } from "../src/providers/database/firebase/FirebaseWrapperStub";
+import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWrapper";
 
 import { config } from './TEST.config';
-const fire = new FirebaseStub();
+const fire: IFirebaseWrapper = new FirebaseWrapperStub();
 fire.init(config);
 const db = fire.db();
 
@@ -25,6 +26,21 @@ test('t1 client create doc', async () => {
 test('t2 client delete doc', async () => {
   const docName = 'test123'
   await db.collection('t2').doc(docName).set({name: 'Jim'});
+
+  const client: IFirebaseClient = new FirebaseClient(fire, {});
+  await client.apiDelete('t2', {
+    'id': docName,
+    previousData: {}
+  });
+
+  const users = await getDocsFromCollection(db, 't2');
+  expect(users.length).toBe(0);
+  await deleteCollection(db, 't2');
+}, 100000);
+
+test('t3 client delete doc', async () => {
+  const docName = 'test123'
+  await createDoc(db, 't2', docName, {name: 'Jim'});
 
   const client: IFirebaseClient = new FirebaseClient(fire, {});
   await client.apiDelete('t2', {

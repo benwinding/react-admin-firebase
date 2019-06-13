@@ -1,11 +1,11 @@
-import { IFirebase } from "./Firebase.interface";
-import { FirebaseFirestore } from "@firebase/firestore-types";
+import { IFirebaseWrapper } from "./IFirebaseWrapper";
+import { firestore } from "firebase";
 
 import * as firebaseApp from "firebase/app";
 import "firebase/firestore";
 
-export class FirebaseStub implements IFirebase {
-  private firestore: FirebaseFirestore;
+export class FirebaseWrapper implements IFirebaseWrapper {
+  private firestore: firestore.Firestore;
 
   constructor() { }
 
@@ -18,7 +18,7 @@ export class FirebaseStub implements IFirebase {
       this.firestore = app.firestore();
     }
   }
-  public db(): FirebaseFirestore {
+  public db(): firestore.Firestore {
     return this.firestore;
   }
   public serverTimestamp() {

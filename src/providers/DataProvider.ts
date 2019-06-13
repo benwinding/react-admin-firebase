@@ -11,9 +11,9 @@ import {
 } from "react-admin";
 import { log, EnableLogging } from "../misc/logger";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
-import { IFirebase } from "./database/firebase/Firebase.interface";
+import { IFirebaseWrapper } from "./database/firebase/IFirebaseWrapper";
 import { FirebaseClient } from "./database/FirebaseClient";
-import { Firebase } from "./database/firebase/Firebase";
+import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
 export let fb: FirebaseClient;
 
@@ -26,9 +26,9 @@ export function DataProvider(config: {}, options?: RAFirebaseOptions) {
   if (config["debug"] || optionsSafe.logging) {
     EnableLogging();
   }
-  const fireClient: IFirebase = new Firebase();
-  fireClient.init(config);
-  fb = new FirebaseClient(fireClient, optionsSafe);
+  const fireWrapper: IFirebaseWrapper = new FirebaseWrapper();
+  fireWrapper.init(config);
+  fb = new FirebaseClient(fireWrapper, optionsSafe);
   async function providerApi(type: string, resourceName: string, params: any): Promise<any> {
     log("FirebaseDataProvider: event", { type, resourceName, params });
     switch (type) {
