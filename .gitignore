@@ -28,3 +28,4 @@ src/**/*.js
 .rts*
 TEST.config.ts
 yarn.lock
+src-demo/yarn.lock
