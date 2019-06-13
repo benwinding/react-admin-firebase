@@ -58,26 +58,27 @@ export class ResourceManager {
       }
       const collection = this.db.collection(absolutePath);
       const observable = this.getCollectionObservable(collection);
+      const list: Array<{}> = [];
+      const resource: IResource = {
+        collection: collection,
+        list: list,
+        observable: observable,
+        path: relativePath,
+        pathAbsolute: absolutePath
+      };
+      this.resources[relativePath] = resource;
+
       observable.subscribe(
         async (querySnapshot: QuerySnapshot) => {
           const newList = querySnapshot.docs.map(
             (doc: QueryDocumentSnapshot) =>
               this.parseFireStoreDocument(doc)
           );
-          await this.setList(newList, absolutePath);
+          resource.list = newList;
           // The data has been set, so resolve the promise
           resolve();
         }
       );
-      const list: Array<{}> = [];
-      const r: IResource = {
-        collection,
-        list,
-        observable,
-        path: relativePath,
-        pathAbsolute: absolutePath
-      };
-      this.resources[relativePath] = r;
       // log("initPath", { absolutePath, r, "this.resources": this.resources });
     });
   }
@@ -103,14 +104,6 @@ export class ResourceManager {
     // React Admin requires an id field on every document,
     // So we can just using the firestore document id
     return { id: doc.id, ...data };
-  }
-
-  private async setList(
-    newList: Array<{}>,
-    resourceName: string
-  ): Promise<void> {
-    const resource = await this.TryGetResourcePromise(resourceName);
-    resource.list = newList;
   }
 
   private getCollectionObservable(

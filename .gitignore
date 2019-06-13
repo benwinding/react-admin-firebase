@@ -27,3 +27,4 @@ yarn-error.log*
 src/**/*.js
 .rts*
 TEST.config.ts
+yarn.lock
