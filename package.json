@@ -1,35 +1,48 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.5.8",
+  "version": "0.6.1",
   "dependencies": {
-    "firebase": "^5.x",
-    "ra-realtime": "^2.x",
+    "firebase": "6.1.x",
+    "path-browserify": "^1.0.0",
+    "ra-realtime": "^2.8.x",
     "react": "^16.x",
-    "react-admin": "^2.x",
+    "react-admin": "^2.9.x",
     "react-dom": "^16.x",
-    "rxjs": "^6.x"
+    "rxjs": "^6.5.x"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.3.9",
-    "@firebase/firestore-types": "^1.2.0",    
-    "@firebase/auth-types": "^0.6.0",    
+    "@firebase/auth-types": "^0.6.0",
+    "@firebase/firestore-types": "^1.2.0",
     "@firebase/util": "^0.2.11",
     "@types/firebase": "^3.2.1",
+    "@types/jest": "^24.0.13",
     "@types/node": "^10.9.4",
-    "@types/rx": "^4.1.1",
     "@types/react": "^16.8.13",
+    "@types/rx": "^4.1.1",
+    "jest": "^24.8.0",
     "microbundle": "^0.11.0",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.16.0",
     "typescript": "^3.0.3"
   },
   "homepage": "https://github.com/benwinding/react-admin-firebase",
   "email": "hello@benwinding.com",
   "license": "MIT",
   "scripts": {
-    "build": "microbundle",
+    "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
-    "start": "cd src-demo && yarn add react-admin-firebase@file:.. && yarn start"
+    "cp-dist": "watch cp -r ./dist/ ./src-demo/node_modules/react-admin-firebase/",
+    "start-demo": "cd src-demo && yarn clean-dependencies && yarn start",
+    "test": "jest --watchAll"
   },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "umd:main": "dist/index.umd.js",

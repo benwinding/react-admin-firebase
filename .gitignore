@@ -26,4 +26,7 @@ yarn-error.log*
 
 src/**/*.js
 .rts*
+TEST.config.ts
+FIREBASE_CONFIG.js
 yarn.lock
+src-demo/yarn.lock

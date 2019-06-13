@@ -5,13 +5,14 @@
   "dependencies": {
     "ra-input-rich-text": "^2.3.0",
     "react": "^16.5.1",
-    "react-admin-firebase": "file:..",
+    "react-admin-firebase": "../",
     "react-dom": "^16.5.1",
     "react-scripts": "1.1.5",
     "redux-saga": "^0.16.0"
   },
   "scripts": {
     "start": "BROWSER=none PORT=3333 react-scripts start",
+    "clean-dependencies": "yarn && yarn add ../ && yarn remove react-admin-firebase && yarn add ../ && yarn start",
     "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

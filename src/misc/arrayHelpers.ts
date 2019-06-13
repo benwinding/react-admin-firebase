@@ -1,5 +1,8 @@
 function isEmptyObj(obj) {
-  return JSON.stringify(obj) == "{}";
+  if (!obj) {
+    return true;
+  }
+  return JSON.stringify(obj) === "{}";
 }
 
 export function sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
@@ -24,7 +27,7 @@ export function filterArray(
     return data;
   }
   const fieldNames = Object.keys(filterFields);
-  return data.filter(item =>
+  return data.filter((item) =>
     fieldNames.reduce((previousMatched, fieldName) => {
       const fieldSearchText = filterFields[fieldName].toLowerCase();
       const dataFieldValue = item[fieldName];

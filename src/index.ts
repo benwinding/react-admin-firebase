@@ -1,9 +1,11 @@
-import firebaseRealTimeSaga from './firebaseRealtimeSaga';
-import firebaseDataProvider from './firebaseDataProvider';
-import firebaseAuthProvider from './firebaseAuthProvider';
+import { RealtimeSaga } from "./providers/RealtimeSaga";
+import { DataProvider } from "./providers/DataProvider";
+import { AuthProvider } from "./providers/AuthProvider";
+import { RAFirebaseOptions } from "./providers/RAFirebaseOptions";
 
 export {
-  firebaseRealTimeSaga as FirebaseRealTimeSaga,
-  firebaseDataProvider as FirebaseDataProvider,
-  firebaseAuthProvider as FirebaseAuthProvider,
-}
+  RealtimeSaga as FirebaseRealTimeSaga,
+  DataProvider as FirebaseDataProvider,
+  AuthProvider as FirebaseAuthProvider,
+  RAFirebaseOptions as RAFirebaseOptions
+};

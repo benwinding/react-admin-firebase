@@ -8,7 +8,9 @@
     "baseUrl": "src",
     "preserveConstEnums": true,
     "sourceMap": true,
-    "typeRoots": ["node_modules/@types"]
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "typeRoots": ["node_modules/@types", "src/types.d.ts"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

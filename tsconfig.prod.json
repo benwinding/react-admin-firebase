@@ -1,7 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "preserveConstEnums": false,
-    "sourceMap": false
-  }
-}

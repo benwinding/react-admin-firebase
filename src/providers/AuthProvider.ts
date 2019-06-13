@@ -6,11 +6,11 @@ import { FirebaseApp } from "@firebase/app-types";
 import { FirebaseAuth } from "@firebase/auth-types";
 
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
-import { log, EnableLogging } from "logger";
+import { log, EnableLogging } from "../misc/logger";
 
 class AuthClient {
-  app: FirebaseApp;
-  auth: FirebaseAuth;
+  private app: FirebaseApp;
+  private auth: FirebaseAuth;
 
   constructor(firebaseConfig: {}) {
     log("Auth Client: initializing...");
@@ -22,7 +22,7 @@ class AuthClient {
     this.auth = firebaseApp.auth();
   }
 
-  async HandleAuthLogin(params) {
+  public async HandleAuthLogin(params) {
     const { username, password } = params;
 
     try {
@@ -37,13 +37,13 @@ class AuthClient {
     }
   }
 
-  async HandleAuthLogout(params) {
+  public async HandleAuthLogout(params) {
     await this.auth.signOut();
   }
 
-  async HandleAuthError(params) {}
+  public async HandleAuthError(params) { }
 
-  async HandleAuthCheck(params) {
+  public async HandleAuthCheck(params) {
     try {
       const user = await this.getUserLogin();
       log("HandleAuthCheck: user is still logged in", { user });
@@ -53,9 +53,9 @@ class AuthClient {
     }
   }
 
-  async getUserLogin() {
+  public async getUserLogin() {
     return new Promise((resolve, reject) => {
-      this.auth.onAuthStateChanged(user => {
+      this.auth.onAuthStateChanged((user) => {
         if (user) {
           resolve(user);
         } else {
@@ -65,7 +65,7 @@ class AuthClient {
     });
   }
 
-  async HandleGetCurrent() {
+  public async HandleGetCurrent() {
     try {
       const user = await this.getUserLogin();
       log("HandleGetCurrent: current user", { user });
@@ -76,20 +76,19 @@ class AuthClient {
   }
 }
 
-function SetUpAuth(config: {}) {
+export function AuthProvider(config: {}) {
   if (!config) {
     throw new Error(
       "Please pass the Firebase config.json object to the FirebaseAuthProvider"
     );
   }
   const auth = new AuthClient(config);
-  if (config['debug']) {
+  if (config["debug"]) {
     EnableLogging();
   }
 
-  return async function(type: string, params: {}) {
+  return async (type: string, params: {}) => {
     log("Auth Event: ", { type, params });
-
     {
       switch (type) {
         case AUTH_LOGIN:
@@ -100,7 +99,7 @@ function SetUpAuth(config: {}) {
           await auth.HandleAuthError(params);
         case AUTH_CHECK:
           await auth.HandleAuthCheck(params);
-        case 'AUTH_GETCURRENT':
+        case "AUTH_GETCURRENT":
           await auth.HandleGetCurrent();
         default:
           throw new Error("Unhandled auth type:" + type);
@@ -108,5 +107,3 @@ function SetUpAuth(config: {}) {
     }
   };
 }
-
-export default SetUpAuth;
