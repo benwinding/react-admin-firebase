@@ -2726,7 +2726,7 @@ firebase@*:
     "@firebase/polyfill" "0.3.12"
     "@firebase/storage" "0.2.14"
 
-firebase@^6.x:
+firebase@6.1.1:
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/firebase/-/firebase-6.1.1.tgz#156c4fc4c2803421ea4cfafe1111b265cbfbaa42"
   integrity sha512-RB8ZGcj28tU1of6l/l7TBu0By/ewmsIZtrDSlxTp/C6uawN8QtDkGbW3mWV73nkjkFYP6PwMmzCoXtdKxHpRmQ==
