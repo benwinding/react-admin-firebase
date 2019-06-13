@@ -8,6 +8,8 @@
     "baseUrl": "src",
     "preserveConstEnums": true,
     "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["src"],

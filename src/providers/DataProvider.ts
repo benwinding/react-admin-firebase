@@ -12,8 +12,8 @@ import {
 import { log, EnableLogging } from "../misc/logger";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { IFirebase } from "./database/firebase/Firebase.interface";
-import { FirebaseFactory } from "./database/firebase/FirebaseFactory";
 import { FirebaseClient } from "./database/FirebaseClient";
+import { Firebase } from "./database/firebase/Firebase";
 
 export let fb: FirebaseClient;
 
@@ -26,7 +26,7 @@ export function DataProvider(config: {}, options?: RAFirebaseOptions) {
   if (config["debug"] || optionsSafe.logging) {
     EnableLogging();
   }
-  const fireClient: IFirebase = FirebaseFactory.Create();
+  const fireClient: IFirebase = new Firebase();
   fireClient.init(config);
   fb = new FirebaseClient(fireClient, optionsSafe);
   async function providerApi(type: string, resourceName: string, params: any): Promise<any> {

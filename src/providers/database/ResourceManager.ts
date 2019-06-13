@@ -7,7 +7,7 @@ import {
 } from "@firebase/firestore-types";
 import { Observable } from "rxjs";
 import { RAFirebaseOptions } from "index";
-import { log } from "console";
+import { log } from "../../misc/logger";
 
 export interface IResource {
   path: string;
@@ -78,7 +78,7 @@ export class ResourceManager {
         pathAbsolute: absolutePath
       };
       this.resources[relativePath] = r;
-      log("initPath", { absolutePath, r, "this.resources": this.resources });
+      // log("initPath", { absolutePath, r, "this.resources": this.resources });
     });
   }
 

@@ -20,7 +20,6 @@
     "@types/node": "^10.9.4",
     "@types/react": "^16.8.13",
     "@types/rx": "^4.1.1",
-    "firebase-mock": "^2.2.10",
     "jest": "^24.8.0",
     "microbundle": "^0.11.0",
     "ts-jest": "^24.0.2",

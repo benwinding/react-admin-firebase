@@ -1,17 +1,27 @@
 import { IFirebase } from "./Firebase.interface";
 import { FirebaseFirestore } from "@firebase/firestore-types";
-const firebasemock = require('firebase-mock');
- 
+
+import * as firebaseApp from "firebase/app";
+import "firebase/firestore";
+
 export class FirebaseStub implements IFirebase {
-  private mockfirestore = new firebasemock.MockFirestore();
+  private firestore: FirebaseFirestore;
+
+  constructor() { }
 
   public init(firebaseConfig: {}): void {
-    throw new Error("Method not implemented.");
+    if (!firebaseApp.apps.length) {
+      const app = firebaseApp.initializeApp(firebaseConfig);
+      this.firestore = app.firestore();
+    } else {
+      const app = firebaseApp.app();
+      this.firestore = app.firestore();
+    }
   }
   public db(): FirebaseFirestore {
-    return this.mockfirestore;
+    return this.firestore;
   }
   public serverTimestamp() {
-    throw new Error("Method not implemented.");
+    return firebaseApp.firestore.FieldValue.serverTimestamp();
   }
 }

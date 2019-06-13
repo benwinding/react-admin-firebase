@@ -1,4 +1,7 @@
 function isEmptyObj(obj) {
+  if (!obj) {
+    return true;
+  }
   return JSON.stringify(obj) === "{}";
 }
 
