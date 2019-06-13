@@ -4,8 +4,10 @@ import { RAFirebaseOptions } from "index";
 import { log, logError } from "../../misc/logger";
 import { sortArray, filterArray } from "../../misc/arrayHelpers";
 import { IFirebase } from "./firebase/Firebase.interface";
+import { IFirebaseClient } from "./IFirebaseClient";
+import { messageTypes } from '../../misc/messageTypes'
 
-export class FirebaseClient {
+export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
   private rm: ResourceManager;
 
@@ -16,7 +18,7 @@ export class FirebaseClient {
     this.db = firebase.db();
     this.rm = new ResourceManager(this.db, this.options);
   }
-  public async apiGetList(resourceName: string, params: IParamsGetList): Promise<IResponseGetList> {
+  public async apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
     const r = await this.tryGetResource(resourceName);
     const data = r.list;
@@ -38,7 +40,7 @@ export class FirebaseClient {
       total
     };
   }
-  public async apiGetOne(resourceName: string, params: IParamsGetOne): Promise<IResponseGetOne> {
+  public async apiGetOne(resourceName: string, params: messageTypes.IParamsGetOne): Promise<messageTypes.IResponseGetOne> {
     const r = await this.tryGetResource(resourceName);
     log("apiGetOne", { resourceName, resource: r, params });
     const data = r.list.filter((val: {
@@ -49,7 +51,7 @@ export class FirebaseClient {
     }
     return { data: data.pop() };
   }
-  public async apiCreate(resourceName: string, params: IParamsCreate): Promise<IResponseCreate> {
+  public async apiCreate(resourceName: string, params: messageTypes.IParamsCreate): Promise<messageTypes.IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
     const doc = await r.collection.add({
@@ -64,7 +66,7 @@ export class FirebaseClient {
       }
     };
   }
-  public async apiUpdate(resourceName: string, params: IParamsUpdate): Promise<IResponseUpdate> {
+  public async apiUpdate(resourceName: string, params: messageTypes.IParamsUpdate): Promise<messageTypes.IResponseUpdate> {
     const id = params.id;
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
@@ -82,7 +84,7 @@ export class FirebaseClient {
       }
     };
   }
-  public async apiUpdateMany(resourceName: string, params: IParamsUpdateMany): Promise<IResponseUpdateMany> {
+  public async apiUpdateMany(resourceName: string, params: messageTypes.IParamsUpdateMany): Promise<messageTypes.IResponseUpdateMany> {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
@@ -103,7 +105,7 @@ export class FirebaseClient {
       data: returnData
     };
   }
-  public async apiDelete(resourceName: string, params: IParamsDelete): Promise<IResponseDelete> {
+  public async apiDelete(resourceName: string, params: messageTypes.IParamsDelete): Promise<messageTypes.IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
     r.list = r.list.filter((doc) => doc["id"] !== params.id);
@@ -114,7 +116,7 @@ export class FirebaseClient {
       data: params.previousData
     };
   }
-  public async apiDeleteMany(resourceName: string, params: IParamsDeleteMany): Promise<IResponseDeleteMany> {
+  public async apiDeleteMany(resourceName: string, params: messageTypes.IParamsDeleteMany): Promise<messageTypes.IResponseDeleteMany> {
     const r = await this.tryGetResource(resourceName);
     log("apiDeleteMany", { resourceName, resource: r, params });
     const returnData = [];
@@ -128,7 +130,7 @@ export class FirebaseClient {
     });
     return { data: returnData };
   }
-  public async apiGetMany(resourceName: string, params: IParamsGetMany): Promise<IResponseGetMany> {
+  public async apiGetMany(resourceName: string, params: messageTypes.IParamsGetMany): Promise<messageTypes.IResponseGetMany> {
     const r = await this.tryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = new Set(params.ids);
@@ -139,8 +141,8 @@ export class FirebaseClient {
   }
   public async apiGetManyReference(
     resourceName: string,
-    params: IParamsGetManyReference
-  ): Promise<IResponseGetManyReference> {
+    params: messageTypes.IParamsGetManyReference
+  ): Promise<messageTypes.IResponseGetManyReference> {
     const r = await this.tryGetResource(resourceName);
     log("apiGetManyReference", { resourceName, resource: r, params });
     const data = r.list;

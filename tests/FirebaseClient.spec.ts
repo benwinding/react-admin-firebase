@@ -1,26 +1,38 @@
 import { FirebaseClient } from "../src/providers/database/FirebaseClient";
+import { IFirebaseClient } from "../src/providers/database/IFirebaseClient";
 import { FirebaseStub } from "../src/providers/database/firebase/Firebase.stub";
+import { delayPromise, deleteCollection, getDocsFromCollection } from "./test-helpers";
 
 import { config } from './TEST.config';
 const fire = new FirebaseStub();
 fire.init(config);
+const db = fire.db();
 
-test('test-list', async () => {
+test('t1 client create doc', async () => {
   const client = new FirebaseClient(fire, {});
-  await client.apiCreate('users', {
+  await client.apiCreate('t1', {
     data: { name: 'John' }
   });
 
-  const users = await client.apiGetList('users', {
-    pagination: {
-      page: 0,
-      perPage: 100,
-    }
-  });
-
-  expect(users.data.length).toBe(1);
-  const first = users.data[0] as any;
+  const users = await getDocsFromCollection(db, 't1');
+  expect(users.length).toBe(1);
+  const first = users[0] as any;
   expect(first).toBeTruthy();
   expect(first.name).toBe('John');
-  // expect(!!result.data).toBe(true);
-}, 300000);
+  await deleteCollection(db, 't1');
+}, 100000);
+
+test('t2 client delete doc', async () => {
+  const docName = 'test123'
+  await db.collection('t2').doc(docName).set({name: 'Jim'});
+
+  const client: IFirebaseClient = new FirebaseClient(fire, {});
+  await client.apiDelete('t2', {
+    'id': docName,
+    previousData: {}
+  });
+
+  const users = await getDocsFromCollection(db, 't2');
+  expect(users.length).toBe(0);
+  await deleteCollection(db, 't2');
+}, 100000);

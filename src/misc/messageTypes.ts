@@ -1,101 +1,102 @@
 // PARAMETERS
+export namespace messageTypes {
+  export interface IParamsGetList {
+    pagination: {
+      page: number;
+      perPage: number;
+    };
+    sort?: {
+      field: string;
+      order: string;
+    };
+    filter?: {};
+  }
 
-interface IParamsGetList {
-  pagination: {
-    page: number;
-    perPage: number;
-  };
-  sort?: {
-    field: string;
-    order: string;
-  };
-  filter?: {};
-}
-
-interface IParamsGetOne {
-  id: string;
-}
-
-interface IParamsCreate {
-  data: {};
-}
-
-interface IParamsUpdate {
-  id: string;
-  data: { id: string };
-  previousData: {};
-}
-
-interface IParamsUpdateMany {
-  ids: string[];
-  data: {
+  export interface IParamsGetOne {
     id: string;
-  };
-}
+  }
 
-interface IParamsDelete {
-  id: string;
-  previousData: {};
-}
+  export interface IParamsCreate {
+    data: {};
+  }
 
-interface IParamsDeleteMany {
-  ids: string[];
-}
+  export interface IParamsUpdate {
+    id: string;
+    data: { id: string };
+    previousData: {};
+  }
 
-interface IParamsGetMany {
-  ids: string[];
-}
+  export interface IParamsUpdateMany {
+    ids: string[];
+    data: {
+      id: string;
+    };
+  }
 
-interface IParamsGetManyReference {
-  target: string;
-  id: string;
-  pagination: {
-    page: number;
-    perPage: number;
-  };
-  sort: {
-    field: string;
-    order: string;
-  };
-  filter: {};
-}
+  export interface IParamsDelete {
+    id: string;
+    previousData: {};
+  }
 
-// RESPONSES
+  export interface IParamsDeleteMany {
+    ids: string[];
+  }
 
-interface IResponseGetList {
-  data: Array<{}>;
-  total: number;
-}
+  export interface IParamsGetMany {
+    ids: string[];
+  }
 
-interface IResponseGetOne {
-  data: {};
-}
+  export interface IParamsGetManyReference {
+    target: string;
+    id: string;
+    pagination: {
+      page: number;
+      perPage: number;
+    };
+    sort: {
+      field: string;
+      order: string;
+    };
+    filter: {};
+  }
 
-interface IResponseCreate {
-  data: {};
-}
+  // RESPONSES
 
-interface IResponseUpdate {
-  data: { id: string };
-}
+  export interface IResponseGetList {
+    data: Array<{}>;
+    total: number;
+  }
 
-interface IResponseUpdateMany {
-  data: Array<{}>;
-}
+  export interface IResponseGetOne {
+    data: {};
+  }
 
-interface IResponseDelete {
-  data: {};
-}
+  export interface IResponseCreate {
+    data: {};
+  }
 
-interface IResponseDeleteMany {
-  data: Array<{}>;
-}
+  export interface IResponseUpdate {
+    data: { id: string };
+  }
 
-interface IResponseGetMany {
-  data: Array<{}>;
-}
+  export interface IResponseUpdateMany {
+    data: Array<{}>;
+  }
 
-interface IResponseGetManyReference {
-  data: Array<{}>;
-  total: number;
+  export interface IResponseDelete {
+    data: {};
+  }
+
+  export interface IResponseDeleteMany {
+    data: Array<{}>;
+  }
+
+  export interface IResponseGetMany {
+    data: Array<{}>;
+  }
+
+  export interface IResponseGetManyReference {
+    data: Array<{}>;
+    total: number;
+  }
 }
