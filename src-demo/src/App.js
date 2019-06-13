@@ -2,6 +2,7 @@ import * as React from "react";
 import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
 import { Admin, Resource } from "react-admin";
 import {
+  FirebaseRealTimeSaga,
   FirebaseDataProvider,
   FirebaseAuthProvider
 } from "react-admin-firebase";
@@ -15,6 +16,7 @@ const options = {
 
 const authProvider = FirebaseAuthProvider(firebaseConfig);
 const dataProvider = FirebaseDataProvider(firebaseConfig, options);
+const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 
 class App extends React.Component {
   render() {
@@ -22,6 +24,7 @@ class App extends React.Component {
       <Admin
         dataProvider={dataProvider}
         authProvider={authProvider}
+        customSagas={[firebaseRealtime]}
       >
         <Resource
           name="posts"
