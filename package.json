@@ -4,6 +4,7 @@
   "version": "0.5.7",
   "dependencies": {
     "firebase": "6.1.x",
+    "path-browserify": "^1.0.0",
     "ra-realtime": "^2.8.x",
     "react": "^16.8.x",
     "react-admin": "^2.9.x",

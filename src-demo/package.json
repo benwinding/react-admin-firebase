@@ -12,7 +12,7 @@
   },
   "scripts": {
     "start": "BROWSER=none PORT=3333 react-scripts start",
-    "clean-dependencies": "yarn && rm -rf node_modules/react-admin-firebase && yarn add ../ && yarn start",
+    "clean-dependencies": "yarn && yarn remove react-admin-firebase && yarn add ../ && yarn start",
     "deploy": "gh-pages -d build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

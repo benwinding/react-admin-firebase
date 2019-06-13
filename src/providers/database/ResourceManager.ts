@@ -8,6 +8,7 @@ import {
 import { Observable } from "rxjs";
 import { RAFirebaseOptions } from "index";
 import { log } from "../../misc/logger";
+import { getAbsolutePath } from "../../misc/pathHelper";
 
 export interface IResource {
   path: string;
@@ -49,7 +50,7 @@ export class ResourceManager {
   }
 
   private async initPath(relativePath: string): Promise<void> {
-    const absolutePath = this.getAbsolutePath(relativePath);
+    const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
     log("resourceManager.initPath:::", { absolutePath });
     return new Promise((resolve) => {
       const hasBeenInited = this.resources[relativePath];
@@ -81,14 +82,6 @@ export class ResourceManager {
       );
       // log("initPath", { absolutePath, r, "this.resources": this.resources });
     });
-  }
-
-  private getAbsolutePath(relativePath: string): string {
-    let absolutePath = relativePath;
-    if (this.options.rootRef) {
-      absolutePath = this.options.rootRef + "/" + relativePath;
-    }
-    return absolutePath;
   }
 
   private parseFireStoreDocument(

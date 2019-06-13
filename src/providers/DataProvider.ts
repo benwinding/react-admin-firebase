@@ -17,18 +17,16 @@ import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
 export let fb: FirebaseClient;
 
-export function DataProvider(config: {}, options?: RAFirebaseOptions) {
-  if (!config) {
-    throw new Error("Please pass the Firebase config.json object to the FirebaseDataProvider");
-  }
+export function DataProvider(config: {}, optionsInput?: RAFirebaseOptions) {
+  const options = optionsInput || {};
+  VerifyInputs(config, options);
   console.log("react-admin-firebase:: Creating FirebaseDataProvider", { config, options });
-  const optionsSafe = options || {};
-  if (config["debug"] || optionsSafe.logging) {
+  if (config["debug"] || options.logging) {
     EnableLogging();
   }
   const fireWrapper: IFirebaseWrapper = new FirebaseWrapper();
   fireWrapper.init(config);
-  fb = new FirebaseClient(fireWrapper, optionsSafe);
+  fb = new FirebaseClient(fireWrapper, options);
   async function providerApi(type: string, resourceName: string, params: any): Promise<any> {
     log("FirebaseDataProvider: event", { type, resourceName, params });
     switch (type) {
@@ -55,4 +53,13 @@ export function DataProvider(config: {}, options?: RAFirebaseOptions) {
     }
   }
   return providerApi;
+}
+
+function VerifyInputs(config: {}, options?: RAFirebaseOptions) {
+  if (!config) {
+    throw new Error("Please pass the Firebase config.json object to the FirebaseDataProvider");
+  }
+  if (options.rootRef) {
+    
+  }
 }
