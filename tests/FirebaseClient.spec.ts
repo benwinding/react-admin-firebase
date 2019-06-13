@@ -1,7 +1,7 @@
 import { FirebaseClient } from "../src/providers/database/FirebaseClient";
 import { deleteCollection, getDocsFromCollection, createDoc } from "./test-helpers";
 import { IFirebaseClient } from "../src/providers/database/IFirebaseClient";
-import { FirebaseWrapperStub } from "../src/providers/database/firebase/FirebaseWrapperStub";
+import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
 import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWrapper";
 
 import { config } from './TEST.config';

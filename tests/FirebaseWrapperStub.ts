@@ -1,5 +1,4 @@
-import { IFirebaseWrapper } from "./IFirebaseWrapper";
-import { FirebaseFirestore } from "@firebase/firestore-types";
+import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWrapper";
 import { firestore } from "firebase";
 
 import * as firebaseApp from "firebase/app";
