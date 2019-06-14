@@ -62,7 +62,7 @@ const config = {
 
 // Options are optional
 const options = {
-  // All collections and docuemtns can be relative to the new root ref, rather than the firestore root
+  // All collections and documents can be relative to the new root ref, rather than the firestore root
   rootRef: 'root-collection/document'
 }
 
