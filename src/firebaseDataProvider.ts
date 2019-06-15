@@ -28,14 +28,14 @@ class FirebaseClient {
   private app: FirebaseAppFirestore;
   private rm: ResourceManager;
 
-  constructor(firebaseConfig: {}) {
+  constructor(firebaseConfig: any) {
     if (!firebaseApp.apps.length) {
       this.app = firebaseApp.initializeApp(firebaseConfig);
     } else {
       this.app = firebaseApp.app();
     }
     this.db = this.app.firestore();
-    this.rm = new ResourceManager(this.db);
+    this.rm = new ResourceManager(this.db, firebaseConfig.resourceManager || {});
   }
 
   public async apiGetList(
@@ -43,7 +43,7 @@ class FirebaseClient {
     params: IParamsGetList
   ): Promise<IResponseGetList> {
     const r = await this.tryGetResource(resourceName);
-    console.log("SADASDASDASDASD")
+
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -63,6 +63,10 @@ class FirebaseClient {
       data: dataPage,
       total
     };
+  }
+
+  public getResourceManager() {
+    return this.rm;
   }
 
   public async apiGetOne(
@@ -235,6 +239,13 @@ export default function FirebaseProvider(config: {}) {
     params: any
   ): Promise<any> {
     switch (type) {
+
+
+
+
+
+
+
       case GET_MANY:
         return fb.apiGetMany(resourceName, params);
       case GET_MANY_REFERENCE:
@@ -243,6 +254,12 @@ export default function FirebaseProvider(config: {}) {
         return fb.apiGetList(resourceName, params);
       case GET_ONE:
         return fb.apiGetOne(resourceName, params);
+
+
+
+
+
+
       case CREATE:
         return fb.apiCreate(resourceName, params);
       case UPDATE:
@@ -257,5 +274,5 @@ export default function FirebaseProvider(config: {}) {
         return {};
     }
   }
-  return providerApi;
+  return { provider: providerApi, client: fb };
 }
