@@ -23,6 +23,7 @@ _Pull requests welcome!!_
 - [x] Realtime updates, using ra-realtime
     - Implicitly watches all GET_LIST routes using observables with the firebase sdk
     - Optional watch collection array or dontwatch collection array
+- [x] Ability to manage sub collections through app configuration
 
 ## Get Started
 `yarn add react-admin-firebase` 
@@ -59,7 +60,13 @@ const config = {
   messagingSenderId: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
 };
 
-const dataProvider = FirebaseDataProvider(config);
+// Options are optional
+const options = {
+  // All collections and documents can be relative to the new root ref, rather than the firestore root
+  rootRef: 'root-collection/document'
+}
+
+const dataProvider = FirebaseDataProvider(config, options);
 
 class App extends React.Component {
   public render() {
