@@ -13,6 +13,8 @@ const options = {
   logging: true,
   rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
   // app: firebaseAppInstance
+  // watch: ['posts'];
+  // dontwatch: ['comments'];
 }
 
 const authProvider = FirebaseAuthProvider(firebaseConfig, options);

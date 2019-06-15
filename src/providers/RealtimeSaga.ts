@@ -1,15 +1,20 @@
 import realtimeSaga from "ra-realtime";
 import { fb } from "./DataProvider";
+import { RAFirebaseOptions } from "index";
 
-const observeRequest = (dataProvider, options) => (type, resource, params) => {
-  // If the paths are explicitly set in options
-  if (options && Array.isArray(options.watch) && !options.watch.includes(resource)) {
-    // Then don't observe it, if it's not set
-    return;
+const observeRequest = (dataProvider, options?: RAFirebaseOptions) => (type, resource, params) => {
+  const safeOptions = options || {};
+  if (Array.isArray(safeOptions.watch)) {
+    const mustWatchResource = safeOptions.watch.includes(resource);
+    if (!mustWatchResource) {
+      return;
+    }
   }
-  if (options && Array.isArray(options.dontwatch) && options.dontwatch.includes(resource)) {
-    // Then don't observe it, if it's not set
-    return;
+  if (Array.isArray(safeOptions.dontwatch)) {
+    const mustNotWatchResource = safeOptions.dontwatch.includes(resource);
+    if (mustNotWatchResource) {
+      return;
+    }
   }
 
   return {
