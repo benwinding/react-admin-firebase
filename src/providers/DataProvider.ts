@@ -25,7 +25,7 @@ export function DataProvider(config: {}, optionsInput?: RAFirebaseOptions) {
     EnableLogging();
   }
   const fireWrapper: IFirebaseWrapper = new FirebaseWrapper();
-  fireWrapper.init(config);
+  fireWrapper.init(config, optionsInput);
   fb = new FirebaseClient(fireWrapper, options);
   async function providerApi(type: string, resourceName: string, params: any): Promise<any> {
     log("FirebaseDataProvider: event", { type, resourceName, params });

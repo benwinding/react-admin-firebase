@@ -3,13 +3,14 @@ import { firestore } from "firebase";
 
 import * as firebaseApp from "firebase/app";
 import "firebase/firestore";
+import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
 
   constructor() { }
 
-  public init(firebaseConfig: {}): void {
+  public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
     if (!firebaseApp.apps.length) {
       const app = firebaseApp.initializeApp(firebaseConfig);
       this.firestore = app.firestore();

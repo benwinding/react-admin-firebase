@@ -8,15 +8,22 @@ import {
 } from "react-admin-firebase";
 
 import { firebaseConfig } from './FIREBASE_CONFIG';
-firebaseConfig["debug"] = true;
+
+import * as firebaseApp from "firebase/app";
+import "firebase/firestore";
+
+firebaseApp.initializeApp(firebaseConfig);
+const app = firebaseApp.app()
+
 const options = {
   logging: true,
-  rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP'
+  rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
+  app: app
 }
 
-const authProvider = FirebaseAuthProvider(firebaseConfig);
-const dataProvider = FirebaseDataProvider(firebaseConfig, options);
-const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
+const authProvider = FirebaseAuthProvider(null, options);
+const dataProvider = FirebaseDataProvider(null, options);
+// const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 
 class App extends React.Component {
   render() {
@@ -24,7 +31,7 @@ class App extends React.Component {
       <Admin
         dataProvider={dataProvider}
         authProvider={authProvider}
-        customSagas={[firebaseRealtime]}
+        // customSagas={[firebaseRealtime]}
       >
         <Resource
           name="posts"

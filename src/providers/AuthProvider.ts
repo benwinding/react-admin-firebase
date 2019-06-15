@@ -7,19 +7,30 @@ import { FirebaseAuth } from "@firebase/auth-types";
 
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
 import { log, EnableLogging } from "../misc/logger";
+import { RAFirebaseOptions } from "./RAFirebaseOptions";
 
 class AuthClient {
   private app: FirebaseApp;
   private auth: FirebaseAuth;
 
-  constructor(firebaseConfig: {}) {
-    log("Auth Client: initializing...");
+  constructor(firebaseConfig: {}, options: RAFirebaseOptions) {
+    log("Auth Client: initializing...", {firebaseConfig, options});
+    if (firebaseConfig) {
+      this.initFirebaseApp(firebaseConfig)
+    } else if (options.app) {
+      this.app = options.app;
+    } else {
+      throw new Error('No firebaseConfig or options.app found, cannot access firebase');
+    }
+    this.auth = this.app.auth();
+  }
+
+  private initFirebaseApp(firebaseConfig: {}) {
     if (!firebaseApp.apps.length) {
       this.app = firebaseApp.initializeApp(firebaseConfig);
     } else {
       this.app = firebaseApp.app();
     }
-    this.auth = firebaseApp.auth();
   }
 
   public async HandleAuthLogin(params) {
@@ -76,14 +87,16 @@ class AuthClient {
   }
 }
 
-export function AuthProvider(config: {}) {
-  if (!config) {
+export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
+  const hasNoApp = !options || !options.app;
+  const hasNoConfig = !firebaseConfig;
+  if (hasNoConfig && hasNoApp) {
     throw new Error(
-      "Please pass the Firebase config.json object to the FirebaseAuthProvider"
+      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
     );
   }
-  const auth = new AuthClient(config);
-  if (config["debug"]) {
+  const auth = new AuthClient(firebaseConfig, options);
+  if (firebaseConfig["debug"] || options.logging) {
     EnableLogging();
   }
 

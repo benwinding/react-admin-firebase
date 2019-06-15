@@ -1,4 +1,5 @@
 export interface RAFirebaseOptions {
   rootRef?: string;
+  app?: any;
   logging?: boolean;
 }

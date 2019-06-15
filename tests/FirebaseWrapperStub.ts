@@ -1,4 +1,5 @@
 import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWrapper";
+import { RAFirebaseOptions } from "../src/providers/RAFirebaseOptions";
 import { firestore } from "firebase";
 
 import * as firebaseApp from "firebase/app";
@@ -8,7 +9,7 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
 
   constructor() { }
-  public init(firebaseConfig: {}): void {
+  public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
     if (!firebaseApp.apps.length) {
       const app = firebaseApp.initializeApp(firebaseConfig);
       this.firestore = app.firestore();
