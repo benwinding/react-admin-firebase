@@ -33,8 +33,7 @@
   "scripts": {
     "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
-    "cp-dist": "watch cp -r ./dist/ ./src-demo/node_modules/react-admin-firebase/",
-    "start-demo": "cd src-demo && yarn clean-dependencies && yarn start",
+    "start-demo": "cd src-demo && yarn start",
     "test": "jest --watchAll"
   },
   "files": [

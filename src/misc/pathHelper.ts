@@ -1,4 +1,4 @@
-import * as path from 'path-browserify';
+import path from 'path-browserify'
 
 export function getAbsolutePath(rootRef: string, relativePath: string): string {
   if (!rootRef) {

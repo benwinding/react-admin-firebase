@@ -9,22 +9,15 @@ import {
 
 import { firebaseConfig } from './FIREBASE_CONFIG';
 
-import * as firebaseApp from "firebase/app";
-import "firebase/firestore";
-import "firebase/auth";
-
-firebaseApp.initializeApp(firebaseConfig);
-const app = firebaseApp.app()
-
 const options = {
   logging: true,
   rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
-  app: app
+  // app: firebaseAppInstance
 }
 
-const authProvider = FirebaseAuthProvider(null, options);
-const dataProvider = FirebaseDataProvider(null, options);
-// const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
+const authProvider = FirebaseAuthProvider(firebaseConfig, options);
+const dataProvider = FirebaseDataProvider(firebaseConfig, options);
+const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 
 class App extends React.Component {
   render() {
@@ -32,7 +25,7 @@ class App extends React.Component {
       <Admin
         dataProvider={dataProvider}
         authProvider={authProvider}
-        // customSagas={[firebaseRealtime]}
+        customSagas={[firebaseRealtime]}
       >
         <Resource
           name="posts"

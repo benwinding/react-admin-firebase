@@ -2,20 +2,21 @@ import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWr
 import { RAFirebaseOptions } from "../src/providers/RAFirebaseOptions";
 import { firestore } from "firebase";
 
-import * as firebaseApp from "firebase/app";
+import * as firebase from "firebase/app";
 import "firebase/firestore";
+import "firebase/auth";
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
 
   constructor() { }
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
-    if (!firebaseApp.apps.length) {
-      const app = firebaseApp.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+      const app = firebase.initializeApp(firebaseConfig);
       this.firestore = app.firestore();
     }
     else {
-      const app = firebaseApp.app();
+      const app = firebase.app();
       this.firestore = app.firestore();
     }
   }
@@ -23,7 +24,7 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
     return this.firestore;
   }
   public serverTimestamp() {
-    return firebaseApp.firestore.FieldValue.serverTimestamp();
+    return firebase.firestore.FieldValue.serverTimestamp();
   }
 }
 
