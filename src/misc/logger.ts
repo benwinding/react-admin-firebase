@@ -1,3 +1,5 @@
+import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
+
 // UTILS
 
 export function log(description: string, obj?: {}) {
@@ -15,6 +17,8 @@ export function logError(description: string, obj?: {}) {
 // tslint:disable-next-line: no-var-keyword
 var ISDEBUG = false;
 
-export function EnableLogging() {
-  ISDEBUG = true;
+export function CheckLogging(config: {}, options: RAFirebaseOptions) {
+  if ((config && config['debug']) || options.logging) {
+    ISDEBUG = true;
+  }
 }

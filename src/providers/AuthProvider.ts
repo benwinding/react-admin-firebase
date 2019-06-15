@@ -1,36 +1,19 @@
 // import * as firebase from "firebase";
-import * as firebaseApp from "firebase/app";
-import "firebase/auth";
-
-import { FirebaseApp } from "@firebase/app-types";
 import { FirebaseAuth } from "@firebase/auth-types";
 
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
-import { log, EnableLogging } from "../misc/logger";
+import { log, CheckLogging } from "../misc/logger";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
+import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
 class AuthClient {
-  private app: FirebaseApp;
   private auth: FirebaseAuth;
 
   constructor(firebaseConfig: {}, options: RAFirebaseOptions) {
     log("Auth Client: initializing...", {firebaseConfig, options});
-    if (firebaseConfig) {
-      this.initFirebaseApp(firebaseConfig)
-    } else if (options.app) {
-      this.app = options.app;
-    } else {
-      throw new Error('No firebaseConfig or options.app found, cannot access firebase');
-    }
-    this.auth = this.app.auth();
-  }
-
-  private initFirebaseApp(firebaseConfig: {}) {
-    if (!firebaseApp.apps.length) {
-      this.app = firebaseApp.initializeApp(firebaseConfig);
-    } else {
-      this.app = firebaseApp.app();
-    }
+    const fireWrapper = new FirebaseWrapper();
+    fireWrapper.init(firebaseConfig, options);
+    this.auth = fireWrapper.auth();
   }
 
   public async HandleAuthLogin(params) {
@@ -88,17 +71,9 @@ class AuthClient {
 }
 
 export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
-  const hasNoApp = !options || !options.app;
-  const hasNoConfig = !firebaseConfig;
-  if (hasNoConfig && hasNoApp) {
-    throw new Error(
-      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
-    );
-  }
+  VerifyAuthProviderArgs(firebaseConfig, options);
   const auth = new AuthClient(firebaseConfig, options);
-  if (firebaseConfig["debug"] || options.logging) {
-    EnableLogging();
-  }
+  CheckLogging(firebaseConfig, options);
 
   return async (type: string, params: {}) => {
     log("Auth Event: ", { type, params });
@@ -119,4 +94,14 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
       }
     }
   };
+}
+
+function VerifyAuthProviderArgs(firebaseConfig: {}, options: RAFirebaseOptions) {
+  const hasNoApp = !options || !options.app;
+  const hasNoConfig = !firebaseConfig;
+  if (hasNoConfig && hasNoApp) {
+    throw new Error(
+      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
+    );
+  }
 }

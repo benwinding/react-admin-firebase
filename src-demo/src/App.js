@@ -11,6 +11,7 @@ import { firebaseConfig } from './FIREBASE_CONFIG';
 
 import * as firebaseApp from "firebase/app";
 import "firebase/firestore";
+import "firebase/auth";
 
 firebaseApp.initializeApp(firebaseConfig);
 const app = firebaseApp.app()

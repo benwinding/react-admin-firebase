@@ -1,28 +1,43 @@
 import { IFirebaseWrapper } from "./IFirebaseWrapper";
 import { firestore } from "firebase";
 
-import * as firebaseApp from "firebase/app";
-import "firebase/firestore";
 import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
+
+import firebase from '@firebase/app';
+import "firebase/firestore";
+import "firebase/auth";
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
+  private app;
 
   constructor() { }
 
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
-    if (!firebaseApp.apps.length) {
-      const app = firebaseApp.initializeApp(firebaseConfig);
-      this.firestore = app.firestore();
-    } else {
-      const app = firebaseApp.app();
-      this.firestore = app.firestore();
-    }
+    this.app = ObtainFirebaseApp(firebaseConfig, options) as any;
+    this.firestore = this.app.firestore();
   }
   public db(): firestore.Firestore {
     return this.firestore;
   }
   public serverTimestamp() {
-    return firebaseApp.firestore.FieldValue.serverTimestamp();
+    return firestore.FieldValue.serverTimestamp();
+  }
+  public auth() {
+    return this.app.auth();
+  }
+}
+
+function ObtainFirebaseApp(firebaseConfig: {}, options: RAFirebaseOptions) {
+  if (options.app) {
+    return options.app;
+  }
+  const isInitialized = !!firebase.apps.length;
+  if (isInitialized) {
+    const app = firebase.app();
+    return app;
+  } else {
+    const app = firebase.initializeApp(firebaseConfig);
+    return app;
   }
 }

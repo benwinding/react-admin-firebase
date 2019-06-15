@@ -9,23 +9,22 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { log, EnableLogging } from "../misc/logger";
+import { log, CheckLogging } from "../misc/logger";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
-import { IFirebaseWrapper } from "./database/firebase/IFirebaseWrapper";
 import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import { getAbsolutePath } from "misc/pathHelper";
 
 export let fb: FirebaseClient;
 
-export function DataProvider(config: {}, optionsInput?: RAFirebaseOptions) {
+export function DataProvider(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
   const options = optionsInput || {};
-  VerifyInputs(config, options);
-  console.log("react-admin-firebase:: Creating FirebaseDataProvider", { config, options });
-  if (config["debug"] || options.logging) {
-    EnableLogging();
-  }
-  const fireWrapper: IFirebaseWrapper = new FirebaseWrapper();
-  fireWrapper.init(config, optionsInput);
+  VerifyDataProviderArgs(firebaseConfig, options);
+  CheckLogging(firebaseConfig, options);
+
+  log("react-admin-firebase:: Creating FirebaseDataProvider", { firebaseConfig, options });
+  const fireWrapper = new FirebaseWrapper();
+  fireWrapper.init(firebaseConfig, optionsInput);
   fb = new FirebaseClient(fireWrapper, options);
   async function providerApi(type: string, resourceName: string, params: any): Promise<any> {
     log("FirebaseDataProvider: event", { type, resourceName, params });
@@ -55,11 +54,16 @@ export function DataProvider(config: {}, optionsInput?: RAFirebaseOptions) {
   return providerApi;
 }
 
-function VerifyInputs(config: {}, options?: RAFirebaseOptions) {
-  if (!config) {
-    throw new Error("Please pass the Firebase config.json object to the FirebaseDataProvider");
+function VerifyDataProviderArgs(firebaseConfig: {}, options?: RAFirebaseOptions) {
+  const hasNoApp = !options || !options.app;
+  const hasNoConfig = !firebaseConfig;
+  if (hasNoConfig && hasNoApp) {
+    throw new Error(
+      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
+    );
   }
   if (options.rootRef) {
-    
+    // Will throw error if rootRef doesn't point to a document
+    getAbsolutePath(options.rootRef, 'test');
   }
 }
