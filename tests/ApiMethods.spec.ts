@@ -5,7 +5,7 @@ import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWr
 
 import { config } from './TEST.config';
 const fire: IFirebaseWrapper = new FirebaseWrapperStub();
-fire.init(config);
+fire.init(config, {});
 const db = fire.db();
 
 test('t1 client create doc', async () => {

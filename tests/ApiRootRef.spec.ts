@@ -6,7 +6,7 @@ import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWr
 import { config } from './TEST.config';
 import { ResourceManager } from "../src/providers/database/ResourceManager";
 const fire: IFirebaseWrapper = new FirebaseWrapperStub();
-fire.init(config);
+fire.init(config, {});
 const db = fire.db();
 
 test('rootref1', async () => {
