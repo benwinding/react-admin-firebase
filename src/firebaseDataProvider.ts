@@ -239,13 +239,6 @@ export default function FirebaseProvider(config: {}) {
     params: any
   ): Promise<any> {
     switch (type) {
-
-
-
-
-
-
-
       case GET_MANY:
         return fb.apiGetMany(resourceName, params);
       case GET_MANY_REFERENCE:
@@ -254,12 +247,6 @@ export default function FirebaseProvider(config: {}) {
         return fb.apiGetList(resourceName, params);
       case GET_ONE:
         return fb.apiGetOne(resourceName, params);
-
-
-
-
-
-
       case CREATE:
         return fb.apiCreate(resourceName, params);
       case UPDATE:
