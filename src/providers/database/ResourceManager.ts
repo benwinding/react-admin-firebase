@@ -15,7 +15,7 @@ export interface IResource {
   pathAbsolute: string;
   collection: CollectionReference;
   observable: Observable<{}>;
-  list: Array<{}>;
+  cached: Array<{}>;
 }
 
 export class ResourceManager {
@@ -49,6 +49,17 @@ export class ResourceManager {
     return resource;
   }
 
+  public async TryGetResourcePromiseFiltered(relativePath: string, filter: {}): Promise<IResource> {
+    await this.initPath(relativePath);
+    const resource: IResource = this.resources[relativePath];
+    if (!resource) {
+      throw new Error(
+        `react-admin-firebase: Cant find resource: "${relativePath}"`
+      );
+    }
+    return resource;
+  }
+
   private async initPath(relativePath: string): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
     log("resourceManager.initPath:::", { absolutePath });
@@ -62,7 +73,7 @@ export class ResourceManager {
       const list: Array<{}> = [];
       const resource: IResource = {
         collection: collection,
-        list: list,
+        cached: list,
         observable: observable,
         path: relativePath,
         pathAbsolute: absolutePath
@@ -75,7 +86,7 @@ export class ResourceManager {
             (doc: QueryDocumentSnapshot) =>
               this.parseFireStoreDocument(doc)
           );
-          resource.list = newList;
+          resource.cached = newList;
           // The data has been set, so resolve the promise
           resolve();
         }

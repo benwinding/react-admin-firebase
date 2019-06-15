@@ -21,20 +21,13 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
     const r = await this.tryGetResource(resourceName);
-    const data = r.list;
-    if (params.sort != null) {
-      const { field, order } = params.sort;
-      if (order === "ASC") {
-        sortArray(data, field, "asc");
-      } else {
-        sortArray(data, field, "desc");
-      }
-    }
+    const data = r.cached;
+    sortArray(data, params.sort);
     const filteredData = filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
-    const total = r.list.length;
+    const total = r.cached.length;
     return {
       data: dataPage,
       total
@@ -43,7 +36,7 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiGetOne(resourceName: string, params: messageTypes.IParamsGetOne): Promise<messageTypes.IResponseGetOne> {
     const r = await this.tryGetResource(resourceName);
     log("apiGetOne", { resourceName, resource: r, params });
-    const data = r.list.filter((val: {
+    const data = r.cached.filter((val: {
       id: string;
     }) => val.id === params.id);
     if (data.length < 1) {
@@ -71,8 +64,8 @@ export class FirebaseClient implements IFirebaseClient {
           id: newDocId
         }
       };
-    } 
-    
+    }
+
     const doc = await r.collection.add({
       ...params.data,
       createdate: this.fireWrapper.serverTimestamp(),
@@ -127,7 +120,7 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiDelete(resourceName: string, params: messageTypes.IParamsDelete): Promise<messageTypes.IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
-    r.list = r.list.filter((doc) => doc["id"] !== params.id);
+    r.cached = r.cached.filter((doc) => doc["id"] !== params.id);
     r.collection.doc(params.id).delete().catch((error) => {
       logError("apiDelete error", { error });
     });
@@ -153,7 +146,7 @@ export class FirebaseClient implements IFirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = new Set(params.ids);
-    const matches = r.list.filter((item) => ids.has(item["id"]));
+    const matches = r.cached.filter((item) => ids.has(item["id"]));
     return {
       data: matches
     };
@@ -164,19 +157,11 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<messageTypes.IResponseGetManyReference> {
     const r = await this.tryGetResource(resourceName);
     log("apiGetManyReference", { resourceName, resource: r, params });
-    const data = r.list;
+    const data = r.cached;
     const targetField = params.target;
     const targetValue = params.id;
     const matches = data.filter((val) => val[targetField] === targetValue);
-    if (params.sort != null) {
-      const { field, order } = params.sort;
-      if (order === "ASC") {
-        sortArray(data, field, "asc");
-      }
-      else {
-        sortArray(data, field, "desc");
-      }
-    }
+    sortArray(data, params.sort);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = matches.slice(pageStart, pageEnd);
@@ -186,7 +171,11 @@ export class FirebaseClient implements IFirebaseClient {
   public GetResource(resourceName: string): IResource {
     return this.rm.GetResource(resourceName);
   }
-  private tryGetResource(resourceName: string): Promise<IResource> {
-    return this.rm.TryGetResourcePromise(resourceName);
+  private tryGetResource(resourceName: string, filter?: {}): Promise<IResource> {
+    if (filter) {
+      return this.rm.TryGetResourcePromise(resourceName);
+    } else {
+      return this.rm.TryGetResourcePromise(resourceName);
+    }
   }
 }

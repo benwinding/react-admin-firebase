@@ -5,15 +5,24 @@ function isEmptyObj(obj) {
   return JSON.stringify(obj) === "{}";
 }
 
-export function sortArray(data: Array<{}>, field: string, dir: "asc" | "desc"): void {
+export function sortArray(
+  data: Array<{}>, 
+  sort?: { field: string, order: 'ASC' | 'DESC' }
+): void {
+  if (isEmptyObj(sort)) {
+    return;
+  }
+
+  const { field, order } = sort;
+
   data.sort((a: {}, b: {}) => {
     const aValue = a[field] ? a[field].toString().toLowerCase() : "";
     const bValue = b[field] ? b[field].toString().toLowerCase() : "";
     if (aValue > bValue) {
-      return dir === "asc" ? -1 : 1;
+      return order === "ASC" ? -1 : 1;
     }
     if (aValue < bValue) {
-      return dir === "asc" ? 1 : -1;
+      return order === "ASC" ? 1 : -1;
     }
     return 0;
   });

@@ -9,6 +9,7 @@ import {
 } from "react-admin-firebase";
 
 import { firebaseConfig } from './FIREBASE_CONFIG';
+import PeopleIcon from '@material-ui/icons/People';
 
 const options = {
   logging: true,
@@ -43,6 +44,7 @@ class App extends React.Component {
           show={UserShow}
           create={UserCreate}
           edit={UserEdit}
+          icon={PeopleIcon}
         />
       </Admin>
     );

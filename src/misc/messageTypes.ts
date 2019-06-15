@@ -7,7 +7,7 @@ export namespace messageTypes {
     };
     sort?: {
       field: string;
-      order: string;
+      order: 'ASC' | 'DESC';
     };
     filter?: {};
   }
@@ -57,7 +57,7 @@ export namespace messageTypes {
     };
     sort: {
       field: string;
-      order: string;
+      order: 'ASC' | 'DESC';
     };
     filter: {};
   }
