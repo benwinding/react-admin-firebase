@@ -20,7 +20,7 @@ const observeRequest = (dataProvider, options?: RAFirebaseOptions) => (type, res
   return {
     subscribe(observer) {
       const resourceObj = fb.GetResource(resource);
-      const sub = resourceObj.observable.subscribe(() => {
+      const sub = resourceObj.activeObservable.subscribe(() => {
         dataProvider(type, resource, params)
           .then((results) => observer.next(results)) // New data received, notify the observer
           .catch((error) => observer.error(error)); // Ouch, an error occured, notify the observer

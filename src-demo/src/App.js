@@ -14,6 +14,7 @@ import PeopleIcon from '@material-ui/icons/People';
 const options = {
   logging: true,
   rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
+  serverSide: true,
   // app: firebaseAppInstance
   // watch: ['posts'];
   // dontwatch: ['comments'];

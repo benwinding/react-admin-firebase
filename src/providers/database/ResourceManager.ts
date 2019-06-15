@@ -5,7 +5,7 @@ import {
   QuerySnapshot,
   FirebaseFirestore
 } from "@firebase/firestore-types";
-import { Observable } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { RAFirebaseOptions } from "index";
 import { log } from "../../misc/logger";
 import { getAbsolutePath } from "../../misc/pathHelper";
@@ -14,8 +14,20 @@ export interface IResource {
   path: string;
   pathAbsolute: string;
   collection: CollectionReference;
-  observable: Observable<{}>;
+  activeObservable: Observable<{}>;
+  activeSubscription?: Subscription;
   cached: Array<{}>;
+  cachedFrom?: {
+    pagination: {
+      page: number;
+      perPage: number;
+    };
+    sort: {
+      field: string;
+      order: 'ASC' | 'DESC';
+    };
+    filter: {};
+  }
 }
 
 export class ResourceManager {
@@ -49,17 +61,6 @@ export class ResourceManager {
     return resource;
   }
 
-  public async TryGetResourcePromiseFiltered(relativePath: string, filter: {}): Promise<IResource> {
-    await this.initPath(relativePath);
-    const resource: IResource = this.resources[relativePath];
-    if (!resource) {
-      throw new Error(
-        `react-admin-firebase: Cant find resource: "${relativePath}"`
-      );
-    }
-    return resource;
-  }
-
   private async initPath(relativePath: string): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
     log("resourceManager.initPath:::", { absolutePath });
@@ -70,32 +71,29 @@ export class ResourceManager {
       }
       const collection = this.db.collection(absolutePath);
       const observable = this.getCollectionObservable(collection);
-      const list: Array<{}> = [];
       const resource: IResource = {
         collection: collection,
-        cached: list,
-        observable: observable,
+        cached: [],
+        activeObservable: observable,
         path: relativePath,
-        pathAbsolute: absolutePath
+        pathAbsolute: absolutePath,
       };
       this.resources[relativePath] = resource;
-
-      observable.subscribe(
-        async (querySnapshot: QuerySnapshot) => {
-          const newList = querySnapshot.docs.map(
-            (doc: QueryDocumentSnapshot) =>
-              this.parseFireStoreDocument(doc)
-          );
-          resource.cached = newList;
-          // The data has been set, so resolve the promise
-          resolve();
-        }
-      );
+      const observer = async (querySnapshot: QuerySnapshot) => {
+        const newList = querySnapshot.docs.map(
+          (doc: QueryDocumentSnapshot) =>
+            this.parseFireStoreDocument(doc)
+        );
+        resource.cached = newList;
+        // The data has been set, so resolve the promise
+        resolve();
+      };
+      resource.activeSubscription = observable.subscribe(observer);
       // log("initPath", { absolutePath, r, "this.resources": this.resources });
     });
   }
 
-  private parseFireStoreDocument(
+  public parseFireStoreDocument(
     doc: QueryDocumentSnapshot
   ): {} {
     const data = doc.data();
@@ -110,7 +108,7 @@ export class ResourceManager {
     return { id: doc.id, ...data };
   }
 
-  private getCollectionObservable(
+  public getCollectionObservable(
     collection: CollectionReference
   ): Observable<QuerySnapshot> {
     const observable: Observable<

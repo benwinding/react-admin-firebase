@@ -1,4 +1,4 @@
-import { FirebaseFirestore } from "@firebase/firestore-types";
+import { FirebaseFirestore, QuerySnapshot, QueryDocumentSnapshot } from "@firebase/firestore-types";
 import { ResourceManager, IResource } from "./ResourceManager";
 import { RAFirebaseOptions } from "index";
 import { log, logError } from "../../misc/logger";
@@ -6,6 +6,23 @@ import { sortArray, filterArray } from "../../misc/arrayHelpers";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
 import { messageTypes } from '../../misc/messageTypes'
+import { resolve } from "dns";
+
+function isAlreadyCached(r: IResource, params: messageTypes.IParamsGetList): boolean {
+  if (!r.cachedFrom) {
+    return false;
+  }
+  const cachedFrom = r.cachedFrom;
+  const requiredFrom = {
+    filter: params.filter,
+    sort: params.sort,
+    pagination: params.pagination
+  }
+  const currentCachedFrom = JSON.stringify(cachedFrom);
+  const requiredCachedFrom = JSON.stringify(requiredFrom);
+  log('checking cache:', {currentCachedFrom, requiredCachedFrom});
+  return currentCachedFrom === requiredCachedFrom;
+}
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -21,16 +38,42 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
     const r = await this.tryGetResource(resourceName);
-    const data = r.cached;
-    sortArray(data, params.sort);
-    const filteredData = filterArray(data, params.filter);
-    const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
-    const pageEnd = pageStart + params.pagination.perPage;
-    const dataPage = filteredData.slice(pageStart, pageEnd);
-    const total = r.cached.length;
+    let dataPage: {}[];
+    if (this.options.serverSide) {
+      const alreadyCached = isAlreadyCached(r, params);
+      if (alreadyCached) {
+        dataPage = r.cached;
+      } else {
+        if (r.activeSubscription) {
+          r.activeSubscription.unsubscribe();
+        }
+        const collection = r.collection
+        const observable = this.rm.getCollectionObservable(collection);
+        dataPage = await new Promise((resolve, reject) => {
+          const observer = async (querySnapshot: QuerySnapshot) => {
+            const newList = querySnapshot.docs.map(
+              (doc: QueryDocumentSnapshot) =>
+                this.rm.parseFireStoreDocument(doc)
+            );
+            r.cached = newList;
+            // The data has been set, so resolve the promise
+            resolve(newList);
+          };
+          r.activeSubscription = observable.subscribe(observer);
+        })
+      }
+    } else {
+      const data = r.cached;
+      sortArray(data, params.sort);
+      const filteredData = filterArray(data, params.filter);
+      const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
+      const pageEnd = pageStart + params.pagination.perPage;
+      dataPage = filteredData.slice(pageStart, pageEnd);
+    }
+    const total = dataPage.length;
     return {
       data: dataPage,
-      total
+      total: total
     };
   }
   public async apiGetOne(resourceName: string, params: messageTypes.IParamsGetOne): Promise<messageTypes.IResponseGetOne> {
