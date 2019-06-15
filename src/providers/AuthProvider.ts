@@ -63,6 +63,7 @@ class AuthClient {
     try {
       const user = await this.getUserLogin();
       log("HandleGetCurrent: current user", { user });
+      return user;
     } catch (e) {
       log("HandleGetCurrent: no user is logged in", { e });
       return null;
@@ -80,15 +81,15 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
     {
       switch (type) {
         case AUTH_LOGIN:
-          await auth.HandleAuthLogin(params);
+          return auth.HandleAuthLogin(params);
         case AUTH_LOGOUT:
-          await auth.HandleAuthLogout(params);
+          return auth.HandleAuthLogout(params);
         case AUTH_ERROR:
-          await auth.HandleAuthError(params);
+          return auth.HandleAuthError(params);
         case AUTH_CHECK:
-          await auth.HandleAuthCheck(params);
+          return auth.HandleAuthCheck(params);
         case "AUTH_GETCURRENT":
-          await auth.HandleGetCurrent();
+          return auth.HandleGetCurrent();
         default:
           throw new Error("Unhandled auth type:" + type);
       }
