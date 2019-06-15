@@ -51,6 +51,7 @@ export const UserShow = (props) => (
 export const UserCreate = (props) => (
   <Create {...props} >
     <SimpleForm>
+      <TextInput source="id" />
       <TextInput source="name" />
       <TextInput source="age" />
     </SimpleForm>

@@ -25,6 +25,7 @@ _Pull requests welcome!!_
     - Optional watch collection array or dontwatch collection array
 - [x] Ability to manage sub collections through app configuration
 - [x] Ability to use externally initialized firebaseApp instance
+- [x] Override firestore random id by using "id" as a field in the Create part of the resource
 
 ## Get Started
 `yarn add react-admin-firebase` 

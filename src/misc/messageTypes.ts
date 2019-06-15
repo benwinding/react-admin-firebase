@@ -17,7 +17,9 @@ export namespace messageTypes {
   }
 
   export interface IParamsCreate {
-    data: {};
+    data: {
+      id?: string
+    };
   }
 
   export interface IParamsUpdate {

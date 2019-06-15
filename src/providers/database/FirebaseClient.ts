@@ -54,6 +54,25 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiCreate(resourceName: string, params: messageTypes.IParamsCreate): Promise<messageTypes.IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
+    const hasOverridenDocId = params.data && params.data.id;
+    if (hasOverridenDocId) {
+      const newDocId = params.data.id;
+      if (!newDocId) {
+        throw new Error('id must be a valid string');
+      }
+      await r.collection.doc(newDocId).set({
+        ...params.data,
+        createdate: this.fireWrapper.serverTimestamp(),
+        lastupdate: this.fireWrapper.serverTimestamp()
+      }, { merge: true });
+      return {
+        data: {
+          ...params.data,
+          id: newDocId
+        }
+      };
+    } 
+    
     const doc = await r.collection.add({
       ...params.data,
       createdate: this.fireWrapper.serverTimestamp(),
@@ -80,7 +99,7 @@ export class FirebaseClient implements IFirebaseClient {
     return {
       data: {
         ...params.data,
-        id
+        id: id
       }
     };
   }
@@ -98,7 +117,7 @@ export class FirebaseClient implements IFirebaseClient {
       });
       return {
         ...params.data,
-        id
+        id: id
       };
     });
     return {
