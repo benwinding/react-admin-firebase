@@ -24,6 +24,7 @@ _Pull requests welcome!!_
     - Implicitly watches all GET_LIST routes using observables with the firebase sdk
     - Optional watch collection array or dontwatch collection array
 - [x] Ability to manage sub collections through app configuration
+- [x] Ability to use externally initialized firebaseApp instance
 
 ## Get Started
 `yarn add react-admin-firebase` 
@@ -42,14 +43,14 @@ A simple example based on the [React Admin Tutorial](https://marmelab.com/react-
 - Create a `posts` collection in the firebase firestore database
 - Get config credentials using the dashboard
 
-## Data Provider
+## Options
 
 ``` javascript
-import * as React from 'react';
-import { Admin, Resource } from 'react-admin';
-
-import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
-import { FirebaseDataProvider } from 'react-admin-firebase';
+import {
+  FirebaseAuthProvider,
+  FirebaseDataProvider,
+  FirebaseRealTimeSaga
+} from 'react-admin-firebase';
 
 const config = {
   apiKey: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -60,55 +61,70 @@ const config = {
   messagingSenderId: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
 };
 
-// Options are optional
+// All options are optional
 const options = {
-  // All collections and documents can be relative to the new root ref, rather than the firestore root
-  rootRef: 'root-collection/document'
+  // Use a different root document to set your resource collections, by default it uses the root collections of firestore
+  rootRef: 'root-collection/some-doc';
+  // Your own, previously initialized firebase app instance
+  app: firebaseAppInstance;
+  // Enable logging of react-admin-firebase
+  logging: true;
+  // Resources to watch for realtime updates, will implicitly watch all resources by default, if not set.
+  watch: ['posts'];
+  // Resources you explicitly dont want realtime updates for
+  dontwatch: ['comments'];
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
+const authProvider = FirebaseAuthProvider(config, options);
+const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
+```
 
-class App extends React.Component {
-  public render() {
-    return (
+## Data Provider
+
+``` javascript
+import * as React from 'react';
+import { Admin, Resource } from 'react-admin';
+
+import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
+import {
+  FirebaseAuthProvider,
+  FirebaseDataProvider,
+  FirebaseRealTimeSaga
+} from 'react-admin-firebase';
+
+const config = {
+  apiKey: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  authDomain: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  databaseURL: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  projectId: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  storageBucket: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  messagingSenderId: "aaaaaaaaaaaaaaaaaaaaaaaaaaa",
+};
+
+const options = {};
+
+const dataProvider = FirebaseDataProvider(config, options);
+...
       <Admin 
         dataProvider={dataProvider} 
       >
         <Resource name="posts" list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
       </Admin>
-    );
-  }
-}
-
-export default App;
+...
 ```
 ## Auth Provider
 Using the `FirebaseAuthProvider` you can allow authentication in the application.
 
 ``` javascript
-...
-import {
-  FirebaseAuthProvider,
-  FirebaseDataProvider
-} from 'react-admin-firebase';
-...
 const dataProvider = FirebaseDataProvider(config);
 const authProvider = FirebaseAuthProvider(config);
-
-class App extends React.Component {
-  public render() {
-    return (
+...
       <Admin 
         dataProvider={dataProvider}
         authProvider={authProvider}
       >
-        <Resource name="posts" list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
-      </Admin>
-    );
-  }
-}
-
-export default App;
+...
 ```
 #### Note
 To get the currently logged in user run `const user = await authProvider('AUTH_GETCURRENT')`, this will return the firebase user object, or null if there is no currently logged in user.
@@ -125,21 +141,12 @@ import {
 ...
 const dataProvider = FirebaseDataProvider(config);
 const firebaseRealtime = FirebaseRealTimeSaga(dataProvider);
-
-class App extends React.Component {
-  public render() {
-    return (
+...
       <Admin 
         dataProvider={dataProvider} 
         customSagas={[firebaseRealtime]}
       >
-        <Resource name="posts" list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/>
-      </Admin>
-    );
-  }
-}
-
-export default App;
+...
 ```
 
 ### Realtime Options
@@ -156,7 +163,7 @@ const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 ...
 ```
 
-### Develop `react-admin-firebase` Locally!
+# Help Develop `react-admin-firebase`?
 
 1. `git clone https://github.com/benwinding/react-admin-firebase`
 2. `yarn && yarn watch`
