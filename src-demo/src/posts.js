@@ -17,7 +17,9 @@ import {
   EditButton,
   DeleteButton,
   RichTextField,
-  SelectInput
+  ReferenceField,
+  SelectInput,
+  ReferenceInput
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
@@ -32,11 +34,12 @@ export const PostList = (props) => (
     <Datagrid>
       <TextField source="title" />
       <RichTextField source="body" />
-      <TextField source="createdate" />
-      <TextField source="lastupdate" />
+      <ReferenceField label="User" source="user_id" reference="users">
+        <TextField source="name" />
+      </ReferenceField>
       <ShowButton label="" />
       <EditButton label="" />
-      <DeleteButton label="" redirect={false}/>
+      <DeleteButton label="" redirect={false} />
     </Datagrid>
   </List>
 );
@@ -45,10 +48,13 @@ export const PostShow = (props) => (
   <Show {...props}>
     <SimpleShowLayout>
       <TextField source="id" />
-      <TextField source="title" />
       <TextField source="createdate" />
       <TextField source="lastupdate" />
+      <TextField source="title" />
       <RichTextField source="body" />
+      <ReferenceField label="User" source="user_id" reference="users">
+        <TextField source="name" />
+      </ReferenceField>
     </SimpleShowLayout>
   </Show>
 );
@@ -58,6 +64,14 @@ export const PostCreate = (props) => (
     <SimpleForm>
       <TextInput source="title" />
       <RichTextInput source="body" />
+      <ReferenceInput
+        label="User"
+        source="user_id"
+        reference="users"
+        filter={{ isAdmin: true }}
+      >
+        <SelectInput label="User" optionText="name" />
+      </ReferenceInput>
     </SimpleForm>
   </Create>
 );
@@ -70,11 +84,14 @@ export const PostEdit = (props) => (
       <DisabledInput source="lastupdate" />
       <TextInput source="title" />
       <RichTextInput source="body" />
-      <SelectInput source="rating" choices={[
-        { id: 1, name: 'Good' },
-        { id: 2, name: 'Okay' },
-        { id: 3, name: 'Bad' },
-      ]} />
+      <ReferenceInput
+        label="User"
+        source="user_id"
+        reference="users"
+        filter={{ isAdmin: true }}
+      >
+        <SelectInput label="User" optionText="name" />
+      </ReferenceInput>
     </SimpleForm>
   </Edit>
 );

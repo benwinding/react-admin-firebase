@@ -1,5 +1,6 @@
 import * as React from "react";
 import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
+import { UserList, UserShow, UserCreate, UserEdit } from "./users";
 import { Admin, Resource } from "react-admin";
 import {
   FirebaseRealTimeSaga,
@@ -35,6 +36,13 @@ class App extends React.Component {
           show={PostShow}
           create={PostCreate}
           edit={PostEdit}
+        />
+        <Resource
+          name="users"
+          list={UserList}
+          show={UserShow}
+          create={UserCreate}
+          edit={UserEdit}
         />
       </Admin>
     );

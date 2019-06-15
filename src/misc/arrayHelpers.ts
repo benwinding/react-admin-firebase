@@ -29,7 +29,11 @@ export function filterArray(
   const fieldNames = Object.keys(filterFields);
   return data.filter((item) =>
     fieldNames.reduce((previousMatched, fieldName) => {
-      const fieldSearchText = filterFields[fieldName].toLowerCase();
+      let fieldVal = filterFields[fieldName];
+      if (fieldVal == null || fieldVal == undefined) {
+        fieldVal = '';
+      }
+      const fieldSearchText = fieldVal.toString().toLowerCase();
       const dataFieldValue = item[fieldName];
       if (dataFieldValue == null) {
         return false;
