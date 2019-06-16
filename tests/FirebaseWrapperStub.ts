@@ -26,5 +26,8 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   public serverTimestamp() {
     return firebase.firestore.FieldValue.serverTimestamp();
   }
+  public storage() {
+    return null;
+  }
 }
 

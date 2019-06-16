@@ -6,6 +6,7 @@ import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import "firebase/storage";
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
@@ -25,6 +26,9 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   }
   public auth() {
     return this.app.auth();
+  }
+  public storage() {
+    return this.app.storage();
   }
 }
 

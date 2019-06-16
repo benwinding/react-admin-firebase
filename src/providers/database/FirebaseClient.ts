@@ -90,6 +90,11 @@ export class FirebaseClient implements IFirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
+    let data = params.data;
+    if (this.options.uploadToStorage) {
+      const docPath = r.collection.doc(id).path;
+      data = this.parseDataAndUpload(docPath, data);
+    }
     r.collection.doc(id).update({
       ...params.data,
       lastupdate: this.fireWrapper.serverTimestamp()
@@ -188,5 +193,22 @@ export class FirebaseClient implements IFirebaseClient {
   }
   private tryGetResource(resourceName: string): Promise<IResource> {
     return this.rm.TryGetResourcePromise(resourceName);
+  }
+  private parseDataAndUpload(docPath: string, data: any) {
+    if (!data) {
+      return data;
+    }
+    Object.keys(data).map(k => {
+      const val = data[k];
+      const hasRawFile = !!val && val.hasOwnProperty('rawFile');
+      if (!hasRawFile) {
+        return;
+      }
+      this.fireWrapper.storage().ref(docPath).put(val.rawFile);
+      delete data[k].rawFile;
+      // const hasRawFileArray = !!val && Array.isArray(val) && !!val.length && val[0].hasOwnProperty('rawFile');
+      return hasRawFile;
+    })
+    return data;
   }
 }

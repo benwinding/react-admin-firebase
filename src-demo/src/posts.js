@@ -19,7 +19,11 @@ import {
   RichTextField,
   ReferenceField,
   SelectInput,
-  ReferenceInput
+  ReferenceInput,
+  FileInput,
+  FileField,
+  ArrayInput,
+  SimpleFormIterator
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
@@ -68,7 +72,7 @@ export const PostCreate = (props) => (
         label="User"
         source="user_id"
         reference="users"
-        filter={{ isAdmin: true }}
+        // filter={{ isAdmin: true }}
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
@@ -88,10 +92,20 @@ export const PostEdit = (props) => (
         label="User"
         source="user_id"
         reference="users"
-        filter={{ isAdmin: true }}
+        // filter={{ isAdmin: true }}
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
+      <FileInput source="file" label="File" accept="application/pdf">
+        <FileField source="src" title="title" />
+      </FileInput>
+      <ArrayInput source="files" label="Related files">
+        <SimpleFormIterator>
+          <FileInput source="file" label="File" accept="image/*">
+            <FileField source="src" title="title" />
+          </FileInput>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Edit>
 );
