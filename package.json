@@ -1,7 +1,7 @@
 {
   "name": "ra-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "dependencies": {
     "firebase": "^5.x",
     "ra-realtime": "^2.x",
@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@firebase/app-types": "^0.3.9",
-    "@firebase/firestore-types": "^1.2.0",    
-    "@firebase/auth-types": "^0.6.0",    
+    "@firebase/firestore-types": "^1.2.0",
+    "@firebase/auth-types": "^0.6.0",
     "@firebase/util": "^0.2.11",
     "@types/firebase": "^3.2.1",
     "@types/node": "^10.9.4",
