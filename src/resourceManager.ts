@@ -28,7 +28,6 @@ export class ResourceManager {
   }
 
   private makeQuery(path: string, collection: CollectionReference) {
-    console.log({path});
     if (!this.config.query) {
       return collection;
     }
@@ -74,24 +73,6 @@ export class ResourceManager {
       this.resources[path] = r;
       log("initPath", { path, r, "this.resources": this.resources });
     });
-  }
-
-  public somethingThatChangesListBecauseReasons(path: string) {
-    if (!this.resources[path]) {
-      return;
-    }
-
-    this.resources[path].subscription.unsubscribe();
-
-    delete this.resources[path];
-    /**
-     * 1. Unsubscribe
-     * 2. Get new query
-     * 3. Make new observable.
-     * 4. Clear list, update list.
-     */
-
-    // return null;
   }
 
   public GetResource(resourceName: string): IResource {
