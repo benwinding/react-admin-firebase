@@ -1,5 +1,6 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
-
+.rts2_cache_*
+.idea
 # dependencies
 /node_modules
 node_modules
