@@ -86,15 +86,23 @@ class FirebaseClient {
 
   public async apiCreate(
     resourceName: string,
-    params: IParamsCreate
+    params: IParamsCreate & { data: { id?: string } }
   ): Promise<IResponseCreate> {
+    const { id } = params.data;
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
-    const doc = await r.collection.add({
+    const docData = {
       ...params.data,
       createdate: firebaseApp.firestore.FieldValue.serverTimestamp(),
       lastupdate: firebaseApp.firestore.FieldValue.serverTimestamp()
-    });
+    };
+
+    const doc = id ? r.collection.doc(id) : await r.collection.add(docData);
+
+    if (id) {
+      await doc.set(docData);
+    }
+
     return {
       data: {
         ...params.data,
