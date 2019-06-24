@@ -273,10 +273,10 @@ class FirebaseClient {
       const aValue = a[field] ? a[field].toString().toLowerCase() : "";
       const bValue = b[field] ? b[field].toString().toLowerCase() : "";
       if (aValue > bValue) {
-        return dir === "asc" ? -1 : 1;
+        return dir === "asc" ? 1 : -1;
       }
       if (aValue < bValue) {
-        return dir === "asc" ? 1 : -1;
+        return dir === "asc" ? -1 : 1;
       }
       return 0;
     });
