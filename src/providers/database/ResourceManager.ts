@@ -74,9 +74,9 @@ export class ResourceManager {
   private async initPath(relativePath: string): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
     log('resourceManager.initPath:::', { absolutePath });
-    const isLoggedIn = await this.getUserLogin();
+    const isAccessible = await this.isCollectionAccessible(absolutePath);
     const hasBeenInited = this.resources[relativePath];
-    if (!isLoggedIn) {
+    if (!isAccessible) {
       if (hasBeenInited) {
         this.removeResource(relativePath);
       }
@@ -112,13 +112,18 @@ export class ResourceManager {
   public async getUserLogin(): Promise<User> {
     return new Promise((resolve, reject) => {
       this.fireWrapper.auth().onAuthStateChanged(user => {
-        if (user) {
-          resolve(user);
-        } else {
-          reject('User not logged in');
-        }
+        resolve(user);
       });
     });
+  }
+
+  private async isCollectionAccessible(absolutePath: string): Promise<boolean> {
+    try {
+      await this.db.collection(absolutePath).doc('auth_test').get();
+    } catch (error) {
+      return false;
+    }
+    return true;
   }
 
   private removeResource(resourceName: string) {

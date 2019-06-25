@@ -1,5 +1,5 @@
-import { IFirebaseWrapper } from '../src/providers/database/firebase/IFirebaseWrapper';
-import { RAFirebaseOptions } from '../src/providers/RAFirebaseOptions';
+import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
+import { RAFirebaseOptions } from '../../../src/providers/RAFirebaseOptions';
 import { firestore } from 'firebase';
 
 import * as firebase from 'firebase/app';
