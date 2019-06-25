@@ -68,7 +68,7 @@ export const PostCreate = (props) => (
         label="User"
         source="user_id"
         reference="users"
-        filter={{ isAdmin: true }}
+        // filter={{ isAdmin: true }}
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
@@ -88,7 +88,7 @@ export const PostEdit = (props) => (
         label="User"
         source="user_id"
         reference="users"
-        filter={{ isAdmin: true }}
+        // filter={{ isAdmin: true }}
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>

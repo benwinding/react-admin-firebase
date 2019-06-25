@@ -2,19 +2,17 @@
 import {
   CollectionReference,
   QueryDocumentSnapshot,
-  QuerySnapshot,
   FirebaseFirestore
-} from "@firebase/firestore-types";
-import { Observable } from "rxjs";
-import { RAFirebaseOptions } from "index";
-import { log } from "../../misc/logger";
-import { getAbsolutePath } from "../../misc/pathHelper";
+} from '@firebase/firestore-types';
+import { RAFirebaseOptions } from 'index';
+import { log } from '../../misc/logger';
+import { getAbsolutePath } from '../../misc/pathHelper';
+import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
 
 export interface IResource {
   path: string;
   pathAbsolute: string;
   collection: CollectionReference;
-  observable: Observable<{}>;
   list: Array<{}>;
 }
 
@@ -23,10 +21,14 @@ export class ResourceManager {
     [resourceName: string]: IResource;
   } = {};
 
+  private db: FirebaseFirestore;
+
   constructor(
-    private db: FirebaseFirestore,
+    private fireWrapper: IFirebaseWrapper,
     private options: RAFirebaseOptions
-  ) { }
+  ) {
+    this.db = fireWrapper.db();
+  }
 
   public GetResource(relativePath: string): IResource {
     const resource: IResource = this.resources[relativePath];
@@ -49,46 +51,53 @@ export class ResourceManager {
     return resource;
   }
 
-  private async initPath(relativePath: string): Promise<void> {
-    const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
-    log("resourceManager.initPath:::", { absolutePath });
-    return new Promise((resolve) => {
-      const hasBeenInited = this.resources[relativePath];
-      if (hasBeenInited) {
-        return resolve();
-      }
-      const collection = this.db.collection(absolutePath);
-      const observable = this.getCollectionObservable(collection);
-      const list: Array<{}> = [];
-      const resource: IResource = {
-        collection: collection,
-        list: list,
-        observable: observable,
-        path: relativePath,
-        pathAbsolute: absolutePath
-      };
-      this.resources[relativePath] = resource;
-
-      observable.subscribe(
-        async (querySnapshot: QuerySnapshot) => {
-          const newList = querySnapshot.docs.map(
-            (doc: QueryDocumentSnapshot) =>
-              this.parseFireStoreDocument(doc)
-          );
-          resource.list = newList;
-          // The data has been set, so resolve the promise
-          resolve();
-        }
-      );
-      // log("initPath", { absolutePath, r, "this.resources": this.resources });
-    });
+  public async RefreshResource(relativePath: string) {
+    await this.initPath(relativePath);
+    const resource = this.resources[relativePath];
+    log('resourceManager.RefreshResource', { relativePath });
+    const newDocs = await resource.collection.get();
+    resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
   }
 
-  private parseFireStoreDocument(
-    doc: QueryDocumentSnapshot
-  ): {} {
+  public async GetSingleDoc(relativePath: string, docId: string) {
+    await this.initPath(relativePath);
+    const resource = this.resources[relativePath];
+    const res = await resource.collection.doc(docId).get();
+    if (!res.exists) {
+      throw new Error("react-admin-firebase: No id found matching: " + docId);
+    }
+    const result = this.parseFireStoreDocument(res);
+    return result;
+  }
+
+  private async initPath(relativePath: string): Promise<void> {
+    const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
+    log('resourceManager.initPath:::', { absolutePath });
+    const isLoggedIn = await this.getUserLogin();
+    const hasBeenInited = this.resources[relativePath];
+    if (!isLoggedIn) {
+      if (hasBeenInited) {
+        this.removeResource(relativePath);
+      }
+      return;
+    }
+    if (hasBeenInited) {
+      return;
+    }
+    const collection = this.db.collection(absolutePath);
+    const list: Array<{}> = [];
+    const resource: IResource = {
+      collection: collection,
+      list: list,
+      path: relativePath,
+      pathAbsolute: absolutePath
+    };
+    this.resources[relativePath] = resource;
+  }
+
+  private parseFireStoreDocument(doc: QueryDocumentSnapshot): {} {
     const data = doc.data();
-    Object.keys(data).forEach((key) => {
+    Object.keys(data).forEach(key => {
       const value = data[key];
       if (value && value.toDate && value.toDate instanceof Function) {
         data[key] = value.toDate().toISOString();
@@ -99,13 +108,19 @@ export class ResourceManager {
     return { id: doc.id, ...data };
   }
 
-  private getCollectionObservable(
-    collection: CollectionReference
-  ): Observable<QuerySnapshot> {
-    const observable: Observable<
-      QuerySnapshot
-    > = Observable.create((observer: any) => collection.onSnapshot(observer));
-    // LOGGING
-    return observable;
+  public async getUserLogin() {
+    return new Promise((resolve, reject) => {
+      this.fireWrapper.auth().onAuthStateChanged(user => {
+        if (user) {
+          resolve(user);
+        } else {
+          reject('User not logged in');
+        }
+      });
+    });
+  }
+
+  private removeResource(resourceName: string) {
+    delete this.resources[resourceName];
   }
 }

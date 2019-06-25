@@ -11,7 +11,7 @@ const db = fire.db();
 test('t1 client create doc', async () => {
   const client = new FirebaseClient(fire, {});
   await client.apiCreate('t1', {
-    data: { name: 'John' }
+    data: { id: 'John' }
   });
 
   const users = await getDocsFromCollection(db, 't1');

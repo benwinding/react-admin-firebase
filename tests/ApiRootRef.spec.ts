@@ -1,5 +1,4 @@
-import { FirebaseClient } from "../src/providers/database/FirebaseClient";
-import { deleteCollection, getDocsFromCollection, createDoc } from "./test-helpers";
+import { deleteCollection } from "./test-helpers";
 import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
 import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWrapper";
 
@@ -10,7 +9,7 @@ fire.init(config, {});
 const db = fire.db();
 
 test('rootref1', async () => {
-  const rm = new ResourceManager(db, {
+  const rm = new ResourceManager(fire, {
     rootRef: 'root-ref1/ok'
   })
   await rm.TryGetResourcePromise('t1');
