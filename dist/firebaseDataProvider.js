@@ -334,8 +334,8 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
-            var aValue = a[field] ? a[field].toString().toLowerCase() : "";
-            var bValue = b[field] ? b[field].toString().toLowerCase() : "";
+            var aValue = a[field] ? a[field].toString() : "";
+            var bValue = b[field] ? b[field].toString() : "";
             if (aValue > bValue) {
                 return dir === "asc" ? 1 : -1;
             }

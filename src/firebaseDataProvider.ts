@@ -270,8 +270,8 @@ class FirebaseClient {
 
   private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field] ? a[field].toString().toLowerCase() : "";
-      const bValue = b[field] ? b[field].toString().toLowerCase() : "";
+      const aValue = a[field] ? a[field].toString() : "";
+      const bValue = b[field] ? b[field].toString() : "";
       if (aValue > bValue) {
         return dir === "asc" ? 1 : -1;
       }
