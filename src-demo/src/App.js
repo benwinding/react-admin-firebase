@@ -7,6 +7,7 @@ import {
   FirebaseDataProvider,
   FirebaseAuthProvider
 } from "react-admin-firebase";
+import UserIcon from '@material-ui/icons/People';
 
 import { firebaseConfig } from './FIREBASE_CONFIG';
 
@@ -39,6 +40,7 @@ class App extends React.Component {
         />
         <Resource
           name="users"
+          icon={UserIcon}
           list={UserList}
           show={UserShow}
           create={UserCreate}
