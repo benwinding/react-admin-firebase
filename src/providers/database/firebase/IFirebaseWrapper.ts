@@ -5,6 +5,6 @@ import { FirebaseAuth } from "@firebase/auth-types";
 export interface IFirebaseWrapper {
   init(firebaseConfig: {}, options: RAFirebaseOptions): void;
   db(): FirebaseFirestore;
-  auth?(): FirebaseAuth;
+  auth(): FirebaseAuth;
   serverTimestamp(): any;
 }

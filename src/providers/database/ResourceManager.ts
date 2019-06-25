@@ -8,6 +8,7 @@ import { RAFirebaseOptions } from 'index';
 import { log } from '../../misc/logger';
 import { getAbsolutePath } from '../../misc/pathHelper';
 import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
+import { User } from '@firebase/auth-types';
 
 export interface IResource {
   path: string;
@@ -108,7 +109,7 @@ export class ResourceManager {
     return { id: doc.id, ...data };
   }
 
-  public async getUserLogin() {
+  public async getUserLogin(): Promise<User> {
     return new Promise((resolve, reject) => {
       this.fireWrapper.auth().onAuthStateChanged(user => {
         if (user) {

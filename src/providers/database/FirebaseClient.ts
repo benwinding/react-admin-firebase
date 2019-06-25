@@ -52,34 +52,33 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiCreate(resourceName: string, params: messageTypes.IParamsCreate): Promise<messageTypes.IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
+    const currentUserEmail = await this.getCurrentUserEmail();
+    const docObj = {
+      ...params.data,
+      createdate: this.fireWrapper.serverTimestamp(),
+      lastupdate: this.fireWrapper.serverTimestamp(),
+      createdby: currentUserEmail,
+      updatedby: currentUserEmail,
+    };
     const hasOverridenDocId = params.data && params.data.id;
     if (hasOverridenDocId) {
       const newDocId = params.data.id;
       if (!newDocId) {
         throw new Error('id must be a valid string');
       }
-      await r.collection.doc(newDocId).set({
-        ...params.data,
-        createdate: this.fireWrapper.serverTimestamp(),
-        lastupdate: this.fireWrapper.serverTimestamp()
-      }, { merge: true });
+      await r.collection.doc(newDocId).set(docObj, { merge: true });
       return {
         data: {
           ...params.data,
           id: newDocId
         }
       };
-    } 
-    
-    const doc = await r.collection.add({
-      ...params.data,
-      createdate: this.fireWrapper.serverTimestamp(),
-      lastupdate: this.fireWrapper.serverTimestamp()
-    });
+    }
+    const ref = await r.collection.add(docObj);
     return {
       data: {
         ...params.data,
-        id: doc.id
+        id: ref.id
       }
     };
   }
@@ -88,9 +87,11 @@ export class FirebaseClient implements IFirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
+    const currentUserEmail = await this.getCurrentUserEmail();
     r.collection.doc(id).update({
       ...params.data,
-      lastupdate: this.fireWrapper.serverTimestamp()
+      lastupdate: this.fireWrapper.serverTimestamp(),
+      updatedby: currentUserEmail,
     }).catch((error) => {
       logError("apiUpdate error", { error });
     });
@@ -106,10 +107,12 @@ export class FirebaseClient implements IFirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
+    const currentUserEmail = await this.getCurrentUserEmail();
     const returnData = ids.map((id) => {
       r.collection.doc(id).update({
         ...params.data,
-        lastupdate: this.fireWrapper.serverTimestamp()
+        lastupdate: this.fireWrapper.serverTimestamp(),
+        updatedby: currentUserEmail,
       }).catch((error) => {
         logError("apiUpdateMany error", { error });
       });
@@ -186,5 +189,13 @@ export class FirebaseClient implements IFirebaseClient {
       await this.rm.RefreshResource(resourceName);
     }
     return this.rm.TryGetResourcePromise(resourceName);
+  }
+  private async getCurrentUserEmail() {
+    const user = await this.rm.getUserLogin();
+    if (user) {
+      return user.email;
+    } else {
+      return 'annonymous user';
+    }
   }
 }
