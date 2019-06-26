@@ -12,7 +12,7 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
 ## Features
 - [x] Firestore Dataprovider _(details below)_
 - [x] Firebase AuthProvider (email, password)
-- [ ] Firebase storage upload functionality
+- [x] Firebase storage upload functionality
 
 _Pull requests welcome!!_
 
@@ -21,11 +21,11 @@ _Pull requests welcome!!_
 - [x] All methods implemented; `(GET, POST, GET_LIST ect...)`
 - [x] Filtering, sorting etc...
 - [x] Realtime updates, using ra-realtime
-    - Implicitly watches all GET_LIST routes using observables with the firebase sdk
     - Optional watch collection array or dontwatch collection array
 - [x] Ability to manage sub collections through app configuration
 - [x] Ability to use externally initialized firebaseApp instance
 - [x] Override firestore random id by using "id" as a field in the Create part of the resource
+- [x] Upload to the firebase storage bucket using the standard <FileInput /> field
 
 ## Get Started
 `yarn add react-admin-firebase` 
