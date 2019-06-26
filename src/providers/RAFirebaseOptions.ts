@@ -4,5 +4,4 @@ export interface RAFirebaseOptions {
   logging?: boolean;
   watch?: string[];
   dontwatch?: string[];
-  uploadToStorage?: boolean;
 }

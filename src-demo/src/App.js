@@ -14,7 +14,6 @@ import { firebaseConfig } from './FIREBASE_CONFIG';
 const options = {
   logging: true,
   rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
-  uploadToStorage: true,
   // app: firebaseAppInstance
   // watch: ['posts'];
   // dontwatch: ['comments'];

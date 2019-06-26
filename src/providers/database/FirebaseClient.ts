@@ -54,32 +54,42 @@ export class FirebaseClient implements IFirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
     const currentUserEmail = await this.getCurrentUserEmail();
-    const docObj = {
-      ...params.data,
-      createdate: this.fireWrapper.serverTimestamp(),
-      lastupdate: this.fireWrapper.serverTimestamp(),
-      createdby: currentUserEmail,
-      updatedby: currentUserEmail,
-    };
     const hasOverridenDocId = params.data && params.data.id;
     if (hasOverridenDocId) {
-      const newDocId = params.data.id;
-      if (!newDocId) {
+      const overridenId = params.data.id;
+      const data = await this.parseDataAndUpload(r, overridenId, params.data);
+      if (!overridenId) {
         throw new Error('id must be a valid string');
       }
-      await r.collection.doc(newDocId).set(docObj, { merge: true });
+      const docObj = {
+        ...data,
+        createdate: this.fireWrapper.serverTimestamp(),
+        lastupdate: this.fireWrapper.serverTimestamp(),
+        createdby: currentUserEmail,
+        updatedby: currentUserEmail
+      };
+      await r.collection.doc(overridenId).set(docObj, { merge: true });
       return {
         data: {
-          ...params.data,
-          id: newDocId
+          ...data,
+          id: overridenId
         }
       };
     }
-    const ref = await r.collection.add(docObj);
+    const newId = this.db.collection('collections').doc().id;
+    const data = await this.parseDataAndUpload(r, newId, params.data);
+    const docObj = {
+      ...data,
+      createdate: this.fireWrapper.serverTimestamp(),
+      lastupdate: this.fireWrapper.serverTimestamp(),
+      createdby: currentUserEmail,
+      updatedby: currentUserEmail
+    };
+    await r.collection.doc(newId).set(docObj, {merge: false});
     return {
       data: {
-        ...params.data,
-        id: ref.id
+        ...data,
+        id: newId
       }
     };
   }
@@ -89,13 +99,9 @@ export class FirebaseClient implements IFirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
     const currentUserEmail = await this.getCurrentUserEmail();
-    let data = params.data;
-    if (this.options.uploadToStorage) {
-      const docPath = r.collection.doc(id).path;
-      data = await this.parseDataAndUpload(docPath, data);
-    }
+    const data = await this.parseDataAndUpload(r, id, params.data);
     r.collection.doc(id).update({
-      ...params.data,
+      ...data,
       lastupdate: this.fireWrapper.serverTimestamp(),
       updatedby: currentUserEmail,
     }).catch((error) => {
@@ -103,7 +109,7 @@ export class FirebaseClient implements IFirebaseClient {
     });
     return {
       data: {
-        ...params.data,
+        ...data,
         id: id
       }
     };
@@ -114,19 +120,20 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const currentUserEmail = await this.getCurrentUserEmail();
-    const returnData = ids.map((id) => {
+    const returnData = await Promise.all(ids.map(async (id) => {
+      const data = await this.parseDataAndUpload(r, id, params.data);
       r.collection.doc(id).update({
-        ...params.data,
+        ...data,
         lastupdate: this.fireWrapper.serverTimestamp(),
         updatedby: currentUserEmail,
       }).catch((error) => {
         logError("apiUpdateMany error", { error });
       });
       return {
-        ...params.data,
+        ...data,
         id: id
       };
-    });
+    }));
     return {
       data: returnData
     };
@@ -204,10 +211,11 @@ export class FirebaseClient implements IFirebaseClient {
       return 'annonymous user';
     }
   }
-  private async parseDataAndUpload(docPath: string, data: any) {
+  private async parseDataAndUpload(r: IResource, id: string, data: any) {
     if (!data) {
       return data;
     }
+    const docPath = r.collection.doc(id).path;
     await Promise.all(Object.keys(data).map(async (fieldName) => {
       const val = data[fieldName];
       const hasRawFile = !!val && val.hasOwnProperty('rawFile');
@@ -224,7 +232,7 @@ export class FirebaseClient implements IFirebaseClient {
     return data;
   }
 
-  private async saveFile(storagePath, rawFile): Promise<string> {
+  private async saveFile(storagePath: string, rawFile: any): Promise<string> {
     log('saveFile() saving file...', { storagePath, rawFile });
     const task = this.fireWrapper
       .storage()
