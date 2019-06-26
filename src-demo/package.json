@@ -11,16 +11,19 @@
     "redux-saga": "^0.16.0",
     "source-map-loader": "^0.2.4"
   },
+  "devDependencies": {
+    "gh-pages": "^2.0.1",
+    "concurrently": "4.1.1",
+    "cpx": "1.5.0"
+  },
   "scripts": {
-    "start": "yarn update-raf && yarn replace-config && BROWSER=none PORT=3333 react-scripts start",
+    "start": "concurrently \"yarn update-raf\" \"yarn start-dev-server\"",
+    "start-dev-server": "yarn replace-config && BROWSER=none PORT=3333 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build",
-    "update-raf": "yarn && cp -r ../dist node_modules/react-admin-firebase",
-    "replace-config": "cp ./webpack-override.js node_modules/react-scripts/config/webpack.config.dev.js"
-  },
-  "devDependencies": {
-    "gh-pages": "^2.0.1"
+    "update-raf": "yarn && cpx \"../dist/**/*\" node_modules/react-admin-firebase/dist --watch --verbose",
+    "replace-config": "cp ./webpack-override.js node_modules/react-scripts/config/webpack.config.dev.js && cp ./webpack-devserver-override.js node_modules/react-scripts/config/webpackDevServer.config.js"
   }
 }
