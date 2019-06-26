@@ -1,5 +1,15 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
 
+import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
+import { FirebaseWrapperStub } from './FirebaseWrapperStub';
+import { config } from './TEST.config';
+
+export function initFireWrapper(): IFirebaseWrapper {
+  const fire: IFirebaseWrapper = new FirebaseWrapperStub();
+  fire.init(config, {});
+  return fire;
+}
+
 export function delayPromise(ms: number) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -27,3 +37,4 @@ export async function getDocsFromCollection(db: FirebaseFirestore, collectionNam
   }));
   return docsData;
 }
+

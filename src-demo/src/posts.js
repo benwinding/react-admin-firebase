@@ -37,6 +37,8 @@ export const PostList = (props) => (
   <List {...props} filters={<PostFilter />}>
     <Datagrid>
       <TextField source="title" />
+      <TextField source="updatedby" />
+      <TextField source="createdby" />
       <RichTextField source="body" />
       <ReferenceField label="User" source="user_id" reference="users">
         <TextField source="name" />

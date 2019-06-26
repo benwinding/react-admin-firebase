@@ -16,11 +16,11 @@ export class FirebaseClient implements IFirebaseClient {
     private options: RAFirebaseOptions
   ) {
     this.db = fireWrapper.db();
-    this.rm = new ResourceManager(this.db, this.options);
+    this.rm = new ResourceManager(this.fireWrapper, this.options);
   }
   public async apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.tryGetResource(resourceName, 'REFRESH');
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -41,47 +41,44 @@ export class FirebaseClient implements IFirebaseClient {
     };
   }
   public async apiGetOne(resourceName: string, params: messageTypes.IParamsGetOne): Promise<messageTypes.IResponseGetOne> {
-    const r = await this.tryGetResource(resourceName);
-    log("apiGetOne", { resourceName, resource: r, params });
-    const data = r.list.filter((val: {
-      id: string;
-    }) => val.id === params.id);
-    if (data.length < 1) {
-      throw new Error("react-admin-firebase: No id found matching: " + params.id);
+    log("apiGetOne", { resourceName, params });
+    try {
+      const data = await this.rm.GetSingleDoc(resourceName, params.id);
+      return { data: data };      
+    } catch (error) {
+      throw new Error('Error getting id: ' + params.id + ' from collection: ' + resourceName);
     }
-    return { data: data.pop() };
   }
   public async apiCreate(resourceName: string, params: messageTypes.IParamsCreate): Promise<messageTypes.IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
+    const currentUserEmail = await this.getCurrentUserEmail();
+    const docObj = {
+      ...params.data,
+      createdate: this.fireWrapper.serverTimestamp(),
+      lastupdate: this.fireWrapper.serverTimestamp(),
+      createdby: currentUserEmail,
+      updatedby: currentUserEmail,
+    };
     const hasOverridenDocId = params.data && params.data.id;
     if (hasOverridenDocId) {
       const newDocId = params.data.id;
       if (!newDocId) {
         throw new Error('id must be a valid string');
       }
-      await r.collection.doc(newDocId).set({
-        ...params.data,
-        createdate: this.fireWrapper.serverTimestamp(),
-        lastupdate: this.fireWrapper.serverTimestamp()
-      }, { merge: true });
+      await r.collection.doc(newDocId).set(docObj, { merge: true });
       return {
         data: {
           ...params.data,
           id: newDocId
         }
       };
-    } 
-    
-    const doc = await r.collection.add({
-      ...params.data,
-      createdate: this.fireWrapper.serverTimestamp(),
-      lastupdate: this.fireWrapper.serverTimestamp()
-    });
+    }
+    const ref = await r.collection.add(docObj);
     return {
       data: {
         ...params.data,
-        id: doc.id
+        id: ref.id
       }
     };
   }
@@ -90,6 +87,7 @@ export class FirebaseClient implements IFirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
+    const currentUserEmail = await this.getCurrentUserEmail();
     let data = params.data;
     if (this.options.uploadToStorage) {
       const docPath = r.collection.doc(id).path;
@@ -97,7 +95,8 @@ export class FirebaseClient implements IFirebaseClient {
     }
     r.collection.doc(id).update({
       ...params.data,
-      lastupdate: this.fireWrapper.serverTimestamp()
+      lastupdate: this.fireWrapper.serverTimestamp(),
+      updatedby: currentUserEmail,
     }).catch((error) => {
       logError("apiUpdate error", { error });
     });
@@ -113,10 +112,12 @@ export class FirebaseClient implements IFirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
+    const currentUserEmail = await this.getCurrentUserEmail();
     const returnData = ids.map((id) => {
       r.collection.doc(id).update({
         ...params.data,
-        lastupdate: this.fireWrapper.serverTimestamp()
+        lastupdate: this.fireWrapper.serverTimestamp(),
+        updatedby: currentUserEmail,
       }).catch((error) => {
         logError("apiUpdateMany error", { error });
       });
@@ -132,7 +133,6 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiDelete(resourceName: string, params: messageTypes.IParamsDelete): Promise<messageTypes.IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
-    r.list = r.list.filter((doc) => doc["id"] !== params.id);
     r.collection.doc(params.id).delete().catch((error) => {
       logError("apiDelete error", { error });
     });
@@ -143,7 +143,7 @@ export class FirebaseClient implements IFirebaseClient {
   public async apiDeleteMany(resourceName: string, params: messageTypes.IParamsDeleteMany): Promise<messageTypes.IResponseDeleteMany> {
     const r = await this.tryGetResource(resourceName);
     log("apiDeleteMany", { resourceName, resource: r, params });
-    const returnData = [];
+    const returnData: {id: string}[] = [];
     const batch = this.db.batch();
     for (const id of params.ids) {
       batch.delete(r.collection.doc(id));
@@ -155,10 +155,11 @@ export class FirebaseClient implements IFirebaseClient {
     return { data: returnData };
   }
   public async apiGetMany(resourceName: string, params: messageTypes.IParamsGetMany): Promise<messageTypes.IResponseGetMany> {
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.tryGetResource(resourceName, 'REFRESH');
     log("apiGetMany", { resourceName, resource: r, params });
-    const ids = new Set(params.ids);
-    const matches = r.list.filter((item) => ids.has(item["id"]));
+    const ids = params.ids;
+    const matchDocSnaps = await Promise.all(ids.map(id => r.collection.doc(id).get()))
+    const matches = matchDocSnaps.map(snap => {return {...snap.data(), id: snap.id}});
     return {
       data: matches
     };
@@ -167,7 +168,7 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: messageTypes.IParamsGetManyReference
   ): Promise<messageTypes.IResponseGetManyReference> {
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.tryGetResource(resourceName, 'REFRESH');
     log("apiGetManyReference", { resourceName, resource: r, params });
     const data = r.list;
     const targetField = params.target;
@@ -188,11 +189,19 @@ export class FirebaseClient implements IFirebaseClient {
     const total = matches.length;
     return { data: dataPage, total };
   }
-  public GetResource(resourceName: string): IResource {
-    return this.rm.GetResource(resourceName);
-  }
-  private tryGetResource(resourceName: string): Promise<IResource> {
+  private async tryGetResource(resourceName: string, refresh?: 'REFRESH'): Promise<IResource> {
+    if (refresh) {
+      await this.rm.RefreshResource(resourceName);
+    }
     return this.rm.TryGetResourcePromise(resourceName);
+  }
+  private async getCurrentUserEmail() {
+    const user = await this.rm.getUserLogin();
+    if (user) {
+      return user.email;
+    } else {
+      return 'annonymous user';
+    }
   }
   private parseDataAndUpload(docPath: string, data: any) {
     if (!data) {

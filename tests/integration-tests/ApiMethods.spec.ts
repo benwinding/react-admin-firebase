@@ -1,17 +1,18 @@
-import { FirebaseClient } from "../src/providers/database/FirebaseClient";
-import { deleteCollection, getDocsFromCollection, createDoc } from "./test-helpers";
-import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
-import { IFirebaseWrapper } from "../src/providers/database/firebase/IFirebaseWrapper";
+import { FirebaseClient } from '../../src/providers/database/FirebaseClient';
+import {
+  deleteCollection,
+  getDocsFromCollection,
+  createDoc,
+  initFireWrapper
+} from './utils/test-helpers';
 
-import { config } from './TEST.config';
-const fire: IFirebaseWrapper = new FirebaseWrapperStub();
-fire.init(config, {});
+const fire = initFireWrapper();
 const db = fire.db();
 
 test('t1 client create doc', async () => {
   const client = new FirebaseClient(fire, {});
   await client.apiCreate('t1', {
-    data: { name: 'John' }
+    data: { name: 'John' } as any
   });
 
   const users = await getDocsFromCollection(db, 't1');
@@ -23,12 +24,15 @@ test('t1 client create doc', async () => {
 }, 100000);
 
 test('t2 client delete doc', async () => {
-  const docName = 'test123'
-  await db.collection('t2').doc(docName).set({name: 'Jim'});
+  const docName = 'test123';
+  await db
+    .collection('t2')
+    .doc(docName)
+    .set({ name: 'Jim' });
 
   const client = new FirebaseClient(fire, {});
   await client.apiDelete('t2', {
-    'id': docName,
+    id: docName,
     previousData: {}
   });
 
@@ -38,12 +42,12 @@ test('t2 client delete doc', async () => {
 }, 100000);
 
 test('t3 client delete doc', async () => {
-  const docName = 'test123'
-  await createDoc(db, 't2', docName, {name: 'Jim'});
+  const docName = 'test123';
+  await createDoc(db, 't2', docName, { name: 'Jim' });
 
   const client = new FirebaseClient(fire, {});
   await client.apiDelete('t2', {
-    'id': docName,
+    id: docName,
     previousData: {}
   });
 
