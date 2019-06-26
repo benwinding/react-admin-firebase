@@ -6,7 +6,7 @@ import { sortArray, filterArray } from "../../misc/arrayHelpers";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
 import { messageTypes } from '../../misc/messageTypes'
-import { joinPaths } from "misc/pathHelper";
+import { joinPaths } from "../../misc/pathHelper";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;

@@ -5,7 +5,7 @@ import { firestore } from 'firebase';
 import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
-import { FirebaseAuth } from '@firebase/auth-types';
+import 'firebase/storage';
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
@@ -23,8 +23,11 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   public db(): firestore.Firestore {
     return this.firestore;
   }
-  public auth(): FirebaseAuth {
+  public auth() {
     return this.app.auth();
+  }
+  storage() {
+    return this.app.storage();
   }
   public serverTimestamp() {
     return firebase.firestore.FieldValue.serverTimestamp();
