@@ -1,7 +1,6 @@
 import * as React from "react";
 import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
 import { UserList, UserShow, UserCreate, UserEdit } from "./users";
-import Person from '@material-ui/icons/Person'
 import { Admin, Resource } from "react-admin";
 import {
   FirebaseRealTimeSaga,

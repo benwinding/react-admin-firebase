@@ -6,6 +6,7 @@ import { sortArray, filterArray } from "../../misc/arrayHelpers";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
 import { messageTypes } from '../../misc/messageTypes'
+import { joinPaths } from "misc/pathHelper";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -91,7 +92,7 @@ export class FirebaseClient implements IFirebaseClient {
     let data = params.data;
     if (this.options.uploadToStorage) {
       const docPath = r.collection.doc(id).path;
-      data = this.parseDataAndUpload(docPath, data);
+      data = await this.parseDataAndUpload(docPath, data);
     }
     r.collection.doc(id).update({
       ...params.data,
@@ -203,21 +204,54 @@ export class FirebaseClient implements IFirebaseClient {
       return 'annonymous user';
     }
   }
-  private parseDataAndUpload(docPath: string, data: any) {
+  private async parseDataAndUpload(docPath: string, data: any) {
     if (!data) {
       return data;
     }
-    Object.keys(data).map(k => {
-      const val = data[k];
+    await Promise.all(Object.keys(data).map(async (fieldName) => {
+      const val = data[fieldName];
       const hasRawFile = !!val && val.hasOwnProperty('rawFile');
       if (!hasRawFile) {
         return;
       }
-      this.fireWrapper.storage().ref(docPath).put(val.rawFile);
-      delete data[k].rawFile;
+      const storagePath = joinPaths(docPath, fieldName);
+      const storageLink = await this.saveFile(storagePath, val.rawFile);
+      data[fieldName].src = storageLink;
+      delete data[fieldName].rawFile;
       // const hasRawFileArray = !!val && Array.isArray(val) && !!val.length && val[0].hasOwnProperty('rawFile');
       return hasRawFile;
-    })
+    }))
     return data;
+  }
+
+  private async saveFile(storagePath, rawFile): Promise<string> {
+    log('saveFile() saving file...', { storagePath, rawFile });
+    const task = this.fireWrapper
+      .storage()
+      .ref(storagePath)
+      .put(rawFile);
+    try {
+      const taskResult: firebase.storage.UploadTaskSnapshot = await new Promise(
+        (res, rej) => task.then(res).catch(rej)
+      );
+      const getDownloadURL = await taskResult.ref.getDownloadURL();
+      log('saveFile() saved file', {
+        storagePath,
+        taskResult,
+        getDownloadURL
+      });
+      return getDownloadURL;
+    } catch (storageError) {
+      if (storageError.code === 'storage/unknown') {
+        logError(
+          'saveFile() error saving file, No bucket found! Try clicking "Get Started" in firebase -> storage',
+          { storageError }
+        );
+      } else {
+        logError('saveFile() error saving file', {
+          storageError
+        });
+      }
+    }
   }
 }

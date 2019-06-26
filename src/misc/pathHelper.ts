@@ -16,3 +16,7 @@ e.g. /collection/document/ or /collection/document/collection/document/`);
   const withOutSlashes = withSlashes.slice(1, -1);
   return withOutSlashes;
 }
+
+export function joinPaths(path1, path2) {
+  return path.join(path1, path2);
+}

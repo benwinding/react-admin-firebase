@@ -61,6 +61,7 @@ export const PostShow = (props) => (
       <ReferenceField label="User" source="user_id" reference="users">
         <TextField source="name" />
       </ReferenceField>
+      <FileField source="file.src" title="file.title" />
     </SimpleShowLayout>
   </Show>
 );
@@ -78,6 +79,9 @@ export const PostCreate = (props) => (
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
+      <FileInput source="file" label="File" accept="application/pdf">
+        <FileField source="src" title="title" />
+      </FileInput>
     </SimpleForm>
   </Create>
 );
@@ -101,13 +105,6 @@ export const PostEdit = (props) => (
       <FileInput source="file" label="File" accept="application/pdf">
         <FileField source="src" title="title" />
       </FileInput>
-      <ArrayInput source="files" label="Related files">
-        <SimpleFormIterator>
-          <FileInput source="file" label="File" accept="image/*">
-            <FileField source="src" title="title" />
-          </FileInput>
-        </SimpleFormIterator>
-      </ArrayInput>
     </SimpleForm>
   </Edit>
 );
