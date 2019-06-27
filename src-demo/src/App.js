@@ -10,6 +10,7 @@ import {
 import UserIcon from '@material-ui/icons/People';
 
 import { firebaseConfig } from './FIREBASE_CONFIG';
+import CustomLoginPage from './CustomLoginPage';
 
 const options = {
   logging: true,
@@ -27,6 +28,7 @@ class App extends React.Component {
   render() {
     return (
       <Admin
+        loginPage={CustomLoginPage} 
         dataProvider={dataProvider}
         authProvider={authProvider}
         customSagas={[firebaseRealtime]}

@@ -11,6 +11,7 @@
     "redux-saga": "^0.16.0",
     "source-map-loader": "^0.2.4"
   },
+  "homepage": "https://benwinding.github.io/react-admin-firebase/",
   "devDependencies": {
     "gh-pages": "^2.0.1",
     "concurrently": "4.1.1",
