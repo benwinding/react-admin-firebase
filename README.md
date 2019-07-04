@@ -172,3 +172,5 @@ const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 4. `cd src-demo && yarn && yarn start`
 
 Now all local changes in the library source code can be tested immediately in the demo app.
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ben.winding%40gmail.com&item_name=Development&currency_code=AUD&source=url)
