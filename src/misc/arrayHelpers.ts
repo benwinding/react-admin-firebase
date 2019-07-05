@@ -39,6 +39,7 @@ export function filterArray(
         return false;
       }
       const currentIsMatched = dataFieldValue
+        .toString()
         .toLowerCase()
         .includes(fieldSearchText);
       return previousMatched || currentIsMatched;
