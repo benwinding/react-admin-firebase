@@ -2,7 +2,6 @@ declare module 'csstype';
 declare module '@material-ui/core/AppBar';
 declare module 'react-admin-firebase';
 
-declare module 'firebase/app';
 declare module 'react-admin';
 declare module 'ra-realtime';
 
