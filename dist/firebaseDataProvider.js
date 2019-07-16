@@ -178,14 +178,26 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.apiCreate = function (resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
-            var r, doc;
+            var r, newId, data, doc;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
                     case 1:
                         r = _a.sent();
-                        return [4 /*yield*/, r.collection.add(params.data)];
+                        newId = params.data[exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY];
+                        if (!newId) return [3 /*break*/, 3];
+                        data = __assign({}, params.data);
+                        delete data[exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY];
+                        return [4 /*yield*/, r.collection.doc(newId).set(data, { merge: true })];
                     case 2:
+                        _a.sent();
+                        return [2 /*return*/, {
+                                data: {
+                                    id: newId
+                                }
+                            }];
+                    case 3: return [4 /*yield*/, r.collection.add(params.data)];
+                    case 4:
                         doc = _a.sent();
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: doc.id })
@@ -382,6 +394,7 @@ var FirebaseClient = /** @class */ (function () {
     };
     return FirebaseClient;
 }());
+exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY = "CREATE_WITHOUT_AUTOMATIC_ID_KEY";
 function FirebaseProvider(config) {
     exports.fb = new FirebaseClient(config);
     function providerApi(type, resourceName, params) {
