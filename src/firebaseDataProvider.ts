@@ -150,6 +150,19 @@ class FirebaseClient {
     params: IParamsCreate
   ): Promise<IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
+    const newId = params.data[CREATE_WITHOUT_AUTOMATIC_ID_KEY];
+    if (newId) {
+      const data = {
+        ...params.data
+      };
+      delete data[CREATE_WITHOUT_AUTOMATIC_ID_KEY];
+      await r.collection.doc(newId).set(data, { merge: true });
+      return {
+        data: {
+          id: newId
+        }
+      };
+    }
     const doc = await r.collection.add(params.data);
     return {
       data: {
@@ -319,6 +332,8 @@ class FirebaseClient {
 }
 
 export let fb: FirebaseClient;
+export const CREATE_WITHOUT_AUTOMATIC_ID_KEY =
+  "CREATE_WITHOUT_AUTOMATIC_ID_KEY";
 
 export default function FirebaseProvider(config: {}): any {
   fb = new FirebaseClient(config);
