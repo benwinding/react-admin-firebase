@@ -60,13 +60,15 @@ class FirebaseClient {
   private app: firebase.app.App;
   private resources: IResource[] = [];
 
-  constructor(private firebaseConfig: {}) {
-    //wait on user stuff
+  static instance = new FirebaseClient();
+
+  static getInstance(firebaseConfig: {}) {
     const id = firebaseConfig["projectId"];
-    this.app = !firebase.apps.length
+    FirebaseClient.instance.app = !firebase.apps.length
       ? firebase.initializeApp(firebaseConfig, id)
       : firebase.app(id);
-    this.db = this.app.firestore();
+    FirebaseClient.instance.db = FirebaseClient.instance.app.firestore();
+    return FirebaseClient.instance;
   }
 
   public async initPath(inputPath: string) {
@@ -336,7 +338,7 @@ export const CREATE_WITHOUT_AUTOMATIC_ID_KEY =
   "CREATE_WITHOUT_AUTOMATIC_ID_KEY";
 
 export default function FirebaseProvider(config: {}): any {
-  fb = new FirebaseClient(config);
+  fb = FirebaseClient.getInstance(config);
   async function providerApi(
     type: string,
     resourceName: string,
