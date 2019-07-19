@@ -114,7 +114,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsGetList
   ): Promise<IResponseGetList> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -139,7 +139,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsGetOne
   ): Promise<IResponseGetOne> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const data = r.list.filter((val: { id: string }) => val.id === params.id);
     if (data.length < 1) {
       throw Error("react-admin-firebase: No id found matching: " + params.id);
@@ -151,7 +151,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsCreate
   ): Promise<IResponseCreate> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const newId = params.data[CREATE_WITHOUT_AUTOMATIC_ID_KEY];
     if (newId) {
       const data = {
@@ -180,7 +180,7 @@ class FirebaseClient {
   ): Promise<IResponseUpdate> {
     const id = params.id;
     delete params.data.id;
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
 
     await r.collection.doc(id).update(params.data);
     return {
@@ -196,7 +196,7 @@ class FirebaseClient {
     params: IParamsUpdateMany
   ): Promise<IResponseUpdateMany> {
     delete params.data.id;
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const returnData = [];
     for (const id of params.ids) {
       r.collection.doc(id).update(params.data);
@@ -214,7 +214,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsDelete
   ): Promise<IResponseDelete> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     r.collection.doc(params.id).delete();
     return {
       data: params.previousData
@@ -225,7 +225,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsDeleteMany
   ): Promise<IResponseDeleteMany> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const returnData = [];
     const batch = this.db.batch();
     for (const id of params.ids) {
@@ -240,7 +240,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsGetMany
   ): Promise<IResponseGetMany> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const ids = new Set(params.ids);
     const matches = r.list.filter(item => ids.has(item["id"]));
     return {
@@ -252,7 +252,7 @@ class FirebaseClient {
     resourceName: string,
     params: IParamsGetManyReference
   ): Promise<IResponseGetManyReference> {
-    const r = await this.tryGetResource(resourceName);
+    const r = this.tryGetResource(resourceName);
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
@@ -302,13 +302,12 @@ class FirebaseClient {
     return multiFilter(data, filterFields);
   }
 
-  private setList(newList: Array<{}>, resourceName: string): Promise<any> {
-    return this.tryGetResource(resourceName).then((resource: IResource) => {
-      resource.list = newList;
-    });
+  private setList(newList: Array<{}>, resourceName: string) {
+    const resource = this.tryGetResource(resourceName);
+    resource.list = newList;
   }
 
-  private async tryGetResource(resourceName: string) {
+  private tryGetResource(resourceName: string) {
     const matches: IResource[] = this.resources.filter(val => {
       return val.path === resourceName;
     });
