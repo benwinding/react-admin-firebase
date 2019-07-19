@@ -78,16 +78,17 @@ function multiFilter(array, filters) {
     });
 }
 var FirebaseClient = /** @class */ (function () {
-    function FirebaseClient(firebaseConfig) {
-        this.firebaseConfig = firebaseConfig;
+    function FirebaseClient() {
         this.resources = [];
-        //wait on user stuff
+    }
+    FirebaseClient.getInstance = function (firebaseConfig) {
         var id = firebaseConfig["projectId"];
-        this.app = !firebase.apps.length
+        FirebaseClient.instance.app = !firebase.apps.length
             ? firebase.initializeApp(firebaseConfig, id)
             : firebase.app(id);
-        this.db = this.app.firestore();
-    }
+        FirebaseClient.instance.db = FirebaseClient.instance.app.firestore();
+        return FirebaseClient.instance;
+    };
     FirebaseClient.prototype.initPath = function (inputPath) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
@@ -132,30 +133,26 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, data, _a, field, order, filteredData, pageStart, pageEnd, dataPage, total;
             return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _b.sent();
-                        data = r.list;
-                        if (params.sort != null) {
-                            _a = params.sort, field = _a.field, order = _a.order;
-                            if (order === "ASC") {
-                                this.sortArray(data, field, "asc");
-                            }
-                            else {
-                                this.sortArray(data, field, "desc");
-                            }
-                        }
-                        filteredData = this.filterArray(data, params.filter);
-                        pageStart = (params.pagination.page - 1) * params.pagination.perPage;
-                        pageEnd = pageStart + params.pagination.perPage;
-                        dataPage = filteredData.slice(pageStart, pageEnd);
-                        total = r.list.length;
-                        return [2 /*return*/, {
-                                data: dataPage,
-                                total: total
-                            }];
+                r = this.tryGetResource(resourceName);
+                data = r.list;
+                if (params.sort != null) {
+                    _a = params.sort, field = _a.field, order = _a.order;
+                    if (order === "ASC") {
+                        this.sortArray(data, field, "asc");
+                    }
+                    else {
+                        this.sortArray(data, field, "desc");
+                    }
                 }
+                filteredData = this.filterArray(data, params.filter);
+                pageStart = (params.pagination.page - 1) * params.pagination.perPage;
+                pageEnd = pageStart + params.pagination.perPage;
+                dataPage = filteredData.slice(pageStart, pageEnd);
+                total = r.list.length;
+                return [2 /*return*/, {
+                        data: dataPage,
+                        total: total
+                    }];
             });
         });
     };
@@ -163,16 +160,12 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, data;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _a.sent();
-                        data = r.list.filter(function (val) { return val.id === params.id; });
-                        if (data.length < 1) {
-                            throw Error("react-admin-firebase: No id found matching: " + params.id);
-                        }
-                        return [2 /*return*/, { data: data[0] }];
+                r = this.tryGetResource(resourceName);
+                data = r.list.filter(function (val) { return val.id === params.id; });
+                if (data.length < 1) {
+                    throw Error("react-admin-firebase: No id found matching: " + params.id);
                 }
+                return [2 /*return*/, { data: data[0] }];
             });
         });
     };
@@ -181,23 +174,22 @@ var FirebaseClient = /** @class */ (function () {
             var r, newId, data, doc;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _a.sent();
+                    case 0:
+                        r = this.tryGetResource(resourceName);
                         newId = params.data[exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY];
-                        if (!newId) return [3 /*break*/, 3];
+                        if (!newId) return [3 /*break*/, 2];
                         data = __assign({}, params.data);
                         delete data[exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY];
                         return [4 /*yield*/, r.collection.doc(newId).set(data, { merge: true })];
-                    case 2:
+                    case 1:
                         _a.sent();
                         return [2 /*return*/, {
                                 data: {
                                     id: newId
                                 }
                             }];
-                    case 3: return [4 /*yield*/, r.collection.add(params.data)];
-                    case 4:
+                    case 2: return [4 /*yield*/, r.collection.add(params.data)];
+                    case 3:
                         doc = _a.sent();
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: doc.id })
@@ -214,11 +206,9 @@ var FirebaseClient = /** @class */ (function () {
                     case 0:
                         id = params.id;
                         delete params.data.id;
-                        return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _a.sent();
+                        r = this.tryGetResource(resourceName);
                         return [4 /*yield*/, r.collection.doc(id).update(params.data)];
-                    case 2:
+                    case 1:
                         _a.sent();
                         return [2 /*return*/, {
                                 data: __assign({}, params.data, { id: id })
@@ -231,22 +221,17 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, returnData, _i, _a, id;
             return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        delete params.data.id;
-                        return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _b.sent();
-                        returnData = [];
-                        for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
-                            id = _a[_i];
-                            r.collection.doc(id).update(params.data);
-                            returnData.push(__assign({}, params.data, { id: id }));
-                        }
-                        return [2 /*return*/, {
-                                data: returnData
-                            }];
+                delete params.data.id;
+                r = this.tryGetResource(resourceName);
+                returnData = [];
+                for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
+                    id = _a[_i];
+                    r.collection.doc(id).update(params.data);
+                    returnData.push(__assign({}, params.data, { id: id }));
                 }
+                return [2 /*return*/, {
+                        data: returnData
+                    }];
             });
         });
     };
@@ -254,15 +239,11 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _a.sent();
-                        r.collection.doc(params.id).delete();
-                        return [2 /*return*/, {
-                                data: params.previousData
-                            }];
-                }
+                r = this.tryGetResource(resourceName);
+                r.collection.doc(params.id).delete();
+                return [2 /*return*/, {
+                        data: params.previousData
+                    }];
             });
         });
     };
@@ -270,20 +251,16 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, returnData, batch, _i, _a, id;
             return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _b.sent();
-                        returnData = [];
-                        batch = this.db.batch();
-                        for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
-                            id = _a[_i];
-                            batch.delete(r.collection.doc(id));
-                            returnData.push({ id: id });
-                        }
-                        batch.commit();
-                        return [2 /*return*/, { data: returnData }];
+                r = this.tryGetResource(resourceName);
+                returnData = [];
+                batch = this.db.batch();
+                for (_i = 0, _a = params.ids; _i < _a.length; _i++) {
+                    id = _a[_i];
+                    batch.delete(r.collection.doc(id));
+                    returnData.push({ id: id });
                 }
+                batch.commit();
+                return [2 /*return*/, { data: returnData }];
             });
         });
     };
@@ -291,16 +268,12 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, ids, matches;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _a.sent();
-                        ids = new Set(params.ids);
-                        matches = r.list.filter(function (item) { return ids.has(item["id"]); });
-                        return [2 /*return*/, {
-                                data: matches
-                            }];
-                }
+                r = this.tryGetResource(resourceName);
+                ids = new Set(params.ids);
+                matches = r.list.filter(function (item) { return ids.has(item["id"]); });
+                return [2 /*return*/, {
+                        data: matches
+                    }];
             });
         });
     };
@@ -308,29 +281,25 @@ var FirebaseClient = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var r, data, targetField, targetValue, matches, _a, field, order, pageStart, pageEnd, dataPage, total;
             return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, this.tryGetResource(resourceName)];
-                    case 1:
-                        r = _b.sent();
-                        data = r.list;
-                        targetField = params.target;
-                        targetValue = params.id;
-                        matches = data.filter(function (val) { return val[targetField] === targetValue; });
-                        if (params.sort != null) {
-                            _a = params.sort, field = _a.field, order = _a.order;
-                            if (order === "ASC") {
-                                this.sortArray(data, field, "asc");
-                            }
-                            else {
-                                this.sortArray(data, field, "desc");
-                            }
-                        }
-                        pageStart = (params.pagination.page - 1) * params.pagination.perPage;
-                        pageEnd = pageStart + params.pagination.perPage;
-                        dataPage = matches.slice(pageStart, pageEnd);
-                        total = matches.length;
-                        return [2 /*return*/, { data: dataPage, total: total }];
+                r = this.tryGetResource(resourceName);
+                data = r.list;
+                targetField = params.target;
+                targetValue = params.id;
+                matches = data.filter(function (val) { return val[targetField] === targetValue; });
+                if (params.sort != null) {
+                    _a = params.sort, field = _a.field, order = _a.order;
+                    if (order === "ASC") {
+                        this.sortArray(data, field, "asc");
+                    }
+                    else {
+                        this.sortArray(data, field, "desc");
+                    }
                 }
+                pageStart = (params.pagination.page - 1) * params.pagination.perPage;
+                pageEnd = pageStart + params.pagination.perPage;
+                dataPage = matches.slice(pageStart, pageEnd);
+                total = matches.length;
+                return [2 /*return*/, { data: dataPage, total: total }];
             });
         });
     };
@@ -363,24 +332,18 @@ var FirebaseClient = /** @class */ (function () {
         return multiFilter(data, filterFields);
     };
     FirebaseClient.prototype.setList = function (newList, resourceName) {
-        return this.tryGetResource(resourceName).then(function (resource) {
-            resource.list = newList;
-        });
+        var resource = this.tryGetResource(resourceName);
+        resource.list = newList;
     };
     FirebaseClient.prototype.tryGetResource = function (resourceName) {
-        return __awaiter(this, void 0, void 0, function () {
-            var matches, match;
-            return __generator(this, function (_a) {
-                matches = this.resources.filter(function (val) {
-                    return val.path === resourceName;
-                });
-                if (matches.length < 1) {
-                    throw new Error("react-admin-firebase: Cant find resource with id");
-                }
-                match = matches[0];
-                return [2 /*return*/, match];
-            });
+        var matches = this.resources.filter(function (val) {
+            return val.path === resourceName;
         });
+        if (matches.length < 1) {
+            throw new Error("react-admin-firebase: Cant find resource with id");
+        }
+        var match = matches[0];
+        return match;
     };
     FirebaseClient.prototype.getCollectionObservable = function (collection) {
         var observable = rxjs_1.Observable.create(function (observer) {
@@ -392,11 +355,12 @@ var FirebaseClient = /** @class */ (function () {
         // });
         return observable;
     };
+    FirebaseClient.instance = new FirebaseClient();
     return FirebaseClient;
 }());
 exports.CREATE_WITHOUT_AUTOMATIC_ID_KEY = "CREATE_WITHOUT_AUTOMATIC_ID_KEY";
 function FirebaseProvider(config) {
-    exports.fb = new FirebaseClient(config);
+    exports.fb = FirebaseClient.getInstance(config);
     function providerApi(type, resourceName, params) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
