@@ -1,7 +1,13 @@
 // import * as firebase from "firebase";
 import { FirebaseAuth } from "@firebase/auth-types";
 
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from "react-admin";
+import {
+  AUTH_LOGIN,
+  AUTH_LOGOUT,
+  AUTH_ERROR,
+  AUTH_CHECK,
+  AUTH_GET_PERMISSIONS
+} from "react-admin";
 import { log, CheckLogging } from "../misc/logger";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
@@ -69,6 +75,21 @@ class AuthClient {
       return null;
     }
   }
+
+  public async HandleGetPermissions() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.claims;
+    } catch (e) {
+      log("HandleGetPermission: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
 }
 
 export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
@@ -90,6 +111,8 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
           return auth.HandleAuthCheck(params);
         case "AUTH_GETCURRENT":
           return auth.HandleGetCurrent();
+        case AUTH_GET_PERMISSIONS:
+          return auth.HandleGetPermissions();
         default:
           throw new Error("Unhandled auth type:" + type);
       }
