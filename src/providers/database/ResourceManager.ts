@@ -41,8 +41,12 @@ export class ResourceManager {
     return resource;
   }
 
-  public async TryGetResourcePromise(relativePath: string): Promise<IResource> {
-    await this.initPath(relativePath);
+  public async TryGetResourcePromise(
+    relativePath: string,
+    filter?: { [key: string]: string }
+  ): Promise<IResource> {
+    await this.initPath(relativePath, filter);
+
     const resource: IResource = this.resources[relativePath];
     if (!resource) {
       throw new Error(
@@ -52,11 +56,19 @@ export class ResourceManager {
     return resource;
   }
 
-  public async RefreshResource(relativePath: string) {
-    await this.initPath(relativePath);
+  public async RefreshResource(
+    relativePath: string,
+    filter?: { [key: string]: string }
+  ) {
+    await this.initPath(relativePath, filter);
     const resource = this.resources[relativePath];
     log("resourceManager.RefreshResource", { relativePath });
-    const newDocs = await resource.collection.get();
+
+    const collection = resource.collection;
+    const query = this.addFilterToCollection(collection, filter);
+
+    const newDocs = await query.get();
+
     resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
   }
 
@@ -71,10 +83,17 @@ export class ResourceManager {
     return result;
   }
 
-  private async initPath(relativePath: string): Promise<void> {
+  private async initPath(
+    relativePath: string,
+    filter?: { [key: string]: string }
+  ): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
     log("resourceManager.initPath:::", { absolutePath });
-    const isAccessible = await this.isCollectionAccessible(absolutePath);
+    const isAccessible = await this.isCollectionAccessible(
+      absolutePath,
+      filter
+    );
+
     const hasBeenInited = this.resources[relativePath];
     if (!isAccessible) {
       if (hasBeenInited) {
@@ -117,12 +136,18 @@ export class ResourceManager {
     });
   }
 
-  private async isCollectionAccessible(absolutePath: string): Promise<boolean> {
+  private async isCollectionAccessible(
+    absolutePath: string,
+    filter?: { [key: string]: string }
+  ): Promise<boolean> {
     try {
-      await this.db
-        .collection(absolutePath)
-        .doc("auth_test")
-        .get();
+      const collection = this.db.collection(absolutePath);
+      const query = this.addFilterToCollection(collection, filter);
+
+      /**
+        TODO: Before, a single document read check was done, I'm not sure if this relates to the same security rules as GET and LIST can have seperated rules
+       */
+      await query.get();
     } catch (error) {
       return false;
     }
@@ -131,5 +156,24 @@ export class ResourceManager {
 
   private removeResource(resourceName: string) {
     delete this.resources[resourceName];
+  }
+
+  private addFilterToCollection(
+    collection: CollectionReference,
+    filter: { [key: string]: string }
+  ) {
+    if (!filter) return collection;
+
+    let query;
+
+    Object.keys(filter).forEach(key => {
+      if (query) {
+        query = query.where(key, "==", filter[key]);
+      } else {
+        query = collection.where(key, "==", filter[key]);
+      }
+    });
+
+    return query;
   }
 }

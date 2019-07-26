@@ -24,7 +24,7 @@ export class FirebaseClient implements IFirebaseClient {
     params: messageTypes.IParamsGetList
   ): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
-    const r = await this.tryGetResource(resourceName, "REFRESH");
+    const r = await this.tryGetResource(resourceName, "REFRESH", params.filter);
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -239,12 +239,13 @@ export class FirebaseClient implements IFirebaseClient {
   }
   private async tryGetResource(
     resourceName: string,
-    refresh?: "REFRESH"
+    refresh?: "REFRESH",
+    filter?: { [key: string]: string }
   ): Promise<IResource> {
     if (refresh) {
-      await this.rm.RefreshResource(resourceName);
+      await this.rm.RefreshResource(resourceName, filter);
     }
-    return this.rm.TryGetResourcePromise(resourceName);
+    return this.rm.TryGetResourcePromise(resourceName, filter);
   }
   private async getCurrentUserEmail() {
     const user = await this.rm.getUserLogin();
