@@ -3,12 +3,12 @@ import {
   CollectionReference,
   QueryDocumentSnapshot,
   FirebaseFirestore
-} from '@firebase/firestore-types';
-import { RAFirebaseOptions } from 'index';
-import { log } from '../../misc/logger';
-import { getAbsolutePath } from '../../misc/pathHelper';
-import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
-import { User } from '@firebase/auth-types';
+} from "@firebase/firestore-types";
+import { RAFirebaseOptions } from "index";
+import { log } from "../../misc/logger";
+import { getAbsolutePath } from "../../misc/pathHelper";
+import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
+import { User } from "@firebase/auth-types";
 
 export interface IResource {
   path: string;
@@ -55,7 +55,7 @@ export class ResourceManager {
   public async RefreshResource(relativePath: string) {
     await this.initPath(relativePath);
     const resource = this.resources[relativePath];
-    log('resourceManager.RefreshResource', { relativePath });
+    log("resourceManager.RefreshResource", { relativePath });
     const newDocs = await resource.collection.get();
     resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
   }
@@ -73,7 +73,7 @@ export class ResourceManager {
 
   private async initPath(relativePath: string): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
-    log('resourceManager.initPath:::', { absolutePath });
+    log("resourceManager.initPath:::", { absolutePath });
     const isAccessible = await this.isCollectionAccessible(absolutePath);
     const hasBeenInited = this.resources[relativePath];
     if (!isAccessible) {
@@ -119,7 +119,10 @@ export class ResourceManager {
 
   private async isCollectionAccessible(absolutePath: string): Promise<boolean> {
     try {
-      await this.db.collection(absolutePath).doc('auth_test').get();
+      await this.db
+        .collection(absolutePath)
+        .doc("auth_test")
+        .get();
     } catch (error) {
       return false;
     }
