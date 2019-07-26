@@ -9,7 +9,7 @@ export namespace messageTypes {
       field: string;
       order: string;
     };
-    filter?: {};
+    filter?: { firebaseQueryFilter?: {} };
   }
 
   export interface IParamsGetOne {
@@ -18,7 +18,7 @@ export namespace messageTypes {
 
   export interface IParamsCreate {
     data: {
-      id?: string
+      id?: string;
     };
   }
 

@@ -24,7 +24,11 @@ export class FirebaseClient implements IFirebaseClient {
     params: messageTypes.IParamsGetList
   ): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
-    const r = await this.tryGetResource(resourceName, "REFRESH", params.filter);
+
+    const queryFilter = params.filter.firebaseQueryFilter;
+    delete params.filter.firebaseQueryFilter;
+
+    const r = await this.tryGetResource(resourceName, "REFRESH", queryFilter);
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -34,6 +38,7 @@ export class FirebaseClient implements IFirebaseClient {
         sortArray(data, field, "desc");
       }
     }
+    // @ts-ignore
     const filteredData = filterArray(data, params.filter);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
