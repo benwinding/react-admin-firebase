@@ -1,5 +1,5 @@
 // in src/posts.js
-import * as React from "react";
+import * as React from 'react';
 // tslint:disable-next-line:no-var-requires
 import {
   Datagrid,
@@ -24,16 +24,16 @@ import {
   FileField,
   ArrayInput,
   SimpleFormIterator
-} from "react-admin";
-import RichTextInput from "ra-input-rich-text";
+} from 'react-admin';
+import RichTextInput from 'ra-input-rich-text';
 
-const PostFilter = (props) => (
+const PostFilter = props => (
   <Filter {...props}>
     <TextInput label="Search" source="title" alwaysOn />
   </Filter>
 );
 
-export const PostList = (props) => (
+export const PostList = props => (
   <List {...props} filters={<PostFilter />}>
     <Datagrid>
       <TextField source="title" />
@@ -50,7 +50,7 @@ export const PostList = (props) => (
   </List>
 );
 
-export const PostShow = (props) => (
+export const PostShow = props => (
   <Show {...props}>
     <SimpleShowLayout>
       <TextField source="id" />
@@ -66,8 +66,8 @@ export const PostShow = (props) => (
   </Show>
 );
 
-export const PostCreate = (props) => (
-  <Create {...props} >
+export const PostCreate = props => (
+  <Create {...props}>
     <SimpleForm>
       <TextInput source="title" />
       <RichTextInput source="body" />
@@ -86,7 +86,7 @@ export const PostCreate = (props) => (
   </Create>
 );
 
-export const PostEdit = (props) => (
+export const PostEdit = props => (
   <Edit {...props}>
     <SimpleForm>
       <DisabledInput source="id" />
@@ -102,9 +102,13 @@ export const PostEdit = (props) => (
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
-      <FileInput source="file" label="File" accept="application/pdf">
-        <FileField source="src" title="title" />
-      </FileInput>
+      <ArrayInput source="files">
+        <SimpleFormIterator>
+          <FileInput source="file" label="File">
+            <FileField source="src" title="title" />
+          </FileInput>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Edit>
 );
