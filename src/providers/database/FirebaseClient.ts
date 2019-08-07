@@ -268,16 +268,26 @@ export class FirebaseClient implements IFirebaseClient {
         if (isArray) {
           await Promise.all(
             (val as []).map((arrayObj, index) => {
-              return Promise.all(
-                Object.keys(arrayObj).map(arrayObjFieldName => {
-                  const arrayObjVal = arrayObj[arrayObjFieldName];
-                  return this.parseDataField(
-                    arrayObjVal,
+              if (!!val[index] && val[index].hasOwnProperty('rawFile')) {
+                return Promise.all([
+                  this.parseDataField(
+                    val[index],
                     docPath,
-                    fieldName + arrayObjFieldName + index
-                  );
-                })
-              );
+                    fieldName + index
+                  )
+                ]);
+              } else {
+                return Promise.all(
+                  Object.keys(arrayObj).map(arrayObjFieldName => {
+                    const arrayObjVal = arrayObj[arrayObjFieldName];
+                    return this.parseDataField(
+                      arrayObjVal,
+                      docPath,
+                      fieldName + arrayObjFieldName + index
+                    );
+                  })
+                );
+              }
             })
           );
         }
