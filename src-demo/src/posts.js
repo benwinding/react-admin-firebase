@@ -1,5 +1,5 @@
 // in src/posts.js
-import * as React from 'react';
+import * as React from "react";
 // tslint:disable-next-line:no-var-requires
 import {
   Datagrid,
@@ -25,8 +25,8 @@ import {
   FileField,
   ArrayInput,
   SimpleFormIterator
-} from 'react-admin';
-import RichTextInput from 'ra-input-rich-text';
+} from "react-admin";
+import RichTextInput from "ra-input-rich-text";
 
 const PostFilter = props => (
   <Filter {...props}>
@@ -40,7 +40,7 @@ export const PostList = props => (
     filters={<PostFilter />}
     filter={{
       collectionQuery: collection =>
-        collection.where('publishing_state', '==', 'published')
+        collection.where("publishing_state", "==", "published")
     }}
   >
     <Datagrid>
