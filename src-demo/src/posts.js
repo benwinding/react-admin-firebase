@@ -27,16 +27,21 @@ import {
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
-const PostFilter = (props) => (
+const PostFilter = props => (
   <Filter {...props}>
     <TextInput label="Search" source="title" alwaysOn />
   </Filter>
 );
 
-export const PostList = (props) => (
-  <List {...props} filters={<PostFilter />}>
+export const PostList = props => (
+  <List
+    {...props}
+    filters={<PostFilter />}
+    filter={{ firebaseQueryFilter: { publishing_state: "published" } }}
+  >
     <Datagrid>
       <TextField source="title" />
+      <TextField source="publishing_state" />
       <TextField source="updatedby" />
       <TextField source="createdby" />
       <RichTextField source="body" />
@@ -50,7 +55,7 @@ export const PostList = (props) => (
   </List>
 );
 
-export const PostShow = (props) => (
+export const PostShow = props => (
   <Show {...props}>
     <SimpleShowLayout>
       <TextField source="id" />
@@ -66,8 +71,8 @@ export const PostShow = (props) => (
   </Show>
 );
 
-export const PostCreate = (props) => (
-  <Create {...props} >
+export const PostCreate = props => (
+  <Create {...props}>
     <SimpleForm>
       <TextInput source="title" />
       <RichTextInput source="body" />
@@ -86,7 +91,7 @@ export const PostCreate = (props) => (
   </Create>
 );
 
-export const PostEdit = (props) => (
+export const PostEdit = props => (
   <Edit {...props}>
     <SimpleForm>
       <DisabledInput source="id" />
