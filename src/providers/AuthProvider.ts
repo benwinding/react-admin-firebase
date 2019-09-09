@@ -16,23 +16,57 @@ class AuthClient {
   private auth: FirebaseAuth;
 
   constructor(firebaseConfig: {}, options: RAFirebaseOptions) {
-    log("Auth Client: initializing...", {firebaseConfig, options});
+    log("Auth Client: initializing...", { firebaseConfig, options });
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
     this.auth = fireWrapper.auth();
   }
 
   public async HandleAuthLogin(params) {
-    const { username, password } = params;
+    const { username, password, mode } = params;
+    let user;
 
     try {
-      const user = await this.auth.signInWithEmailAndPassword(
+      if (mode === "link") {
+        if (this.auth.isSignInWithEmailLink(window.location.href)) {
+          user = await this.auth.signInWithEmailLink(
         username,
-        password
+            window.location.href
       );
+
+          // Save email LocalStorage for same browser login
+          window.localStorage.removeItem("emailForSignIn");
+
+          // Clear Search Params
+          const urlWithoutParams =
+            window.location.origin +
+            window.location.pathname +
+            window.location.hash;
+          window.history.replaceState({}, document.title, urlWithoutParams);
+
       log("HandleAuthLogin: user sucessfully logged in", { user });
+        } else {
+          console.log("Login link request");
+
+          const result: any = await this.auth.sendSignInLinkToEmail(username, {
+            url: window.location.href,
+            handleCodeInApp: true
+          });
+
+          // Clear LocalStorage
+          window.localStorage.setItem("emailForSignIn", username);
+
+          log("HandleAuthLogin: login link sucessfully requested", {
+            user: result && result.user
+          });
+        }
+      } else {
+        // Regular password login
+        user = await this.auth.signInWithEmailAndPassword(username, password);
+        log("HandleAuthLogin: user sucessfully logged in", { user });
+      }
     } catch (e) {
-      log("HandleAuthLogin: invalid credentials", { params });
+      log(`HandleAuthLogin: invalid credentials Error ${e}`, { params });
       throw new Error("Login error: invalid credentials");
     }
   }
