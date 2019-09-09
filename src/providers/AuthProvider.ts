@@ -30,9 +30,9 @@ class AuthClient {
       if (mode === "link") {
         if (this.auth.isSignInWithEmailLink(window.location.href)) {
           user = await this.auth.signInWithEmailLink(
-        username,
+            username,
             window.location.href
-      );
+          );
 
           // Save email LocalStorage for same browser login
           window.localStorage.removeItem("emailForSignIn");
@@ -44,10 +44,8 @@ class AuthClient {
             window.location.hash;
           window.history.replaceState({}, document.title, urlWithoutParams);
 
-      log("HandleAuthLogin: user sucessfully logged in", { user });
+          log("HandleAuthLogin: user sucessfully logged in", { user });
         } else {
-          console.log("Login link request");
-
           const result: any = await this.auth.sendSignInLinkToEmail(username, {
             url: window.location.href,
             handleCodeInApp: true
@@ -75,7 +73,7 @@ class AuthClient {
     await this.auth.signOut();
   }
 
-  public async HandleAuthError(params) { }
+  public async HandleAuthError(params) {}
 
   public async HandleAuthCheck(params) {
     try {
@@ -89,7 +87,7 @@ class AuthClient {
 
   public async getUserLogin() {
     return new Promise((resolve, reject) => {
-      this.auth.onAuthStateChanged((user) => {
+      this.auth.onAuthStateChanged(user => {
         if (user) {
           resolve(user);
         } else {
@@ -154,7 +152,10 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
   };
 }
 
-function VerifyAuthProviderArgs(firebaseConfig: {}, options: RAFirebaseOptions) {
+function VerifyAuthProviderArgs(
+  firebaseConfig: {},
+  options: RAFirebaseOptions
+) {
   const hasNoApp = !options || !options.app;
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {
