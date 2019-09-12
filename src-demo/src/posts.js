@@ -37,7 +37,10 @@ export const PostList = props => (
   <List
     {...props}
     filters={<PostFilter />}
-    filter={{ firebaseQueryFilter: { publishing_state: "published" } }}
+    filter={{
+      collectionQuery: collection =>
+        collection.where("publishing_state", "==", "published")
+    }}
   >
     <Datagrid>
       <TextField source="title" />
