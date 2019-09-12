@@ -9,6 +9,7 @@ import { log } from "../../misc/logger";
 import { getAbsolutePath } from "../../misc/pathHelper";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { User } from "@firebase/auth-types";
+import { messageTypes } from "../../misc/messageTypes";
 
 export interface IResource {
   path: string;
@@ -43,9 +44,9 @@ export class ResourceManager {
 
   public async TryGetResourcePromise(
     relativePath: string,
-    filter?: { [key: string]: string }
+    collectionQuery: messageTypes.CollectionQueryType
   ): Promise<IResource> {
-    await this.initPath(relativePath, filter);
+    await this.initPath(relativePath, collectionQuery);
 
     const resource: IResource = this.resources[relativePath];
     if (!resource) {
@@ -58,15 +59,14 @@ export class ResourceManager {
 
   public async RefreshResource(
     relativePath: string,
-    filter?: { [key: string]: string }
+    collectionQuery: messageTypes.CollectionQueryType
   ) {
-    await this.initPath(relativePath, filter);
+    await this.initPath(relativePath, collectionQuery);
     const resource = this.resources[relativePath];
     log("resourceManager.RefreshResource", { relativePath });
 
     const collection = resource.collection;
-    const query = this.addFilterToCollection(collection, filter);
-
+    const query = this.applyQuery(collection, collectionQuery);
     const newDocs = await query.get();
 
     resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
@@ -85,13 +85,13 @@ export class ResourceManager {
 
   private async initPath(
     relativePath: string,
-    filter?: { [key: string]: string }
+    collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
     log("resourceManager.initPath:::", { absolutePath });
     const isAccessible = await this.isCollectionAccessible(
       absolutePath,
-      filter
+      collectionQuery
     );
 
     const hasBeenInited = this.resources[relativePath];
@@ -138,15 +138,12 @@ export class ResourceManager {
 
   private async isCollectionAccessible(
     absolutePath: string,
-    filter?: { [key: string]: string }
+    collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<boolean> {
     try {
       const collection = this.db.collection(absolutePath);
-      const query = this.addFilterToCollection(collection, filter);
+      const query = this.applyQuery(collection, collectionQuery);
 
-      /**
-        TODO: Before, a single document read check was done, I'm not sure if this relates to the same security rules as GET and LIST can have seperated rules
-       */
       await query.get();
     } catch (error) {
       return false;
@@ -158,22 +155,12 @@ export class ResourceManager {
     delete this.resources[resourceName];
   }
 
-  private addFilterToCollection(
+  private applyQuery(
     collection: CollectionReference,
-    filter: { [key: string]: string }
-  ) {
-    if (!filter) return collection;
+    collectionQuery?: messageTypes.CollectionQueryType
+  ): CollectionReference {
+    if (!collectionQuery) return collection;
 
-    let query;
-
-    Object.keys(filter).forEach(key => {
-      if (query) {
-        query = query.where(key, "==", filter[key]);
-      } else {
-        query = collection.where(key, "==", filter[key]);
-      }
-    });
-
-    return query;
+    return collectionQuery(collection);
   }
 }

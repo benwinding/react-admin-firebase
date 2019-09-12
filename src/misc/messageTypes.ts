@@ -1,3 +1,6 @@
+// Firebase types
+import { CollectionReference } from "@firebase/firestore-types";
+
 // PARAMETERS
 export namespace messageTypes {
   export interface IParamsGetList {
@@ -9,8 +12,14 @@ export namespace messageTypes {
       field: string;
       order: string;
     };
-    filter?: { firebaseQueryFilter?: {} };
+    filter?: {
+      collectionQuery?: CollectionQueryType;
+    };
   }
+
+  export type CollectionQueryType = (
+    arg0: CollectionReference
+  ) => CollectionReference;
 
   export interface IParamsGetOne {
     id: string;

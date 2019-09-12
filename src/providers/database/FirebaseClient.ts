@@ -25,10 +25,14 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
 
-    const queryFilter = params.filter.firebaseQueryFilter;
-    delete params.filter.firebaseQueryFilter;
+    const collectionQuery = params.filter.collectionQuery;
+    delete params.filter.collectionQuery;
 
-    const r = await this.tryGetResource(resourceName, "REFRESH", queryFilter);
+    const r = await this.tryGetResource(
+      resourceName,
+      "REFRESH",
+      collectionQuery
+    );
     const data = r.list;
     if (params.sort != null) {
       const { field, order } = params.sort;
@@ -245,12 +249,12 @@ export class FirebaseClient implements IFirebaseClient {
   private async tryGetResource(
     resourceName: string,
     refresh?: "REFRESH",
-    filter?: { [key: string]: string }
+    collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<IResource> {
     if (refresh) {
-      await this.rm.RefreshResource(resourceName, filter);
+      await this.rm.RefreshResource(resourceName, collectionQuery);
     }
-    return this.rm.TryGetResourcePromise(resourceName, filter);
+    return this.rm.TryGetResourcePromise(resourceName, collectionQuery);
   }
   private async getCurrentUserEmail() {
     const user = await this.rm.getUserLogin();
