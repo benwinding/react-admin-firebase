@@ -1,5 +1,5 @@
 // in src/posts.js
-import * as React from "react";
+import * as React from 'react';
 // tslint:disable-next-line:no-var-requires
 import {
   Datagrid,
@@ -24,8 +24,8 @@ import {
   FileField,
   ArrayInput,
   SimpleFormIterator
-} from "react-admin";
-import RichTextInput from "ra-input-rich-text";
+} from 'react-admin';
+import RichTextInput from 'ra-input-rich-text';
 
 const PostFilter = props => (
   <Filter {...props}>
@@ -39,7 +39,7 @@ export const PostList = props => (
     filters={<PostFilter />}
     filter={{
       collectionQuery: collection =>
-        collection.where("publishing_state", "==", "published")
+        collection.where('publishing_state', '==', 'published')
     }}
   >
     <Datagrid>
@@ -69,7 +69,11 @@ export const PostShow = props => (
       <ReferenceField label="User" source="user_id" reference="users">
         <TextField source="name" />
       </ReferenceField>
-      <FileField source="file.src" title="file.title" />
+      <FileField
+        source="files_multiple.src"
+        title="files_multiple.title"
+        multiple
+      />
     </SimpleShowLayout>
   </Show>
 );
@@ -87,9 +91,16 @@ export const PostCreate = props => (
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
-      <FileInput source="file" label="File" accept="application/pdf">
+      <FileInput source="files_multiple" multiple label="Files with (multiple)">
         <FileField source="src" title="title" />
       </FileInput>
+      <ArrayInput source="files">
+        <SimpleFormIterator>
+          <FileInput source="file" label="Array Form Files">
+            <FileField source="src" title="title" />
+          </FileInput>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Create>
 );
@@ -110,9 +121,16 @@ export const PostEdit = props => (
       >
         <SelectInput label="User" optionText="name" />
       </ReferenceInput>
-      <FileInput source="file" label="File" accept="application/pdf">
+      <FileInput source="files_multiple" multiple label="Files with (multiple)">
         <FileField source="src" title="title" />
       </FileInput>
+      <ArrayInput source="files">
+        <SimpleFormIterator>
+          <FileInput source="file" label="Array Form Files">
+            <FileField source="src" title="title" />
+          </FileInput>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Edit>
 );
