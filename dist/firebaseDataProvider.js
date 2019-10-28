@@ -48,6 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var firebase = require("firebase/app");
 require("firebase/firestore");
+var get_1 = require("lodash/get");
 var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
 // UTILS
@@ -315,8 +316,8 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
-            var aValue = a[field] ? a[field].toString() : "";
-            var bValue = b[field] ? b[field].toString() : "";
+            var aValue = get_1.default(a, field) ? get_1.default(a, field).toString() : "";
+            var bValue = get_1.default(b, field) ? get_1.default(b, field).toString() : "";
             if (aValue > bValue) {
                 return dir === "asc" ? 1 : -1;
             }
