@@ -14,6 +14,7 @@ import {
 } from "react-admin";
 import { Observable, Subject } from "rxjs";
 import { type } from "os";
+import get from "lodash/get";
 
 export interface IResource {
   path: string;
@@ -285,8 +286,8 @@ class FirebaseClient {
 
   private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
     data.sort((a: {}, b: {}) => {
-      const aValue = a[field] ? a[field].toString() : "";
-      const bValue = b[field] ? b[field].toString() : "";
+      const aValue = get(a, field) ? get(a, field).toString() : "";
+      const bValue = get(b, field) ? get(b, field).toString() : "";
       if (aValue > bValue) {
         return dir === "asc" ? 1 : -1;
       }
