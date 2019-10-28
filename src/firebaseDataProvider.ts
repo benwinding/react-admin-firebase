@@ -1,6 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-
+import get from "lodash/get";
 import {
   CREATE,
   DELETE,
@@ -12,9 +12,7 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { Observable, Subject } from "rxjs";
-import { type } from "os";
-import get from "lodash/get";
+import { Observable } from "rxjs";
 
 export interface IResource {
   path: string;
