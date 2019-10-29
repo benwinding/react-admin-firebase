@@ -5,7 +5,6 @@
   "dependencies": {
     "@types/lodash": "^4.14.123",
     "firebase": "6.3.0",
-    "lodash": "^4.17.15",
     "ra-realtime": "^2.6.0",
     "react-admin": "^2.3.1",
     "rxjs": "^6.3.2"

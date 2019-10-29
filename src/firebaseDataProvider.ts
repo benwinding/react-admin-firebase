@@ -1,6 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-import get from "lodash/get";
+import * as _ from "lodash";
 import {
   CREATE,
   DELETE,
@@ -285,10 +285,10 @@ class FirebaseClient {
   private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
     data.sort((a: {}, b: {}) => {
       try {
-        const aValue = get(a, field) ? get(a, field).toString() : "";
+        const aValue = _.get(a, field) ? _.get(a, field).toString() : "";
         console.log(aValue);
 
-        const bValue = get(b, field) ? get(b, field).toString() : "";
+        const bValue = _.get(b, field) ? _.get(b, field).toString() : "";
         console.log(bValue);
         if (aValue > bValue) {
           return dir === "asc" ? 1 : -1;
