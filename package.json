@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "dependencies": {
     "@types/lodash": "^4.14.123",
     "firebase": "6.3.0",
