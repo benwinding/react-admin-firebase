@@ -48,7 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var firebase = require("firebase/app");
 require("firebase/firestore");
-var get_1 = require("lodash/get");
+var lodash_1 = require("lodash");
 var react_admin_1 = require("react-admin");
 var rxjs_1 = require("rxjs");
 // UTILS
@@ -317,9 +317,9 @@ var FirebaseClient = /** @class */ (function () {
     FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
             try {
-                var aValue = get_1.default(a, field) ? get_1.default(a, field).toString() : "";
+                var aValue = lodash_1.default.get(a, field) ? lodash_1.default.get(a, field).toString() : "";
                 console.log(aValue);
-                var bValue = get_1.default(b, field) ? get_1.default(b, field).toString() : "";
+                var bValue = lodash_1.default.get(b, field) ? lodash_1.default.get(b, field).toString() : "";
                 console.log(bValue);
                 if (aValue > bValue) {
                     return dir === "asc" ? 1 : -1;
