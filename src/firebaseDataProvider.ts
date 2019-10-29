@@ -284,13 +284,20 @@ class FirebaseClient {
 
   private sortArray(data: Array<{}>, field: string, dir: "asc" | "desc") {
     data.sort((a: {}, b: {}) => {
-      const aValue = get(a, field) ? get(a, field).toString() : "";
-      const bValue = get(b, field) ? get(b, field).toString() : "";
-      if (aValue > bValue) {
-        return dir === "asc" ? 1 : -1;
-      }
-      if (aValue < bValue) {
-        return dir === "asc" ? -1 : 1;
+      try {
+        const aValue = get(a, field) ? get(a, field).toString() : "";
+        console.log(aValue);
+
+        const bValue = get(b, field) ? get(b, field).toString() : "";
+        console.log(bValue);
+        if (aValue > bValue) {
+          return dir === "asc" ? 1 : -1;
+        }
+        if (aValue < bValue) {
+          return dir === "asc" ? -1 : 1;
+        }
+      } catch (error) {
+        console.log(error);
       }
       return 0;
     });
