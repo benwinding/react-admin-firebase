@@ -316,20 +316,13 @@ var FirebaseClient = /** @class */ (function () {
     };
     FirebaseClient.prototype.sortArray = function (data, field, dir) {
         data.sort(function (a, b) {
-            try {
-                var aValue = _.get(a, field) ? _.get(a, field).toString() : "";
-                console.log(aValue);
-                var bValue = _.get(b, field) ? _.get(b, field).toString() : "";
-                console.log(bValue);
-                if (aValue > bValue) {
-                    return dir === "asc" ? 1 : -1;
-                }
-                if (aValue < bValue) {
-                    return dir === "asc" ? -1 : 1;
-                }
+            var aValue = _.get(a, field) ? _.get(a, field).toString() : "";
+            var bValue = _.get(b, field) ? _.get(b, field).toString() : "";
+            if (aValue > bValue) {
+                return dir === "asc" ? 1 : -1;
             }
-            catch (error) {
-                console.log(error);
+            if (aValue < bValue) {
+                return dir === "asc" ? -1 : 1;
             }
             return 0;
         });
