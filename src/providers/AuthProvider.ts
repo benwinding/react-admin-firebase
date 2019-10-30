@@ -15,7 +15,8 @@ import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 class AuthClient {
   private auth: FirebaseAuth;
 
-  constructor(firebaseConfig: {}, options: RAFirebaseOptions) {
+  constructor(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
+    const options = optionsInput || {};
     log("Auth Client: initializing...", {firebaseConfig, options});
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
