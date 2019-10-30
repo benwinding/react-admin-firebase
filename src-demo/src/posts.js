@@ -8,6 +8,7 @@ import {
   Create,
   Edit,
   Filter,
+  DateField,
   DisabledInput,
   SimpleShowLayout,
   SimpleForm,
@@ -97,8 +98,8 @@ export const PostEdit = props => (
   <Edit {...props}>
     <SimpleForm>
       <DisabledInput source="id" />
-      <DisabledInput source="createdate" />
-      <DisabledInput source="lastupdate" />
+      <DateField source="createdate" />
+      <DateField source="lastupdate" />
       <TextInput source="title" />
       <RichTextInput source="body" />
       <ReferenceInput
