@@ -3,12 +3,13 @@ import {
   CollectionReference,
   QueryDocumentSnapshot,
   FirebaseFirestore
-} from '@firebase/firestore-types';
-import { RAFirebaseOptions } from 'index';
-import { log } from '../../misc/logger';
-import { getAbsolutePath } from '../../misc/pathHelper';
-import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
-import { User } from '@firebase/auth-types';
+} from "@firebase/firestore-types";
+import { RAFirebaseOptions } from "index";
+import { log } from "../../misc/logger";
+import { getAbsolutePath } from "../../misc/pathHelper";
+import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
+import { User } from "@firebase/auth-types";
+import { messageTypes } from "../../misc/messageTypes";
 
 export interface IResource {
   path: string;
@@ -41,8 +42,12 @@ export class ResourceManager {
     return resource;
   }
 
-  public async TryGetResourcePromise(relativePath: string): Promise<IResource> {
-    await this.initPath(relativePath);
+  public async TryGetResourcePromise(
+    relativePath: string,
+    collectionQuery: messageTypes.CollectionQueryType
+  ): Promise<IResource> {
+    await this.initPath(relativePath, collectionQuery);
+
     const resource: IResource = this.resources[relativePath];
     if (!resource) {
       throw new Error(
@@ -52,11 +57,18 @@ export class ResourceManager {
     return resource;
   }
 
-  public async RefreshResource(relativePath: string) {
-    await this.initPath(relativePath);
+  public async RefreshResource(
+    relativePath: string,
+    collectionQuery: messageTypes.CollectionQueryType
+  ) {
+    await this.initPath(relativePath, collectionQuery);
     const resource = this.resources[relativePath];
-    log('resourceManager.RefreshResource', { relativePath });
-    const newDocs = await resource.collection.get();
+    log("resourceManager.RefreshResource", { relativePath });
+
+    const collection = resource.collection;
+    const query = this.applyQuery(collection, collectionQuery);
+    const newDocs = await query.get();
+
     resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
   }
 
@@ -71,10 +83,17 @@ export class ResourceManager {
     return result;
   }
 
-  private async initPath(relativePath: string): Promise<void> {
+  private async initPath(
+    relativePath: string,
+    collectionQuery?: messageTypes.CollectionQueryType
+  ): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
-    log('resourceManager.initPath:::', { absolutePath });
-    const isAccessible = await this.isCollectionAccessible(absolutePath);
+    log("resourceManager.initPath:::", { absolutePath });
+    const isAccessible = await this.isCollectionAccessible(
+      absolutePath,
+      collectionQuery
+    );
+
     const hasBeenInited = this.resources[relativePath];
     if (!isAccessible) {
       if (hasBeenInited) {
@@ -117,9 +136,15 @@ export class ResourceManager {
     });
   }
 
-  private async isCollectionAccessible(absolutePath: string): Promise<boolean> {
+  private async isCollectionAccessible(
+    absolutePath: string,
+    collectionQuery?: messageTypes.CollectionQueryType
+  ): Promise<boolean> {
     try {
-      await this.db.collection(absolutePath).doc('auth_test').get();
+      const collection = this.db.collection(absolutePath);
+      const query = this.applyQuery(collection, collectionQuery);
+
+      await query.get();
     } catch (error) {
       return false;
     }
@@ -128,5 +153,14 @@ export class ResourceManager {
 
   private removeResource(resourceName: string) {
     delete this.resources[resourceName];
+  }
+
+  private applyQuery(
+    collection: CollectionReference,
+    collectionQuery?: messageTypes.CollectionQueryType
+  ): CollectionReference {
+    if (!collectionQuery) return collection;
+
+    return collectionQuery(collection);
   }
 }

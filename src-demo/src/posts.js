@@ -35,9 +35,17 @@ const PostFilter = props => (
 );
 
 export const PostList = props => (
-  <List {...props} filters={<PostFilter />}>
+  <List
+    {...props}
+    filters={<PostFilter />}
+    filter={{
+      collectionQuery: collection =>
+        collection.where("publishing_state", "==", "published")
+    }}
+  >
     <Datagrid>
       <TextField source="title" />
+      <TextField source="publishing_state" />
       <TextField source="updatedby" />
       <TextField source="createdby" />
       <RichTextField source="body" />
@@ -62,7 +70,11 @@ export const PostShow = props => (
       <ReferenceField label="User" source="user_id" reference="users">
         <TextField source="name" />
       </ReferenceField>
-      <FileField source="files_multiple.src" title="files_multiple.title" multiple />
+      <FileField
+        source="files_multiple.src"
+        title="files_multiple.title"
+        multiple
+      />
     </SimpleShowLayout>
   </Show>
 );
