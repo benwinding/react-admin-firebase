@@ -1,3 +1,4 @@
+import { CollectionReference } from "@firebase/firestore-types";
 export declare namespace messageTypes {
     interface IParamsGetList {
         pagination: {
@@ -8,8 +9,11 @@ export declare namespace messageTypes {
             field: string;
             order: string;
         };
-        filter?: {};
+        filter?: {
+            collectionQuery?: CollectionQueryType;
+        };
     }
+    type CollectionQueryType = (arg0: CollectionReference) => CollectionReference;
     interface IParamsGetOne {
         id: string;
     }

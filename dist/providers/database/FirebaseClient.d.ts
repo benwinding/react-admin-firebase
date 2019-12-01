@@ -1,7 +1,7 @@
-import { RAFirebaseOptions } from 'index';
-import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
-import { IFirebaseClient } from './IFirebaseClient';
-import { messageTypes } from '../../misc/messageTypes';
+import { RAFirebaseOptions } from "index";
+import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
+import { IFirebaseClient } from "./IFirebaseClient";
+import { messageTypes } from "../../misc/messageTypes";
 export declare class FirebaseClient implements IFirebaseClient {
     private fireWrapper;
     private options;
