@@ -10,6 +10,8 @@ import {
   Filter,
   DateField,
   DisabledInput,
+  ImageField,
+  ImageInput,
   SimpleShowLayout,
   SimpleForm,
   TextField,
@@ -102,6 +104,14 @@ export const PostCreate = props => (
           </FileInput>
         </SimpleFormIterator>
       </ArrayInput>
+      <ArrayInput source="sections.mySection.items" label="Section items">
+        <SimpleFormIterator>
+          <TextInput source="name" label="Name" />
+          <ImageInput source="image" label="Image" accept="image/*">
+            <ImageField source="src" title="title" />
+          </ImageInput>
+        </SimpleFormIterator>
+      </ArrayInput>
     </SimpleForm>
   </Create>
 );
@@ -130,6 +140,14 @@ export const PostEdit = props => (
           <FileInput source="file" label="Array Form Files">
             <FileField source="src" title="title" />
           </FileInput>
+        </SimpleFormIterator>
+      </ArrayInput>
+      <ArrayInput source="sections.mySection.items" label="Section items">
+        <SimpleFormIterator>
+          <TextInput source="name" label="Name" />
+          <ImageInput source="image" label="Image" accept="image/*">
+            <ImageField source="src" title="title" />
+          </ImageInput>
         </SimpleFormIterator>
       </ArrayInput>
     </SimpleForm>
