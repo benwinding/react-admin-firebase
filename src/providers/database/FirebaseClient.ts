@@ -314,7 +314,10 @@ export class FirebaseClient implements IFirebaseClient {
     if (!hasRawFile) {
       return;
     }
-    ref.src = await this.uploadAndGetLink(ref.rawFile, docPath, fieldPath);
+
+    const sourceFieldName = Object.keys(ref).find((key) => key !== 'rawFile' && key !== 'title');
+
+    ref[sourceFieldName] = await this.uploadAndGetLink(ref.rawFile, docPath, fieldPath);
     delete ref.rawFile;
   }
 
