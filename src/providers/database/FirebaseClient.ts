@@ -286,7 +286,7 @@ export class FirebaseClient implements IFirebaseClient {
                 return Promise.all(
                   Object.keys(arrayObj).map(arrayObjFieldName => {
                     const arrayObjVal: any = arrayObj[arrayObjFieldName];
-                    if (typeof arrayObjVal === 'object' && !arrayObjVal.hasOwnProperty("rawFile")) {
+                    if (!!arrayObjVal && typeof arrayObjVal === 'object' && !arrayObjVal.hasOwnProperty("rawFile")) {
                       return this.parseDataAndUpload(r, id, arrayObjVal);
                     }
                     return this.parseDataField(
@@ -300,7 +300,7 @@ export class FirebaseClient implements IFirebaseClient {
             })
           );
         }
-        if (typeof val === 'object' && !val.hasOwnProperty("rawFile")) {
+        if (!!val && typeof val === 'object' && !val.hasOwnProperty("rawFile")) {
           return this.parseDataAndUpload(r, id, val);
         }
         await this.parseDataField(val, docPath, fieldName);
