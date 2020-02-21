@@ -46,6 +46,7 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery: messageTypes.CollectionQueryType
   ): Promise<IResource> {
+    log("resourceManager.TryGetResourcePromise", { relativePath, collectionQuery });
     await this.initPath(relativePath, collectionQuery);
 
     const resource: IResource = this.resources[relativePath];
@@ -61,9 +62,9 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery: messageTypes.CollectionQueryType
   ) {
+    log("resourceManager.RefreshResource", { relativePath, collectionQuery });
     await this.initPath(relativePath, collectionQuery);
     const resource = this.resources[relativePath];
-    log("resourceManager.RefreshResource", { relativePath });
 
     const collection = resource.collection;
     const query = this.applyQuery(collection, collectionQuery);
@@ -94,14 +95,13 @@ export class ResourceManager {
       collectionQuery
     );
 
-    const hasBeenInited = this.resources[relativePath];
-    if (!isAccessible) {
-      if (hasBeenInited) {
-        this.removeResource(relativePath);
-      }
+    const hasBeenInited = !!this.resources[relativePath];
+    log("resourceManager.initPath:::", { absolutePath, isAccessible, hasBeenInited });
+    if (!isAccessible && hasBeenInited){
+      this.removeResource(relativePath);
       return;
     }
-    if (hasBeenInited) {
+    if (hasBeenInited){
       return;
     }
     const collection = this.db.collection(absolutePath);
@@ -144,7 +144,7 @@ export class ResourceManager {
       const collection = this.db.collection(absolutePath);
       const query = this.applyQuery(collection, collectionQuery);
 
-      await query.get();
+      await query.limit(1).get();
     } catch (error) {
       return false;
     }
