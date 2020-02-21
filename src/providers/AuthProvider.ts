@@ -1,13 +1,5 @@
 // import * as firebase from "firebase";
 import { FirebaseAuth } from "@firebase/auth-types";
-
-import {
-  AUTH_LOGIN,
-  AUTH_LOGOUT,
-  AUTH_ERROR,
-  AUTH_CHECK,
-  AUTH_GET_PERMISSIONS
-} from "react-admin";
 import { log, CheckLogging } from "../misc/logger";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
@@ -26,56 +18,48 @@ class AuthClient {
   public async HandleAuthLogin(params) {
     const { username, password } = params;
 
-    try {
-      const user = await this.auth.signInWithEmailAndPassword(
-        username,
-        password
-      );
-      log("HandleAuthLogin: user sucessfully logged in", { user });
-      return user
-    } catch (e) {
-      log("HandleAuthLogin: invalid credentials", { params });
-      throw new Error("Login error: invalid credentials");
+    if (username && password) {
+      try {
+        const user = await this.auth.signInWithEmailAndPassword(
+          username,
+          password
+        );
+        log("HandleAuthLogin: user sucessfully logged in", { user });
+        return user
+      } catch (e) {
+        log("HandleAuthLogin: invalid credentials", { params });
+        throw new Error("Login error: invalid credentials");
+      }
+    } else {
+      return this.getUserLogin();
     }
   }
 
-  public async HandleAuthLogout(params) {
-    await this.auth.signOut();
+  public HandleAuthLogout() {
+    return this.auth.signOut();
   }
 
-  public async HandleAuthError(params) { }
-
-  public async HandleAuthCheck(params) {
-    try {
-      const user = await this.getUserLogin();
-      log("HandleAuthCheck: user is still logged in", { user });
-    } catch (e) {
-      log("HandleAuthCheck: ", { e });
-      throw new Error("Auth check error: " + e);
-    }
+  public HandleAuthError(error) {
+    log("HandleAuthLogin: invalid credentials", { error });
+    return Promise.reject("Login error: invalid credentials");
   }
 
-  public async getUserLogin() {
+  public HandleAuthCheck() {
+    return this.getUserLogin();
+  }
+
+  public getUserLogin() {
     return new Promise((resolve, reject) => {
-      this.auth.onAuthStateChanged((user) => {
+      if (this.auth.currentUser) return resolve(this.auth.currentUser);
+      const unsubscribe = this.auth.onAuthStateChanged(user => {
+        unsubscribe();
         if (user) {
           resolve(user);
         } else {
-          reject("User not logged in");
+          reject();
         }
-      });
+      })
     });
-  }
-
-  public async HandleGetCurrent() {
-    try {
-      const user = await this.getUserLogin();
-      log("HandleGetCurrent: current user", { user });
-      return user;
-    } catch (e) {
-      log("HandleGetCurrent: no user is logged in", { e });
-      return null;
-    }
   }
 
   public async HandleGetPermissions() {
@@ -99,26 +83,12 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
   const auth = new AuthClient(firebaseConfig, options);
   CheckLogging(firebaseConfig, options);
 
-  return async (type: string, params: {}) => {
-    log("Auth Event: ", { type, params });
-    {
-      switch (type) {
-        case AUTH_LOGIN:
-          return auth.HandleAuthLogin(params);
-        case AUTH_LOGOUT:
-          return auth.HandleAuthLogout(params);
-        case AUTH_ERROR:
-          return auth.HandleAuthError(params);
-        case AUTH_CHECK:
-          return auth.HandleAuthCheck(params);
-        case "AUTH_GETCURRENT":
-          return auth.HandleGetCurrent();
-        case AUTH_GET_PERMISSIONS:
-          return auth.HandleGetPermissions();
-        default:
-          throw new Error("Unhandled auth type:" + type);
-      }
-    }
+  return {
+    login: params => auth.HandleAuthLogin(params),
+    logout: () => auth.HandleAuthLogout(),
+    checkAuth: () => auth.HandleAuthCheck(),
+    checkError: error => auth.HandleAuthError(error),
+    getPermissions: () => auth.HandleGetPermissions(),
   };
 }
 
