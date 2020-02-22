@@ -3,19 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "ra-input-rich-text": "^2.3.0",
+    "ra-input-rich-text": "^3.2.0",
     "react": "^16.5.1",
+    "react-admin": "^3.2.2",
     "react-admin-firebase": "../",
     "react-dom": "^16.5.1",
+    "react-firebaseui": "^4.0.0",
     "react-scripts": "1.1.5",
-    "redux-saga": "^0.16.0",
     "source-map-loader": "^0.2.4"
   },
   "homepage": "https://benwinding.github.io/react-admin-firebase/",
   "devDependencies": {
-    "gh-pages": "^2.0.1",
     "concurrently": "4.1.1",
-    "cpx": "1.5.0"
+    "cpx": "1.5.0",
+    "gh-pages": "^2.0.1"
   },
   "scripts": {
     "start": "concurrently \"yarn update-raf\" \"yarn start-dev-server\"",

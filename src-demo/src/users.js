@@ -8,7 +8,6 @@ import {
   Create,
   Edit,
   Filter,
-  DisabledInput,
   SimpleShowLayout,
   SimpleForm,
   TextField,
@@ -61,9 +60,9 @@ export const UserCreate = (props) => (
 export const UserEdit = (props) => (
   <Edit {...props}>
     <SimpleForm>
-      <DisabledInput source="id" />
-      <DisabledInput source="createdate" />
-      <DisabledInput source="lastupdate" />
+      <TextInput disabled source="id" />
+      <TextInput disabled source="createdate" />
+      <TextInput disabled source="lastupdate" />
       <TextInput source="name" />
       <TextInput source="age" />
     </SimpleForm>
