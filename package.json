@@ -1,18 +1,19 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "peerDependencies": {
+    "firebase": "^6.1.x",
     "react": "^16.x",
     "react-admin": "^3.x",
     "react-dom": "^16.x"
   },
   "dependencies": {
-    "firebase": "6.1.x",
     "path-browserify": "^1.0.0",
     "rxjs": "^6.5.x"
   },
   "devDependencies": {
+    "firebase": "^6.1.x",
     "@firebase/app-types": "^0.3.9",
     "@firebase/auth-types": "^0.6.0",
     "@firebase/firestore-types": "1.2.0",
