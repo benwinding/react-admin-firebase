@@ -2,15 +2,40 @@ import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 
 // UTILS
 
-export function log(description: string, obj?: {}) {
-  if (ISDEBUG) {
-    console.log("react-admin-firebase: ", description, obj);
-  }
-}
+export class SimpleLogger {
+  private title = 'react-admin-firebase: ';
 
-export function logError(description: string, obj?: {}) {
-  if (ISDEBUG) {
-    console.error("react-admin-firebase: ", description, obj);
+  public get log() {
+    if (ISDEBUG) {
+      return (...any) => {};
+    }
+    const boundLogFn: (...any) => void = console.log.bind(
+      console,
+      this.title
+    );
+    return boundLogFn;
+  }
+
+  public get warn() {
+    if (ISDEBUG) {
+      return (...any) => {};
+    }
+    const boundLogFn: (...any) => void = console.warn.bind(
+      console,
+      this.title
+    );
+    return boundLogFn;
+  }
+
+  public get error() {
+    if (ISDEBUG) {
+      return (...any) => {};
+    }
+    const boundLogFn: (...any) => void = console.error.bind(
+      console,
+      this.title
+    );
+    return boundLogFn;
   }
 }
 
@@ -22,3 +47,9 @@ export function CheckLogging(config: {}, options: RAFirebaseOptions) {
     ISDEBUG = true;
   }
 }
+
+const logger = new SimpleLogger()
+
+export const log = logger.log;
+export const logWarn = logger.warn;
+export const logError = logger.error;
