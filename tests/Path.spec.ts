@@ -1,4 +1,4 @@
-import { getAbsolutePath } from '../src/misc/pathHelper';
+import { getAbsolutePath } from '../src/misc';
 
 test('path test 1', () => {
   const santized = getAbsolutePath('root/doc', 'coll');

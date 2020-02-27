@@ -1,6 +1,5 @@
 import realtimeSaga from "ra-realtime";
-import { fb } from "./DataProvider";
-import { RAFirebaseOptions } from "index";
+import { RAFirebaseOptions } from "./RAFirebaseOptions";
 
 const observeRequest = (dataProvider, options?: RAFirebaseOptions) => (type, resource, params) => {
   const safeOptions = options || {};

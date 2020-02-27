@@ -9,11 +9,10 @@ import {
   UPDATE,
   UPDATE_MANY
 } from "react-admin";
-import { log, CheckLogging } from "../misc/logger";
+import { getAbsolutePath, log, CheckLogging } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
-import { getAbsolutePath } from "misc/pathHelper";
 
 export let fb: FirebaseClient;
 

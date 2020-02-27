@@ -1,12 +1,16 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
 import { ResourceManager, IResource } from "./ResourceManager";
-import { RAFirebaseOptions } from "index";
-import { log, logError } from "../../misc/logger";
-import { sortArray, filterArray } from "../../misc/arrayHelpers";
+import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
-import { messageTypes } from "../../misc/messageTypes";
-import { joinPaths } from "../../misc/pathHelper";
+import {
+  filterArray,
+  joinPaths,
+  log,
+  logError,
+  messageTypes,
+  sortArray,
+} from "../../misc";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;

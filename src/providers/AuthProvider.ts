@@ -1,6 +1,6 @@
 // import * as firebase from "firebase";
 import { FirebaseAuth } from "@firebase/auth-types";
-import { log, CheckLogging } from "../misc/logger";
+import { log, CheckLogging } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
