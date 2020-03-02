@@ -3,7 +3,7 @@ import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 // UTILS
 
 export class SimpleLogger {
-  private title = 'react-admin-firebase: ';
+  private title = '🔥r-a-f: ';
 
   public get log() {
     if (ISDEBUG) {

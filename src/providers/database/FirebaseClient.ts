@@ -81,6 +81,10 @@ export class FirebaseClient implements IFirebaseClient {
     const hasOverridenDocId = params.data && params.data.id;
     if (hasOverridenDocId) {
       const overridenId = params.data.id;
+      const exists = (await r.collection.doc(overridenId).get()).exists;
+      if (exists) {
+        throw new Error(`the id:"${overridenId}" already exists, please use a unique string if overriding the 'id' field`);
+      }
       const data = await this.parseDataAndUpload(r, overridenId, params.data);
       if (!overridenId) {
         throw new Error("id must be a valid string");
