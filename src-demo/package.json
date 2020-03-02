@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "firebase": "^6.1.x",
+    "firebase": "^7.9.1",
     "ra-input-rich-text": "^3.2.0",
     "react": "^16.5.1",
     "react-admin": "^3.2.2",

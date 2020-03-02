@@ -3,7 +3,7 @@
   "description": "A firebase data provider for the React Admin framework",
   "version": "3.0.1",
   "peerDependencies": {
-    "firebase": "^6.1.x",
+    "firebase": "^7.9.x",
     "react": "^16.x",
     "react-admin": "^3.x",
     "react-dom": "^16.x"
@@ -13,7 +13,7 @@
     "rxjs": "^6.5.x"
   },
   "devDependencies": {
-    "firebase": "^6.1.x",
+    "firebase": "^7.9.1",
     "@firebase/app-types": "^0.3.9",
     "@firebase/auth-types": "^0.6.0",
     "@firebase/firestore-types": "1.2.0",
