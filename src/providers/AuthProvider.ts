@@ -77,15 +77,17 @@ class AuthClient {
     }
   }
 
-  public async HandleGetJWT() {
+  public async HandleGetJWTObject() {
+    /*  Function allows client to retrieve parameters associated with JWTs from Firebase
+     *  Anything listed here can be referenced: https://firebase.google.com/docs/reference/js/firebase.auth.IDTokenResult
+     */ 
     try {
       const user = await this.getUserLogin();
       // @ts-ignore
       const token = await user.getIdTokenResult();
-
-      return token.token;
+      return token;
     } catch (e) {
-      log("HandleGetJWT: no user is logged in or tokenResult error", {
+      log("HandleGetJWTObject: no user is logged in or tokenResult error", {
         e
       });
       return null;
@@ -104,7 +106,7 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
     checkAuth: () => auth.HandleAuthCheck(),
     checkError: error => auth.HandleAuthError(error),
     getPermissions: () => auth.HandleGetPermissions(),
-    getJWT: () => auth.HandleGetJWT()
+    getFBJWTObject: () => auth.HandleGetJWTObject()
   };
 }
 
