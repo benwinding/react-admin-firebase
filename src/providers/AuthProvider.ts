@@ -1,6 +1,7 @@
-// import * as firebase from "firebase";
+import firebase from "firebase/app";
+import "firebase/auth";
 import { FirebaseAuth } from "@firebase/auth-types";
-import { log, CheckLogging } from "../misc/logger";
+import { log, CheckLogging } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
@@ -13,6 +14,7 @@ class AuthClient {
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
     this.auth = fireWrapper.auth();
+    this.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
   }
 
   public async HandleAuthLogin(params) {

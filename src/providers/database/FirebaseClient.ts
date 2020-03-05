@@ -1,12 +1,16 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
 import { ResourceManager, IResource } from "./ResourceManager";
-import { RAFirebaseOptions } from "index";
-import { log, logError } from "../../misc/logger";
-import { sortArray, filterArray } from "../../misc/arrayHelpers";
+import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
-import { messageTypes } from "../../misc/messageTypes";
-import { joinPaths } from "../../misc/pathHelper";
+import {
+  filterArray,
+  joinPaths,
+  log,
+  logError,
+  messageTypes,
+  sortArray,
+} from "../../misc";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -77,6 +81,10 @@ export class FirebaseClient implements IFirebaseClient {
     const hasOverridenDocId = params.data && params.data.id;
     if (hasOverridenDocId) {
       const overridenId = params.data.id;
+      const exists = (await r.collection.doc(overridenId).get()).exists;
+      if (exists) {
+        throw new Error(`the id:"${overridenId}" already exists, please use a unique string if overriding the 'id' field`);
+      }
       const data = await this.parseDataAndUpload(r, overridenId, params.data);
       if (!overridenId) {
         throw new Error("id must be a valid string");
