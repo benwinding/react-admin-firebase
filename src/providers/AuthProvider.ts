@@ -76,6 +76,21 @@ class AuthClient {
       return null;
     }
   }
+
+  public async HandleGetJWT() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.token;
+    } catch (e) {
+      log("HandleGetJWT: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
 }
 
 export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
@@ -89,6 +104,7 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
     checkAuth: () => auth.HandleAuthCheck(),
     checkError: error => auth.HandleAuthError(error),
     getPermissions: () => auth.HandleGetPermissions(),
+    getJWT: () => auth.HandleGetJWT()
   };
 }
 
