@@ -265,11 +265,11 @@ export class FirebaseClient implements IFirebaseClient {
     }
   }
 
-  private async parseDataAndUpload(r: IResource, id: string, data: any) {
+  private async parseDataAndUpload(r: IResource, id: string, data: any, path?: string) {
     if (!data) {
       return data;
     }
-    const docPath = r.collection.doc(id).path;
+    let docPath = path ? path : r.collection.doc(id).path;
 
     await Promise.all(
       Object.keys(data).map(async fieldName => {
@@ -287,12 +287,13 @@ export class FirebaseClient implements IFirebaseClient {
                   Object.keys(arrayObj).map(arrayObjFieldName => {
                     const arrayObjVal: any = arrayObj[arrayObjFieldName];
                     if (!!arrayObjVal && typeof arrayObjVal === 'object' && !arrayObjVal.hasOwnProperty("rawFile")) {
-                      return this.parseDataAndUpload(r, id, arrayObjVal);
+                      docPath += `/${index}/${fieldName}`;
+                      return this.parseDataAndUpload(r, id, arrayObjVal, docPath);
                     }
                     return this.parseDataField(
                       arrayObjVal,
                       docPath,
-                      fieldName + arrayObjFieldName + index
+                      `/${fieldName}/${index}/${arrayObjFieldName}`
                     );
                   })
                 );
@@ -301,7 +302,8 @@ export class FirebaseClient implements IFirebaseClient {
           );
         }
         if (!!val && typeof val === 'object' && !val.hasOwnProperty("rawFile")) {
-          return this.parseDataAndUpload(r, id, val);
+          docPath += `/${fieldName}`;
+          return this.parseDataAndUpload(r, id, val, docPath);
         }
         await this.parseDataField(val, docPath, fieldName);
       })
