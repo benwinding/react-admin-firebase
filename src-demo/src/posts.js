@@ -37,10 +37,7 @@ export const PostList = props => (
   <List
     {...props}
     filters={<PostFilter />}
-    filter={{
-      // collectionQuery: collection =>
-      //   collection.where("publishing_state", "==", "published")
-    }}
+    filter={{ updatedby: "test@example.com" }}
   >
     <Datagrid>
       <TextField source="id" />
