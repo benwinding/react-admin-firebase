@@ -232,9 +232,9 @@ export class FirebaseClient implements IFirebaseClient {
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        sortArray(data, field, "asc");
+        sortArray(matches, field, "asc");
       } else {
-        sortArray(data, field, "desc");
+        sortArray(matches, field, "desc");
       }
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
