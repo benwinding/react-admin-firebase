@@ -9,11 +9,6 @@
 
 A firebase data provider for the [React-Admin](https://github.com/marmelab/react-admin) framework. It maps collections from the Firebase database (Firestore) to your react-admin application. It's an [npm package](https://www.npmjs.com/package/react-admin-firebase)!
 
-
----
-## React-Admin v3
-This version only supports up to `react-admin` v2.x. For the beta version with support for v3 please follow this issue https://github.com/benwinding/react-admin-firebase/issues/46
-
 ---
 
 ## Features
