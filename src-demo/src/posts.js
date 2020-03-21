@@ -43,6 +43,7 @@ export const PostList = props => (
     }}
   >
     <Datagrid>
+      <TextField source="id" />
       <TextField source="title" />
       <TextField source="publishing_state" />
       <TextField source="updatedby" />
@@ -81,7 +82,7 @@ export const PostShow = props => (
 export const PostCreate = props => (
   <Create {...props}>
     <SimpleForm>
-      <TextField source="id" />
+      <TextInput source="id" />
       <TextInput source="title" />
       <RichTextInput source="body" />
       <ReferenceInput

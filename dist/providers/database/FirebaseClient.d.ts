@@ -20,6 +20,8 @@ export declare class FirebaseClient implements IFirebaseClient {
     private tryGetResource;
     private getCurrentUserEmail;
     private parseDataAndUpload;
+    private addCreatedByFields;
+    private addUpdatedByFields;
     private parseDataField;
     private uploadAndGetLink;
     private saveFile;

@@ -20,7 +20,8 @@ const options = {
   app: firebaseApp,
   // watch: ['posts'];
   // dontwatch: ['comments'];
-  persistence: 'local'
+  persistence: 'local',
+  // disableMeta: true
 }
 
 const authProvider = FirebaseAuthProvider(firebaseConfig, options);

@@ -10,7 +10,7 @@ export declare class FirebaseWrapper implements IFirebaseWrapper {
     constructor();
     init(firebaseConfig: {}, options: RAFirebaseOptions): void;
     db(): firebase.firestore.Firestore;
-    serverTimestamp(): firebase.firestore.FieldValue;
+    serverTimestamp(): Date;
     auth(): any;
     storage(): firebase.storage.Storage;
 }

@@ -20,7 +20,9 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     return this.firestore;
   }
   public serverTimestamp() {
-    return firebase.firestore.FieldValue.serverTimestamp();
+    // This line doesn't work for some reason, might be firebase sdk.
+    // return firebase.firestore.FieldValue.serverTimestamp();
+    return new Date();
   }
   public auth() {
     return this.app.auth() as any;
