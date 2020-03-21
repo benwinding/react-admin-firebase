@@ -1,4 +1,4 @@
-import { messageTypes } from '../../misc/messageTypes'
+import { messageTypes } from '../../misc'
 
 export interface IFirebaseClient {
   apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList>;

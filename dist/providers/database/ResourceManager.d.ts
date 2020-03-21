@@ -1,8 +1,8 @@
 import { CollectionReference } from "@firebase/firestore-types";
-import { RAFirebaseOptions } from "index";
+import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { User } from "@firebase/auth-types";
-import { messageTypes } from "../../misc/messageTypes";
+import { messageTypes } from "../../misc";
 export interface IResource {
     path: string;
     pathAbsolute: string;

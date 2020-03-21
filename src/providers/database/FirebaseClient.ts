@@ -1,12 +1,16 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
 import { ResourceManager, IResource } from "./ResourceManager";
-import { RAFirebaseOptions } from "index";
-import { log, logError } from "../../misc/logger";
-import { sortArray, filterArray } from "../../misc/arrayHelpers";
+import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
-import { messageTypes } from "../../misc/messageTypes";
-import { joinPaths } from "../../misc/pathHelper";
+import {
+  filterArray,
+  joinPaths,
+  log,
+  logError,
+  messageTypes,
+  sortArray
+} from "../../misc";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -73,22 +77,25 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<messageTypes.IResponseCreate> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
-    const currentUserEmail = await this.getCurrentUserEmail();
     const hasOverridenDocId = params.data && params.data.id;
+    log("apiCreate", { hasOverridenDocId });
     if (hasOverridenDocId) {
       const overridenId = params.data.id;
+      const exists = (await r.collection.doc(overridenId).get()).exists;
+      if (exists) {
+        throw new Error(
+          `the id:"${overridenId}" already exists, please use a unique string if overriding the 'id' field`
+        );
+      }
       const data = await this.parseDataAndUpload(r, overridenId, params.data);
       if (!overridenId) {
         throw new Error("id must be a valid string");
       }
-      const docObj = {
-        ...data,
-        createdate: this.fireWrapper.serverTimestamp(),
-        lastupdate: this.fireWrapper.serverTimestamp(),
-        createdby: currentUserEmail,
-        updatedby: currentUserEmail
-      };
-      await r.collection.doc(overridenId).set(docObj, { merge: true });
+      const docObj = { ...data };
+      await this.addCreatedByFields(docObj);
+      await this.addUpdatedByFields(docObj);
+      log("apiCreate", { docObj });
+      await r.collection.doc(overridenId).set(docObj, { merge: false });
       return {
         data: {
           ...data,
@@ -98,13 +105,9 @@ export class FirebaseClient implements IFirebaseClient {
     }
     const newId = this.db.collection("collections").doc().id;
     const data = await this.parseDataAndUpload(r, newId, params.data);
-    const docObj = {
-      ...data,
-      createdate: this.fireWrapper.serverTimestamp(),
-      lastupdate: this.fireWrapper.serverTimestamp(),
-      createdby: currentUserEmail,
-      updatedby: currentUserEmail
-    };
+    const docObj = { ...data };
+    await this.addCreatedByFields(docObj);
+    await this.addUpdatedByFields(docObj);
     await r.collection.doc(newId).set(docObj, { merge: false });
     return {
       data: {
@@ -121,15 +124,12 @@ export class FirebaseClient implements IFirebaseClient {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
-    const currentUserEmail = await this.getCurrentUserEmail();
     const data = await this.parseDataAndUpload(r, id, params.data);
+    const docObj = { ...data };
+    await this.addUpdatedByFields(docObj);
     r.collection
       .doc(id)
-      .update({
-        ...data,
-        lastupdate: this.fireWrapper.serverTimestamp(),
-        updatedby: currentUserEmail
-      })
+      .update(docObj)
       .catch(error => {
         logError("apiUpdate error", { error });
       });
@@ -148,17 +148,14 @@ export class FirebaseClient implements IFirebaseClient {
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
-    const currentUserEmail = await this.getCurrentUserEmail();
     const returnData = await Promise.all(
       ids.map(async id => {
         const data = await this.parseDataAndUpload(r, id, params.data);
+        const docObj = { ...data };
+        await this.addUpdatedByFields(docObj);
         r.collection
           .doc(id)
-          .update({
-            ...data,
-            lastupdate: this.fireWrapper.serverTimestamp(),
-            updatedby: currentUserEmail
-          })
+          .update(docObj)
           .catch(error => {
             logError("apiUpdateMany error", { error });
           });
@@ -235,9 +232,9 @@ export class FirebaseClient implements IFirebaseClient {
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        sortArray(data, field, "asc");
+        sortArray(matches, field, "asc");
       } else {
-        sortArray(data, field, "desc");
+        sortArray(matches, field, "desc");
       }
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
@@ -301,6 +298,24 @@ export class FirebaseClient implements IFirebaseClient {
       })
     );
     return data;
+  }
+
+  private async addCreatedByFields(obj: any) {
+    if (this.options.disableMeta) {
+      return;
+    }
+    const currentUserEmail = await this.getCurrentUserEmail();
+    obj.createdate = this.fireWrapper.serverTimestamp();
+    obj.createdby = currentUserEmail;
+  }
+
+  private async addUpdatedByFields(obj: any) {
+    if (this.options.disableMeta) {
+      return;
+    }
+    const currentUserEmail = await this.getCurrentUserEmail();
+    obj.lastupdate = this.fireWrapper.serverTimestamp();
+    obj.updatedby = currentUserEmail;
   }
 
   private async parseDataField(ref: any, docPath: string, fieldPath: string) {

@@ -121,9 +121,10 @@ module.exports = {
       // We are waiting for https://github.com/facebookincubator/create-react-app/issues/2176.
       // { parser: { requireEnsure: false } },
       {
-        test: /\.(js|mjs|jsx|ts|tsx)$/,
-        enforce: 'pre',
-        use: ['source-map-loader']
+        test: /\.(js|mjs|map|jsx|ts|tsx)$/,
+        enforce: "pre",
+        loader: "source-map-loader",
+        exclude: /node_modules\/(?!(react-admin-firebase)\/).*/,
       },
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
@@ -238,6 +239,11 @@ module.exports = {
       // ** STOP ** Are you adding a new loader?
       // Make sure to add the new loader(s) before the "file" loader.
     ],
+  },
+  watch: true,
+  watchOptions: {
+    ignored: /node_modules\/(?!(react-admin-firebase)\/).*/,
+    poll: 1000 // Check for changes every second
   },
   plugins: [
     // Makes some environment variables available in index.html.

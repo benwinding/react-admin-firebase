@@ -1,4 +1,4 @@
-import { sortArray } from "../src/misc/arrayHelpers";
+import { sortArray } from "../src/misc";
 
 test("returns an ascending array", () => {
   const input = [{ a: 1 }, { a: 2 }];

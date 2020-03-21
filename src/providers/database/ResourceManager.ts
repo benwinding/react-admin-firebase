@@ -4,12 +4,10 @@ import {
   QueryDocumentSnapshot,
   FirebaseFirestore
 } from "@firebase/firestore-types";
-import { RAFirebaseOptions } from "index";
-import { log } from "../../misc/logger";
-import { getAbsolutePath } from "../../misc/pathHelper";
+import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { User } from "@firebase/auth-types";
-import { messageTypes } from "../../misc/messageTypes";
+import { log, getAbsolutePath, messageTypes, logError } from "../../misc";
 
 export interface IResource {
   path: string;
@@ -46,7 +44,10 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery: messageTypes.CollectionQueryType
   ): Promise<IResource> {
-    log("resourceManager.TryGetResourcePromise", { relativePath, collectionQuery });
+    log("resourceManager.TryGetResourcePromise", {
+      relativePath,
+      collectionQuery
+    });
     await this.initPath(relativePath, collectionQuery);
 
     const resource: IResource = this.resources[relativePath];
@@ -71,16 +72,28 @@ export class ResourceManager {
     const newDocs = await query.get();
 
     resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
+    log("resourceManager.RefreshResource", {
+      newDocs,
+      resource,
+      collectionPath: collection.path
+    });
   }
 
   public async GetSingleDoc(relativePath: string, docId: string) {
     await this.initPath(relativePath);
     const resource = this.resources[relativePath];
-    const res = await resource.collection.doc(docId).get();
-    if (!res.exists) {
+    const docSnap = await resource.collection.doc(docId).get();
+    if (!docSnap.exists) {
       throw new Error("react-admin-firebase: No id found matching: " + docId);
     }
-    const result = this.parseFireStoreDocument(res);
+    const result = this.parseFireStoreDocument(docSnap);
+    log("resourceManager.GetSingleDoc", {
+      relativePath,
+      resource,
+      docId,
+      docSnap,
+      result
+    });
     return result;
   }
 
@@ -89,19 +102,24 @@ export class ResourceManager {
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
-    log("resourceManager.initPath:::", { absolutePath });
     const isAccessible = await this.isCollectionAccessible(
       absolutePath,
       collectionQuery
     );
 
     const hasBeenInited = !!this.resources[relativePath];
-    log("resourceManager.initPath:::", { absolutePath, isAccessible, hasBeenInited });
-    if (!isAccessible && hasBeenInited){
+    log("resourceManager.initPath()", {
+      absolutePath,
+      isAccessible,
+      hasBeenInited
+    });
+    if (!isAccessible && hasBeenInited) {
+      log("resourceManager.initPath() not accessible, removing resource...");
       this.removeResource(relativePath);
       return;
     }
-    if (hasBeenInited){
+    if (hasBeenInited) {
+      log("resourceManager.initPath() hasbeen inited already...");
       return;
     }
     const collection = this.db.collection(absolutePath);
@@ -113,6 +131,12 @@ export class ResourceManager {
       pathAbsolute: absolutePath
     };
     this.resources[relativePath] = resource;
+    log("resourceManager.initPath() setting resource...", {
+      resource,
+      allResources: this.resources,
+      collection: collection,
+      collectionPath: collection.path
+    });
   }
 
   private parseFireStoreDocument(doc: QueryDocumentSnapshot): {} {
@@ -159,8 +183,17 @@ export class ResourceManager {
     collection: CollectionReference,
     collectionQuery?: messageTypes.CollectionQueryType
   ): CollectionReference {
-    if (!collectionQuery) return collection;
-
-    return collectionQuery(collection);
+    let collref: CollectionReference;
+    if (collectionQuery) {
+      collref = collectionQuery(collection);
+    } else {
+      collref = collection;
+    }
+    log("resourceManager.applyQuery() ...", {
+      collection,
+      collectionQuery: (collectionQuery || "-").toString(),
+      collref
+    });
+    return collref;
   }
 }
