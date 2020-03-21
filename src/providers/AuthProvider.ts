@@ -10,11 +10,31 @@ class AuthClient {
 
   constructor(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
     const options = optionsInput || {};
-    log("Auth Client: initializing...", {firebaseConfig, options});
+    log("Auth Client: initializing...", { firebaseConfig, options });
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
     this.auth = fireWrapper.auth();
-    this.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(error => console.error(error));
+    this.setPersistence(options.persistence);
+  }
+
+  setPersistence(persistenceInput: "session" | "local" | "none") {
+    let persistenceResolved: string;
+    switch (persistenceInput) {
+      case "local":
+        persistenceResolved = firebase.auth.Auth.Persistence.LOCAL;
+        break;
+      case "none":
+        persistenceResolved = firebase.auth.Auth.Persistence.NONE;
+        break;
+      case "session":
+      default:
+        persistenceResolved = firebase.auth.Auth.Persistence.SESSION;
+        break;
+    }
+    log("setPersistence", { persistenceInput, persistenceResolved });
+    this.auth
+      .setPersistence(persistenceResolved)
+      .catch(error => console.error(error));
   }
 
   public async HandleAuthLogin(params) {
@@ -27,7 +47,7 @@ class AuthClient {
           password
         );
         log("HandleAuthLogin: user sucessfully logged in", { user });
-        return user
+        return user;
       } catch (e) {
         log("HandleAuthLogin: invalid credentials", { params });
         throw new Error("Login error: invalid credentials");
@@ -60,7 +80,7 @@ class AuthClient {
         } else {
           reject();
         }
-      })
+      });
     });
   }
 
@@ -90,11 +110,14 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
     logout: () => auth.HandleAuthLogout(),
     checkAuth: () => auth.HandleAuthCheck(),
     checkError: error => auth.HandleAuthError(error),
-    getPermissions: () => auth.HandleGetPermissions(),
+    getPermissions: () => auth.HandleGetPermissions()
   };
 }
 
-function VerifyAuthProviderArgs(firebaseConfig: {}, options: RAFirebaseOptions) {
+function VerifyAuthProviderArgs(
+  firebaseConfig: {},
+  options: RAFirebaseOptions
+) {
   const hasNoApp = !options || !options.app;
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {

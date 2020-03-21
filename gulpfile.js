@@ -19,6 +19,7 @@ const execCmd = (cmd, directory) => {
 };
 
 const conf = {
+  watchSrc: "./src/**/*",
   copyFrom: ["./src/**/*", "./package.json", "./dist/**/*"],
   copyTo: "./src-demo/node_modules/react-admin-firebase",
   output: {
@@ -48,7 +49,7 @@ gulp.task("copy-to-demo", function() {
 gulp.task("watch-and-copy-to-demo", function() {
   // Execute commands in series
   execCmd("yarn watch", '.');
-  gulp.watch(conf.output.dir, ["copy-to-demo"]);
+  gulp.watch(conf.watchSrc, ["copy-to-demo"]);
   execCmd("yarn start", 'src-demo');
 });
 
