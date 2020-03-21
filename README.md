@@ -19,6 +19,7 @@ This version only supports up to `react-admin` v2.x. For the beta version with s
 ## Features
 - [x] Firestore Dataprovider _(details below)_
 - [x] Firebase AuthProvider (email, password)
+- [x] Login with: Google, Facebook, Github etc... [(Example Here)](https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomLoginPage.js)
 - [x] Firebase storage upload functionality
 
 _Pull requests welcome!!_
@@ -27,19 +28,19 @@ _Pull requests welcome!!_
 - [x] Dynamic caching of resources
 - [x] All methods implemented; `(GET, POST, GET_LIST ect...)`
 - [x] Filtering, sorting etc...
-- [x] Realtime updates, using ra-realtime
-    - Optional watch collection array or dontwatch collection array
 - [x] Ability to manage sub collections through app configuration
 - [x] Ability to use externally initialized firebaseApp instance
 - [x] Override firestore random id by using "id" as a field in the Create part of the resource
-- [x] Upload to the firebase storage bucket using the standard <FileInput /> field
+- [x] Upload to the firebase storage bucket using the standard `<FileInput />` field
+- [ ] Realtime updates, using ra-realtime
+    - Optional watch collection array or dontwatch collection array
 
 ## Get Started
-`yarn add react-admin-firebase` 
+`yarn add react-admin-firebase firebase`
 
 or
 
-`npm install --save react-admin-firebase`
+`npm install --save react-admin-firebase firebase`
 
 ## Demos Basic
 A simple example based on the [React Admin Tutorial](https://marmelab.com/react-admin/Tutorial.html).
@@ -184,9 +185,5 @@ const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 3. `yarn start-demo`
 
 Now all local changes in the library source code can be tested immediately in the demo app.
-
-### Explanation
-
-
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ben.winding%40gmail.com&item_name=Development&currency_code=AUD&source=url)
