@@ -2,13 +2,13 @@ function isEmptyObj(obj) {
   if (!obj) {
     return true;
   }
-  return JSON.stringify(obj) === '{}';
+  return JSON.stringify(obj) === "{}";
 }
 
 export function sortArray(
   data: Array<{}>,
   field: string,
-  dir: 'asc' | 'desc'
+  dir: "asc" | "desc"
 ): void {
   data.sort((a: {}, b: {}) => {
     const rawA = a[field];
@@ -19,14 +19,14 @@ export function sortArray(
       aValue = rawA;
       bValue = rawB;
     } else {
-      aValue = (a[field] || '').toString().toLowerCase();
-      bValue = (b[field] || '').toString().toLowerCase();
+      aValue = (a[field] || "").toString().toLowerCase();
+      bValue = (b[field] || "").toString().toLowerCase();
     }
     if (aValue > bValue) {
-      return dir === 'asc' ? 1 : -1;
+      return dir === "asc" ? 1 : -1;
     }
     if (aValue < bValue) {
-      return dir === 'asc' ? -1 : 1;
+      return dir === "asc" ? -1 : 1;
     }
     return 0;
   });
@@ -34,28 +34,34 @@ export function sortArray(
 
 export function filterArray(
   data: Array<{}>,
-  filterFields: { [field: string]: string }
+  searchFields: { [field: string]: string }
 ): Array<{}> {
-  if (isEmptyObj(filterFields)) {
+  if (isEmptyObj(searchFields)) {
     return data;
   }
-  const fieldNames = Object.keys(filterFields);
-  return data.filter(item =>
-    fieldNames.reduce((previousMatched, fieldName) => {
-      let fieldVal = filterFields[fieldName];
-      if (fieldVal == null || fieldVal == undefined) {
-        fieldVal = '';
-      }
-      const fieldSearchText = fieldVal.toString().toLowerCase();
-      const dataFieldValue = item[fieldName];
-      if (dataFieldValue == null) {
-        return false;
-      }
-      const currentIsMatched = dataFieldValue
-        .toString()
-        .toLowerCase()
-        .includes(fieldSearchText);
-      return previousMatched || currentIsMatched;
-    }, false)
+  const searchObjs = Object.keys(searchFields).map(n => ({
+    name: n,
+    value: (searchFields[n] || '').toLowerCase()
+  }));
+  return data.filter(row =>
+    searchObjs.reduce(
+      (prev, curr) => doesRowMatch(row, curr.name, curr.value) && prev,
+      true
+    )
   );
+}
+
+function doesRowMatch(
+  row: {},
+  searchField: string,
+  searchValue: string
+): boolean {
+  const searchPart = row[searchField];
+  if (typeof searchPart !== "string") {
+    return false;
+  }
+  return searchPart
+    .toString()
+    .toLowerCase()
+    .includes(searchValue.toLowerCase());
 }
