@@ -4,4 +4,6 @@ export interface RAFirebaseOptions {
     logging?: boolean;
     watch?: string[];
     dontwatch?: string[];
+    overrideDefaultId?: boolean;
+    persistence?: 'session' | 'local' | 'none';
 }

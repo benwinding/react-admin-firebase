@@ -38,11 +38,12 @@ export const PostList = props => (
     {...props}
     filters={<PostFilter />}
     filter={{
-      collectionQuery: collection =>
-        collection.where("publishing_state", "==", "published")
+      // collectionQuery: collection =>
+      //   collection.where("publishing_state", "==", "published")
     }}
   >
     <Datagrid>
+      <TextField source="id" />
       <TextField source="title" />
       <TextField source="publishing_state" />
       <TextField source="updatedby" />
@@ -81,6 +82,7 @@ export const PostShow = props => (
 export const PostCreate = props => (
   <Create {...props}>
     <SimpleForm>
+      <TextInput source="id" />
       <TextInput source="title" />
       <RichTextInput source="body" />
       <ReferenceInput

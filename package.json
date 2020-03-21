@@ -1,14 +1,14 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "peerDependencies": {
+    "firebase": "^7.9.x",
     "react": "^16.x",
     "react-admin": "^3.x",
     "react-dom": "^16.x"
   },
   "dependencies": {
-    "firebase": "6.1.x",
     "path-browserify": "^1.0.0",
     "rxjs": "^6.5.x"
   },
@@ -24,9 +24,13 @@
     "@types/rx": "^4.1.1",
     "concurrently": "^4.1.1",
     "cpx": "^1.5.0",
+    "del": "^3.0.0",
+    "firebase": "^7.9.1",
+    "gulp": "^3.9.1",
+    "gulp-sequence": "^1.0.0",
     "jest": "^23.6.0",
     "microbundle": "^0.11.0",
-    "ts-jest": "^24.0.2",
+    "ts-jest": "^25",
     "tslint": "^5.16.0",
     "typescript": "^3.0.3"
   },
@@ -36,7 +40,7 @@
   "scripts": {
     "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
-    "start-demo": "cd src-demo && yarn start",
+    "start-demo": "gulp start-demo",
     "test": "jest --watchAll"
   },
   "files": [

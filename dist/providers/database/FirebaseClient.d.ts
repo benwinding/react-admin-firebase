@@ -1,7 +1,7 @@
-import { RAFirebaseOptions } from "index";
+import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
-import { messageTypes } from "../../misc/messageTypes";
+import { messageTypes } from "../../misc";
 export declare class FirebaseClient implements IFirebaseClient {
     private fireWrapper;
     private options;
@@ -20,6 +20,8 @@ export declare class FirebaseClient implements IFirebaseClient {
     private tryGetResource;
     private getCurrentUserEmail;
     private parseDataAndUpload;
+    private addCreatedByFields;
+    private addUpdatedByFields;
     private parseDataField;
     private uploadAndGetLink;
     private saveFile;

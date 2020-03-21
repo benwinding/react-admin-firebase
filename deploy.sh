@@ -1,2 +1,0 @@
-yarn build
-npm publish

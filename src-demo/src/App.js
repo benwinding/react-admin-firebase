@@ -16,10 +16,12 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const options = {
   logging: true,
-  rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
+  // rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
   app: firebaseApp,
   // watch: ['posts'];
   // dontwatch: ['comments'];
+  persistence: 'local',
+  // disableMeta: true
 }
 
 const authProvider = FirebaseAuthProvider(firebaseConfig, options);
