@@ -98,6 +98,81 @@ class AuthClient {
       return null;
     }
   }
+
+  public async HandleGetJWTAuthTime() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.authTime;
+    } catch (e) {
+      log("HandleGetJWTAuthTime: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
+
+  public async HandleGetJWTExpirationTime() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.expirationTime;
+    } catch (e) {
+      log("HandleGetJWTExpirationTime: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
+
+    public async HandleGetJWTSignInProvider() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.signInProvider;
+    } catch (e) {
+      log("HandleGetJWTSignInProvider: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
+
+     public async HandleGetJWTIssuedAtTime() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.issuedAtTime;
+    } catch (e) {
+      log("HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
+
+      public async HandleGetJWTToken() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+
+      return token.token;
+    } catch (e) {
+      log("HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error", {
+        e
+      });
+      return null;
+    }
+  }
 }
 
 export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
@@ -110,7 +185,12 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
     logout: () => auth.HandleAuthLogout(),
     checkAuth: () => auth.HandleAuthCheck(),
     checkError: error => auth.HandleAuthError(error),
-    getPermissions: () => auth.HandleGetPermissions()
+    getPermissions: () => auth.HandleGetPermissions(),
+    getJWTAuthTime: () => auth.HandleGetJWTAuthTime(),
+    getJWTExpirationTime: () => auth.HandleGetJWTExpirationTime(),
+    getJWTSignInProvider: () => auth.HandleGetJWTSignInProvider(),
+    getJWTClaims: () => auth.HandleGetPermissions(),
+    getJWTToken: () => auth.HandleGetJWTToken()
   };
 }
 
