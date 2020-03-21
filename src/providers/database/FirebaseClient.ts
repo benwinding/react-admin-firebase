@@ -51,7 +51,7 @@ export class FirebaseClient implements IFirebaseClient {
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
-    const total = r.list.length;
+    const total = filteredData.length;
     return {
       data: dataPage,
       total
