@@ -22,6 +22,7 @@ const options = {
   // dontwatch: ['comments'];
   persistence: 'local',
   // disableMeta: true
+  dontAddIdFieldToDoc: true
 }
 
 const authProvider = FirebaseAuthProvider(firebaseConfig, options);

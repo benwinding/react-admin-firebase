@@ -6,5 +6,6 @@ export interface RAFirebaseOptions {
     dontwatch?: string[];
     overrideDefaultId?: boolean;
     disableMeta?: boolean;
+    dontAddIdFieldToDoc?: boolean;
     persistence?: 'session' | 'local' | 'none';
 }

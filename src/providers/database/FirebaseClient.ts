@@ -92,6 +92,7 @@ export class FirebaseClient implements IFirebaseClient {
         throw new Error("id must be a valid string");
       }
       const docObj = { ...data };
+      this.checkRemoveIdField(docObj);
       await this.addCreatedByFields(docObj);
       await this.addUpdatedByFields(docObj);
       log("apiCreate", { docObj });
@@ -106,6 +107,7 @@ export class FirebaseClient implements IFirebaseClient {
     const newId = this.db.collection("collections").doc().id;
     const data = await this.parseDataAndUpload(r, newId, params.data);
     const docObj = { ...data };
+    this.checkRemoveIdField(docObj);
     await this.addCreatedByFields(docObj);
     await this.addUpdatedByFields(docObj);
     await r.collection.doc(newId).set(docObj, { merge: false });
@@ -126,6 +128,7 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiUpdate", { resourceName, resource: r, params });
     const data = await this.parseDataAndUpload(r, id, params.data);
     const docObj = { ...data };
+    this.checkRemoveIdField(docObj);
     await this.addUpdatedByFields(docObj);
     r.collection
       .doc(id)
@@ -152,6 +155,7 @@ export class FirebaseClient implements IFirebaseClient {
       ids.map(async id => {
         const data = await this.parseDataAndUpload(r, id, params.data);
         const docObj = { ...data };
+        this.checkRemoveIdField(docObj);
         await this.addUpdatedByFields(docObj);
         r.collection
           .doc(id)
@@ -298,6 +302,12 @@ export class FirebaseClient implements IFirebaseClient {
       })
     );
     return data;
+  }
+
+  private checkRemoveIdField(obj: any) {
+    if (this.options.dontAddIdFieldToDoc) {
+      delete obj.id
+    }
   }
 
   private async addCreatedByFields(obj: any) {

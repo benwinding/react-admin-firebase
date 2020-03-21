@@ -85,6 +85,8 @@ const options = {
   persistence?: 'session' | 'local' | 'none';
   // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
   disableMeta?: false
+  // Prevents document from getting the ID field added as a property
+  dontAddIdFieldToDoc?: false
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
