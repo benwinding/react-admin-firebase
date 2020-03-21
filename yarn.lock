@@ -3215,6 +3215,13 @@ grpc@1.24.2:
     node-pre-gyp "^0.14.0"
     protobufjs "^5.0.3"
 
+gulp-sequence@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-sequence/-/gulp-sequence-1.0.0.tgz#862f93e6503e67c350a42948fa666953cf88ba67"
+  integrity sha512-c+p+EcyBl1UCpbfFA/vUD6MuC7uxoY6Y4g2lq9lLtzOHh9o1wijAQ4o0TIRQ14C7cG6zR6Zi+bpA0cW78CFt6g==
+  dependencies:
+    thunks "^4.9.0"
+
 gulp-util@^3.0.0:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
@@ -7643,6 +7650,11 @@ through2@^2.0.0:
   dependencies:
     readable-stream "~2.3.6"
     xtend "~4.0.1"
+
+thunks@^4.9.0:
+  version "4.9.5"
+  resolved "https://registry.yarnpkg.com/thunks/-/thunks-4.9.5.tgz#fc764983de4de7230a2f300cfe2dc77092bc38f4"
+  integrity sha512-L0s0QzX1x0fcsP52TQs42t3CGX/z6lw0Ktz0ciex47OUhog5K3AsfH3mQ4JTLBYbnsNBhaIUcVMrY8sR+0Lo6w==
 
 tildify@^1.0.0:
   version "1.2.0"

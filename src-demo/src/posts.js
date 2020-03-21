@@ -81,6 +81,7 @@ export const PostShow = props => (
 export const PostCreate = props => (
   <Create {...props}>
     <SimpleForm>
+      <TextField source="id" />
       <TextInput source="title" />
       <RichTextInput source="body" />
       <ReferenceInput

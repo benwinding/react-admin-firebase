@@ -9,6 +9,7 @@
     "react-dom": "^16.x"
   },
   "dependencies": {
+    "gulp-sequence": "^1.0.0",
     "path-browserify": "^1.0.0",
     "rxjs": "^6.5.x"
   },

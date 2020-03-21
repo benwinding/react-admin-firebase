@@ -1,35 +1,32 @@
 const del = require("del");
 const gulp = require("gulp");
-const exec = require('child_process').exec;
+const gulpSequence = require("gulp-sequence");
+const exec = require("child_process").exec;
 
 const execCmd = (cmd, directory) => {
   console.log(`running $ "${cmd}" in dir: [${directory}]`);
   const child = exec(cmd, { cwd: directory });
 
-  child.stdout.on('data', function(data) {
+  child.stdout.on("data", function(data) {
     console.log(data);
   });
-  child.stderr.on('data', function(data) {
+  child.stderr.on("data", function(data) {
     console.error(data);
   });
   return new Promise((resolve, reject) => {
-    child.on('close', resolve);
+    child.on("close", resolve);
   });
 };
 
 const conf = {
-  copyFrom: [
-    './src/**/*',
-    './package.json',
-    './dist/**/*'
-  ],
-  copyTo: './src-demo/node_modules/react-admin-firebase',
+  copyFrom: ["./src/**/*", "./package.json", "./dist/**/*"],
+  copyTo: "./src-demo/node_modules/react-admin-firebase",
   output: {
-    dir: `./dist`,
+    dir: `./dist`
   },
   demo: {
-    root: './src-demo',
-  },
+    root: "./src-demo"
+  }
 };
 
 gulp.task("clean", function() {
@@ -37,19 +34,22 @@ gulp.task("clean", function() {
 });
 
 gulp.task("build", function() {
-  return execCmd('npm run build');
+  return execCmd("yarn build");
+});
+
+gulp.task("prepare-demo", function() {
+  return execCmd("yarn", './src-demo');
 });
 
 gulp.task("copy-to-demo", function() {
-  return gulp
-    .src(conf.copyFrom, {base: '.'})
-    .pipe(gulp.dest(conf.copyTo))
+  return gulp.src(conf.copyFrom, { base: "." }).pipe(gulp.dest(conf.copyTo));
 });
 
-gulp.task('start-demo', function() {
+gulp.task("watch-and-copy-to-demo", function() {
   // Execute commands in series
-  execCmd('npm run watch');
-  gulp.watch(conf.output.dir, ['copy-to-demo']);
-  execCmd('sleep 10 && cd src-demo && npm run start');
-})
+  execCmd("yarn watch", '.');
+  gulp.watch(conf.output.dir, ["copy-to-demo"]);
+  execCmd("yarn start", 'src-demo');
+});
 
+gulp.task("start-demo", gulpSequence("prepare-demo", "watch-and-copy-to-demo"));
