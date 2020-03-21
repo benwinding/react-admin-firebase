@@ -1,3 +1,4 @@
+import "firebase/auth";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 export declare function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions): {
     login: (params: any) => Promise<unknown>;

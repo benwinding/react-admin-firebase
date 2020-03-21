@@ -38,8 +38,8 @@ export const PostList = props => (
     {...props}
     filters={<PostFilter />}
     filter={{
-      collectionQuery: collection =>
-        collection.where("publishing_state", "==", "published")
+      // collectionQuery: collection =>
+      //   collection.where("publishing_state", "==", "published")
     }}
   >
     <Datagrid>

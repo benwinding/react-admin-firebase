@@ -14,7 +14,7 @@ class AuthClient {
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
     this.auth = fireWrapper.auth();
-    this.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    this.auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).catch(error => console.error(error));
   }
 
   public async HandleAuthLogin(params) {

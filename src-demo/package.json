@@ -17,14 +17,11 @@
   "devDependencies": {
     "concurrently": "4.1.1",
     "cpx": "1.5.0",
-    "gh-pages": "^2.0.1",
-    "rimraf": "^3.0.2"
+    "gh-pages": "^2.0.1"
   },
   "scripts": {
-    "start": "yarn clean-node_modules && concurrently \"yarn update-raf\" \"yarn start-dev-server\"",
-    "start-dev-server": "yarn replace-config && BROWSER=none PORT=3333 react-scripts start",
+    "start": "BROWSER=none PORT=3333 react-scripts start",
     "build": "react-scripts build",
-    "clean-node_modules": "yarn && rimraf node_modules/react-admin-firebase",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build",
