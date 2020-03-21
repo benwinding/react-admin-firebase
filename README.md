@@ -83,6 +83,8 @@ const options = {
   dontwatch: ['comments'];
   // Authentication persistence, defaults to 'session'
   persistence?: 'session' | 'local' | 'none';
+  // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
+  disableMeta?: false
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
