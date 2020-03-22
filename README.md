@@ -68,21 +68,21 @@ const config = {
 // All options are optional
 const options = {
   // Use a different root document to set your resource collections, by default it uses the root collections of firestore
-  rootRef: 'root-collection/some-doc';
+  rootRef: 'root-collection/some-doc',
   // Your own, previously initialized firebase app instance
-  app: firebaseAppInstance;
+  app: firebaseAppInstance,
   // Enable logging of react-admin-firebase
-  logging: true;
+  logging: true,
   // Resources to watch for realtime updates, will implicitly watch all resources by default, if not set.
-  watch: ['posts'];
+  watch: ['posts'],
   // Resources you explicitly dont want realtime updates for
-  dontwatch: ['comments'];
-  // Authentication persistence, defaults to 'session'
-  persistence?: 'session' | 'local' | 'none';
+  dontwatch: ['comments'],
+  // Authentication persistence, defaults to 'session', options are 'session' | 'local' | 'none'
+  persistence: 'session',
   // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
-  disableMeta?: false
+  disableMeta: false,
   // Prevents document from getting the ID field added as a property
-  dontAddIdFieldToDoc?: false
+  dontAddIdFieldToDoc: false
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
@@ -137,9 +137,14 @@ const authProvider = FirebaseAuthProvider(config);
 ...
 ```
 #### Note
-To get the currently logged in user run `const user = await authProvider('AUTH_GETCURRENT')`, this will return the firebase user object, or null if there is no currently logged in user.
+To get the currently logged in user run `const user = await authProvider.checkAuth()`, this will return the firebase user object, or null if there is no currently logged in user.
 
 ## Realtime Updates!
+
+NOTE: Realtime updates were removed in `react-admin` v3.x (see https://github.com/marmelab/react-admin/pull/3908). As such, `react-admin-firebase` v3.x also does not support Realtime Updates. However, much of the original code used for this functionalaity in `react-admin` v2.x remains - including the documentation below. For updates on the implementation of realtime please follow these issues:
+- https://github.com/benwinding/react-admin-firebase/issues/49
+- https://github.com/benwinding/react-admin-firebase/issues/57
+
 Get realtime updates from the firebase server instantly on your tables, with minimal overheads, using rxjs observables!
 
 ``` javascript
