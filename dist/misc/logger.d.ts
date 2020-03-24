@@ -1,6 +1,7 @@
 import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 export declare class SimpleLogger {
     private title;
+    isEnabled(): boolean;
     readonly log: (...any: any[]) => void;
     readonly warn: (...any: any[]) => void;
     readonly error: (...any: any[]) => void;
