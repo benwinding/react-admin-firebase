@@ -3,32 +3,30 @@ import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 // UTILS
 
 export class SimpleLogger {
-  private title = '🔥r-a-f: ';
+  private title = "🔥r-a-f: ";
+
+  isEnabled() {
+    return !!localStorage.getItem('LOGGING_ENABLED');
+  }
 
   public get log() {
-    if (ISDEBUG) {
+    if (!this.isEnabled()) {
       return (...any) => {};
     }
-    const boundLogFn: (...any) => void = console.log.bind(
-      console,
-      this.title
-    );
+    const boundLogFn: (...any) => void = console.log.bind(console, this.title);
     return boundLogFn;
   }
 
   public get warn() {
-    if (ISDEBUG) {
+    if (!this.isEnabled()) {
       return (...any) => {};
     }
-    const boundLogFn: (...any) => void = console.warn.bind(
-      console,
-      this.title
-    );
+    const boundLogFn: (...any) => void = console.warn.bind(console, this.title);
     return boundLogFn;
   }
 
   public get error() {
-    if (ISDEBUG) {
+    if (!this.isEnabled()) {
       return (...any) => {};
     }
     const boundLogFn: (...any) => void = console.error.bind(
@@ -39,16 +37,17 @@ export class SimpleLogger {
   }
 }
 
-// tslint:disable-next-line: no-var-keyword
-var ISDEBUG = false;
+const logger = new SimpleLogger();
 
 export function CheckLogging(config: {}, options: RAFirebaseOptions) {
-  if ((config && config['debug']) || options.logging) {
-    ISDEBUG = true;
+  const logSignalDeprecated = config && config["debug"];
+  const logSignal = options.logging;
+  if (logSignalDeprecated || logSignal) {
+    localStorage.setItem('LOGGING_ENABLED', 'true')
+  } else {
+    localStorage.removeItem('LOGGING_ENABLED')
   }
 }
-
-const logger = new SimpleLogger()
 
 export const log = logger.log;
 export const logWarn = logger.warn;
