@@ -119,7 +119,7 @@ export class ResourceManager {
       return;
     }
     if (hasBeenInited) {
-      log("resourceManager.initPath() hasbeen inited already...");
+      log("resourceManager.initPath() has been initialized already...");
       return;
     }
     const collection = this.db.collection(absolutePath);
