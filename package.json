@@ -41,7 +41,8 @@
     "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
     "start-demo": "gulp start-demo",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll",
+    "prepublish": "rm -rf dist && microbundle"
   },
   "files": [
     "dist",
