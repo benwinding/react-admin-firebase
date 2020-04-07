@@ -260,7 +260,7 @@ export class FirebaseClient implements IFirebaseClient {
   private async getCurrentUserEmail() {
     const user = await this.rm.getUserLogin();
     if (user) {
-      return user.email;
+      return user.uid;
     } else {
       return "annonymous user";
     }
