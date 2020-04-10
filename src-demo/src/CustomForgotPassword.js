@@ -67,9 +67,10 @@ export default function AlertDialog() {
           </DialogContentText>
           <TextField
             id="outlined-basic"
-            label="Outlined"
+            label="Email"
             type="email"
             variant="outlined"
+            style={{width: '100%'}}
             onChange={handleOnChange}
           />
         </DialogContent>
