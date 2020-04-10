@@ -3,6 +3,7 @@ import React from "react";
 import { Login, LoginForm } from "react-admin";
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
+import ForgotPasswordButton from './CustomForgotPassword'
 
 // Configure FirebaseUI.
 const uiConfig = {
@@ -26,6 +27,7 @@ const CustomLoginForm = props => (
       <p>Password: password</p>
     </div>
     <LoginForm {...props} />
+    <ForgotPasswordButton {...props} />
     <SignInScreen />
   </div>
 );
