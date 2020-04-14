@@ -89,4 +89,10 @@ export declare namespace messageTypes {
         data: Array<{}>;
         total: number;
     }
+    interface HttpErrorType {
+        status: number;
+        message: string;
+        json?: any;
+    }
+    type IResponseAny = IResponseGetList | IResponseGetOne | IResponseCreate | IResponseUpdate | IResponseUpdateMany | IResponseDelete | IResponseDeleteMany | HttpErrorType;
 }

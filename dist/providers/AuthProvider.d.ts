@@ -4,7 +4,7 @@ export declare function AuthProvider(firebaseConfig: {}, options: RAFirebaseOpti
     login: (params: any) => Promise<unknown>;
     logout: () => Promise<void>;
     checkAuth: () => Promise<unknown>;
-    checkError: (error: any) => Promise<never>;
+    checkError: (error: any) => Promise<string>;
     getPermissions: () => Promise<any>;
     getJWTAuthTime: () => Promise<any>;
     getJWTExpirationTime: () => Promise<any>;
