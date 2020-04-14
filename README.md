@@ -83,7 +83,9 @@ const options = {
   // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
   disableMeta: false,
   // Prevents document from getting the ID field added as a property
-  dontAddIdFieldToDoc: false
+  dontAddIdFieldToDoc: false,
+  // Adds 'deletedate' and 'deletedby' meta fields for non-destructive deleting functionality
+  softDelete: false
 }
 
 const dataProvider = FirebaseDataProvider(config, options);

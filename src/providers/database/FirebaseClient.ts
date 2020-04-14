@@ -173,6 +173,57 @@ export class FirebaseClient implements IFirebaseClient {
       data: returnData
     };
   }
+  public async apiSoftDelete(
+    resourceName: string,
+    params: messageTypes.IParamsUpdate
+  ): Promise<messageTypes.IResponseUpdate> {
+    const id = params.id;
+    const r = await this.tryGetResource(resourceName);
+    log("apiSoftDelete", { resourceName, resource: r, params });
+    const docObj = {};
+    await this.addDeletedByFields(docObj);
+    await this.addUpdatedByFields(docObj);
+    r.collection
+      .doc(id)
+      .update(docObj)
+      .catch(error => {
+        logError("apiSoftDelete error", { error });
+      });
+    return {
+      data: {
+        ...params.previousData,
+        id: id
+      },
+    };
+  }
+  public async apiSoftDeleteMany(
+    resourceName: string,
+    params: messageTypes.IParamsUpdateMany
+  ): Promise<messageTypes.IResponseUpdateMany> {
+    const r = await this.tryGetResource(resourceName);
+    log("apiSoftDeleteMany", { resourceName, resource: r, params });
+    const ids = params.ids;
+    const returnData = await Promise.all(
+      ids.map(async id => {
+        const docObj = {};
+        await this.addDeletedByFields(docObj);
+        await this.addUpdatedByFields(docObj);
+        r.collection
+          .doc(id)
+          .update(docObj)
+          .catch(error => {
+            logError("apiSoftDeleteMany error", { error });
+          });
+        return {
+          ...params.data,
+          id: id
+        };
+      })
+    );
+    return {
+      data: returnData
+    };
+  }
   public async apiDelete(
     resourceName: string,
     params: messageTypes.IParamsDelete
@@ -326,6 +377,15 @@ export class FirebaseClient implements IFirebaseClient {
     const currentUserEmail = await this.getCurrentUserEmail();
     obj.lastupdate = this.fireWrapper.serverTimestamp();
     obj.updatedby = currentUserEmail;
+  }
+
+  private async addDeletedByFields(obj: any) {
+    if (this.options.disableMeta) {
+      return;
+    }
+    const currentUserEmail = await this.getCurrentUserEmail();
+    obj.deletedate = this.fireWrapper.serverTimestamp();
+    obj.deletedby = currentUserEmail;
   }
 
   private async parseDataField(ref: any, docPath: string, fieldPath: string) {

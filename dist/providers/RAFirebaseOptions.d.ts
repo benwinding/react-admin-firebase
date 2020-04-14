@@ -8,4 +8,5 @@ export interface RAFirebaseOptions {
     disableMeta?: boolean;
     dontAddIdFieldToDoc?: boolean;
     persistence?: 'session' | 'local' | 'none';
+    softDelete?: boolean;
 }

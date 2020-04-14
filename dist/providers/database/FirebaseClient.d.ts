@@ -13,6 +13,8 @@ export declare class FirebaseClient implements IFirebaseClient {
     apiCreate(resourceName: string, params: messageTypes.IParamsCreate): Promise<messageTypes.IResponseCreate>;
     apiUpdate(resourceName: string, params: messageTypes.IParamsUpdate): Promise<messageTypes.IResponseUpdate>;
     apiUpdateMany(resourceName: string, params: messageTypes.IParamsUpdateMany): Promise<messageTypes.IResponseUpdateMany>;
+    apiSoftDelete(resourceName: string, params: messageTypes.IParamsUpdate): Promise<messageTypes.IResponseUpdate>;
+    apiSoftDeleteMany(resourceName: string, params: messageTypes.IParamsUpdateMany): Promise<messageTypes.IResponseUpdateMany>;
     apiDelete(resourceName: string, params: messageTypes.IParamsDelete): Promise<messageTypes.IResponseDelete>;
     apiDeleteMany(resourceName: string, params: messageTypes.IParamsDeleteMany): Promise<messageTypes.IResponseDeleteMany>;
     apiGetMany(resourceName: string, params: messageTypes.IParamsGetMany): Promise<messageTypes.IResponseGetMany>;
@@ -23,6 +25,7 @@ export declare class FirebaseClient implements IFirebaseClient {
     private checkRemoveIdField;
     private addCreatedByFields;
     private addUpdatedByFields;
+    private addDeletedByFields;
     private parseDataField;
     private uploadAndGetLink;
     private saveFile;
