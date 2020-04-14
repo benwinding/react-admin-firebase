@@ -8,9 +8,7 @@ export interface RAFirebaseOptions {
   disableMeta?: boolean;
   dontAddIdFieldToDoc?: boolean;
   persistence?: 'session' | 'local' | 'none';
-<<<<<<< HEAD
-  metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
-=======
   softDelete?: boolean;
->>>>>>> softDelete
+  associateUsersById?: boolean;
+  metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
 }

@@ -316,6 +316,14 @@ export class FirebaseClient implements IFirebaseClient {
       return "annonymous user";
     }
   }
+  private async getCurrentUserId() {
+    const user = await this.rm.getUserLogin();
+    if (user) {
+      return user.uid;
+    } else {
+      return "annonymous user";
+    }
+  }
 
   private async parseDataAndUpload(r: IResource, id: string, data: any) {
     if (!data) {
@@ -365,27 +373,27 @@ export class FirebaseClient implements IFirebaseClient {
     if (this.options.disableMeta) {
       return;
     }
-    const currentUserEmail = await this.getCurrentUserEmail();
+    const currentUserIdentifier = this.options.associateUsersById ? await this.getCurrentUserId() : await this.getCurrentUserEmail();
     switch (this.options.metaFieldCasing) {
       case 'camel':
         obj.createDate = this.fireWrapper.serverTimestamp();
-        obj.createdBy = currentUserEmail;
+        obj.createdBy = currentUserIdentifier;
         break;
       case 'snake':
         obj.create_date = this.fireWrapper.serverTimestamp();
-        obj.created_by = currentUserEmail;
+        obj.created_by = currentUserIdentifier;
         break;
       case 'pascal':
         obj.CreateDate = this.fireWrapper.serverTimestamp();
-        obj.CreatedBy = currentUserEmail;
+        obj.CreatedBy = currentUserIdentifier;
         break;
       case 'kebab':
         obj['create-date'] = this.fireWrapper.serverTimestamp();
-        obj['created-by'] = currentUserEmail;
+        obj['created-by'] = currentUserIdentifier;
         break;
       default:
         obj.createdate = this.fireWrapper.serverTimestamp();
-        obj.createdby = currentUserEmail;
+        obj.createdby = currentUserIdentifier;
         break;
     }
   }
@@ -394,27 +402,27 @@ export class FirebaseClient implements IFirebaseClient {
     if (this.options.disableMeta) {
       return;
     }
-    const currentUserEmail = await this.getCurrentUserEmail();
+    const currentUserIdentifier = this.options.associateUsersById ? await this.getCurrentUserId() : await this.getCurrentUserEmail();
     switch (this.options.metaFieldCasing) {
       case 'camel':
         obj.lastUpdate = this.fireWrapper.serverTimestamp();
-        obj.updatedBy = currentUserEmail;
+        obj.updatedBy = currentUserIdentifier;
         break;
       case 'snake':
         obj.last_update = this.fireWrapper.serverTimestamp();
-        obj.updated_by = currentUserEmail;
+        obj.updated_by = currentUserIdentifier;
         break;
       case 'pascal':
         obj.LastUpdate = this.fireWrapper.serverTimestamp();
-        obj.UpdatedBy = currentUserEmail;
+        obj.UpdatedBy = currentUserIdentifier;
         break;
       case 'kebab':
         obj['last-update'] = this.fireWrapper.serverTimestamp();
-        obj['updated-by'] = currentUserEmail;
+        obj['updated-by'] = currentUserIdentifier;
         break;
       default:
         obj.lastupdate = this.fireWrapper.serverTimestamp();
-        obj.updatedby = currentUserEmail;
+        obj.updatedby = currentUserIdentifier;
         break;
     }
   }
@@ -423,9 +431,29 @@ export class FirebaseClient implements IFirebaseClient {
     if (this.options.disableMeta) {
       return;
     }
-    const currentUserEmail = await this.getCurrentUserEmail();
-    obj.deletedate = this.fireWrapper.serverTimestamp();
-    obj.deletedby = currentUserEmail;
+    const currentUserIdentifier = this.options.associateUsersById ? await this.getCurrentUserId() : await this.getCurrentUserEmail();
+    switch (this.options.metaFieldCasing) {
+      case 'camel':
+        obj.deleteDate = this.fireWrapper.serverTimestamp();
+        obj.deletedBy = currentUserIdentifier;
+        break;
+      case 'snake':
+        obj.delete_date = this.fireWrapper.serverTimestamp();
+        obj.deleted_by = currentUserIdentifier;
+        break;
+      case 'pascal':
+        obj.DeleteDate = this.fireWrapper.serverTimestamp();
+        obj.DeletedBy = currentUserIdentifier;
+        break;
+      case 'kebab':
+        obj['delete-date'] = this.fireWrapper.serverTimestamp();
+        obj['deleted-by'] = currentUserIdentifier;
+        break;
+      default:
+        obj.deletedate = this.fireWrapper.serverTimestamp();
+        obj.deletedby = currentUserIdentifier;
+        break;
+    }
   }
 
   private async parseDataField(ref: any, docPath: string, fieldPath: string) {

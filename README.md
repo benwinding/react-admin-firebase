@@ -84,13 +84,12 @@ const options = {
   disableMeta: false,
   // Prevents document from getting the ID field added as a property
   dontAddIdFieldToDoc: false,
-<<<<<<< HEAD
-  // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
-  metaFieldCasing: 'session',
-=======
   // Adds 'deletedate' and 'deletedby' meta fields for non-destructive deleting functionality
-  softDelete: false
->>>>>>> softDelete
+  softDelete: false,
+  // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
+  associateUsersById: false,
+  // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
+  metaFieldCasing: 'lower'
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
