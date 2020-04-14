@@ -7,53 +7,84 @@ import {
   GET_MANY_REFERENCE,
   GET_ONE,
   UPDATE,
-  UPDATE_MANY
+  UPDATE_MANY,
 } from "react-admin";
-import { getAbsolutePath, log, CheckLogging } from "../misc";
+import { getAbsolutePath, log, CheckLogging, messageTypes } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
+import { HttpError } from "react-admin";
+
 export let fb: FirebaseClient;
 
-export function DataProvider(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
+export function DataProvider(
+  firebaseConfig: {},
+  optionsInput?: RAFirebaseOptions
+) {
   const options = optionsInput || {};
   VerifyDataProviderArgs(firebaseConfig, options);
   CheckLogging(firebaseConfig, options);
 
-  log("react-admin-firebase:: Creating FirebaseDataProvider", { firebaseConfig, options });
+  log("react-admin-firebase:: Creating FirebaseDataProvider", {
+    firebaseConfig,
+    options,
+  });
   const fireWrapper = new FirebaseWrapper();
   fireWrapper.init(firebaseConfig, optionsInput);
   fb = new FirebaseClient(fireWrapper, options);
-  async function providerApi(type: string, resourceName: string, params: any): Promise<any> {
+  async function providerApi(
+    type: string,
+    resourceName: string,
+    params: any
+  ): Promise<messageTypes.IResponseAny> {
     log("FirebaseDataProvider: event", { type, resourceName, params });
-    switch (type) {
-      case GET_MANY:
-        return fb.apiGetMany(resourceName, params);
-      case GET_MANY_REFERENCE:
-        return fb.apiGetManyReference(resourceName, params);
-      case GET_LIST:
-        return fb.apiGetList(resourceName, params);
-      case GET_ONE:
-        return fb.apiGetOne(resourceName, params);
-      case CREATE:
-        return fb.apiCreate(resourceName, params);
-      case UPDATE:
-        return fb.apiUpdate(resourceName, params);
-      case UPDATE_MANY:
-        return fb.apiUpdateMany(resourceName, params);
-      case DELETE:
-        return fb.apiDelete(resourceName, params);
-      case DELETE_MANY:
-        return fb.apiDeleteMany(resourceName, params);
-      default:
-        return {};
+    let res: messageTypes.IResponseAny;
+    try {
+      switch (type) {
+        case GET_MANY:
+          res = await fb.apiGetMany(resourceName, params);
+          break;
+        case GET_MANY_REFERENCE:
+          res = await fb.apiGetManyReference(resourceName, params);
+          break;
+        case GET_LIST:
+          res = await fb.apiGetList(resourceName, params);
+          break;
+        case GET_ONE:
+          res = await fb.apiGetOne(resourceName, params);
+          break;
+        case CREATE:
+          res = await fb.apiCreate(resourceName, params);
+          break;
+        case UPDATE:
+          res = await fb.apiUpdate(resourceName, params);
+          break;
+        case UPDATE_MANY:
+          res = await fb.apiUpdateMany(resourceName, params);
+          break;
+        case DELETE:
+          res = await fb.apiDelete(resourceName, params);
+          break;
+        case DELETE_MANY:
+          res = await fb.apiDeleteMany(resourceName, params);
+          break;
+        default:
+          throw new Error(`Unknkown dataprovider command type: "${type}"`);
+      }
+      return res;
+    } catch (error) {
+      // TODO: Determine if Auth Error
+      throw { status: 409, message: error.toString(), json: res };
     }
   }
   return providerApi;
 }
 
-function VerifyDataProviderArgs(firebaseConfig: {}, options?: RAFirebaseOptions) {
+function VerifyDataProviderArgs(
+  firebaseConfig: {},
+  options?: RAFirebaseOptions
+) {
   const hasNoApp = !options || !options.app;
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {
@@ -63,6 +94,6 @@ function VerifyDataProviderArgs(firebaseConfig: {}, options?: RAFirebaseOptions)
   }
   if (options.rootRef) {
     // Will throw error if rootRef doesn't point to a document
-    getAbsolutePath(options.rootRef, 'test');
+    getAbsolutePath(options.rootRef, "test");
   }
 }
