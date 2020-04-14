@@ -43,8 +43,10 @@ export function DataProvider(firebaseConfig: {}, optionsInput?: RAFirebaseOption
       case UPDATE_MANY:
         return fb.apiUpdateMany(resourceName, params);
       case DELETE:
+        if (options.softDelete) return fb.apiSoftDelete(resourceName, params);
         return fb.apiDelete(resourceName, params);
       case DELETE_MANY:
+        if (options.softDelete) return fb.apiSoftDeleteMany(resourceName, params);
         return fb.apiDeleteMany(resourceName, params);
       default:
         return {};
