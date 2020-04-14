@@ -1,3 +1,4 @@
+import { messageTypes } from './../misc/messageTypes';
 import firebase from "firebase/app";
 import "firebase/auth";
 import { FirebaseAuth } from "@firebase/auth-types";
@@ -61,9 +62,13 @@ class AuthClient {
     return this.auth.signOut();
   }
 
-  public HandleAuthError(error) {
-    log("HandleAuthLogin: invalid credentials", { error });
-    return Promise.reject("Login error: invalid credentials");
+  public HandleAuthError(errorHttp: messageTypes.HttpErrorType) {
+    log("HandleAuthLogin: invalid credentials", { errorHttp });
+    const status = !!errorHttp && errorHttp.status;
+    if (status === 409 || status === 200) {
+      return Promise.resolve("API is authenticated");
+    }
+    return Promise.reject("Recieved authentication error from API");
   }
 
   public HandleAuthCheck() {
