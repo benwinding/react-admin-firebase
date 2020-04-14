@@ -19,6 +19,7 @@ export declare class FirebaseClient implements IFirebaseClient {
     apiGetManyReference(resourceName: string, params: messageTypes.IParamsGetManyReference): Promise<messageTypes.IResponseGetManyReference>;
     private tryGetResource;
     private getCurrentUserEmail;
+    private getCurrentUserId;
     private parseDataAndUpload;
     private checkRemoveIdField;
     private addCreatedByFields;

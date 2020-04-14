@@ -265,6 +265,14 @@ export class FirebaseClient implements IFirebaseClient {
       return "annonymous user";
     }
   }
+  private async getCurrentUserId() {
+    const user = await this.rm.getUserLogin();
+    if (user) {
+      return user.uid;
+    } else {
+      return "annonymous user";
+    }
+  }
 
   private async parseDataAndUpload(r: IResource, id: string, data: any) {
     if (!data) {
@@ -314,18 +322,18 @@ export class FirebaseClient implements IFirebaseClient {
     if (this.options.disableMeta) {
       return;
     }
-    const currentUserEmail = await this.getCurrentUserEmail();
+    const currentUserIdentifier = this.options.associateUsersById ? await this.getCurrentUserId() : await this.getCurrentUserEmail();
     obj.createdate = this.fireWrapper.serverTimestamp();
-    obj.createdby = currentUserEmail;
+    obj.createdby = currentUserIdentifier;
   }
 
   private async addUpdatedByFields(obj: any) {
     if (this.options.disableMeta) {
       return;
     }
-    const currentUserEmail = await this.getCurrentUserEmail();
+    const currentUserIdentifier = this.options.associateUsersById ? await this.getCurrentUserId() : await this.getCurrentUserEmail();
     obj.lastupdate = this.fireWrapper.serverTimestamp();
-    obj.updatedby = currentUserEmail;
+    obj.updatedby = currentUserIdentifier;
   }
 
   private async parseDataField(ref: any, docPath: string, fieldPath: string) {

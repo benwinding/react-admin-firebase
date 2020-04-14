@@ -83,7 +83,9 @@ const options = {
   // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
   disableMeta: false,
   // Prevents document from getting the ID field added as a property
-  dontAddIdFieldToDoc: false
+  dontAddIdFieldToDoc: false,
+  // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
+  associateUsersById: false
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
