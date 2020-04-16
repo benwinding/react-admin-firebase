@@ -102,22 +102,11 @@ export class ResourceManager {
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<void> {
     const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
-    const isAccessible = await this.isCollectionAccessible(
-      absolutePath,
-      collectionQuery
-    );
-
     const hasBeenInited = !!this.resources[relativePath];
     log("resourceManager.initPath()", {
       absolutePath,
-      isAccessible,
       hasBeenInited
     });
-    if (!isAccessible && hasBeenInited) {
-      log("resourceManager.initPath() not accessible, removing resource...");
-      this.removeResource(relativePath);
-      return;
-    }
     if (hasBeenInited) {
       log("resourceManager.initPath() has been initialized already...");
       return;
@@ -158,21 +147,6 @@ export class ResourceManager {
         resolve(user);
       });
     });
-  }
-
-  private async isCollectionAccessible(
-    absolutePath: string,
-    collectionQuery?: messageTypes.CollectionQueryType
-  ): Promise<boolean> {
-    try {
-      const collection = this.db.collection(absolutePath);
-      const query = this.applyQuery(collection, collectionQuery);
-
-      await query.limit(1).get();
-    } catch (error) {
-      return false;
-    }
-    return true;
   }
 
   private removeResource(resourceName: string) {
