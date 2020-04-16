@@ -180,8 +180,7 @@ export class FirebaseClient implements IFirebaseClient {
     const id = params.id;
     const r = await this.tryGetResource(resourceName);
     log("apiSoftDelete", { resourceName, resource: r, params });
-    const docObj = {};
-    await this.addDeletedByFields(docObj);
+    const docObj = { deleted: true };
     await this.addUpdatedByFields(docObj);
     r.collection
       .doc(id)
@@ -205,8 +204,7 @@ export class FirebaseClient implements IFirebaseClient {
     const ids = params.ids;
     const returnData = await Promise.all(
       ids.map(async id => {
-        const docObj = {};
-        await this.addDeletedByFields(docObj);
+        const docObj = { deleted: true };
         await this.addUpdatedByFields(docObj);
         r.collection
           .doc(id)
@@ -270,8 +268,9 @@ export class FirebaseClient implements IFirebaseClient {
     const matches = matchDocSnaps.map(snap => {
       return { ...snap.data(), id: snap.id };
     });
+    const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
     return {
-      data: matches
+      data: permittedData
     };
   }
   public async apiGetManyReference(
@@ -284,18 +283,19 @@ export class FirebaseClient implements IFirebaseClient {
     const targetField = params.target;
     const targetValue = params.id;
     const matches = data.filter(val => val[targetField] === targetValue);
+    const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {
-        sortArray(matches, field, "asc");
+        sortArray(permittedData, field, "asc");
       } else {
-        sortArray(matches, field, "desc");
+        sortArray(permittedData, field, "desc");
       }
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
-    const dataPage = matches.slice(pageStart, pageEnd);
-    const total = matches.length;
+    const dataPage = permittedData.slice(pageStart, pageEnd);
+    const total = permittedData.length;
     return { data: dataPage, total };
   }
   private async tryGetResource(
@@ -423,35 +423,6 @@ export class FirebaseClient implements IFirebaseClient {
       default:
         obj.lastupdate = this.fireWrapper.serverTimestamp();
         obj.updatedby = currentUserIdentifier;
-        break;
-    }
-  }
-
-  private async addDeletedByFields(obj: any) {
-    if (this.options.disableMeta) {
-      return;
-    }
-    const currentUserIdentifier = this.options.associateUsersById ? await this.getCurrentUserId() : await this.getCurrentUserEmail();
-    switch (this.options.metaFieldCasing) {
-      case 'camel':
-        obj.deleteDate = this.fireWrapper.serverTimestamp();
-        obj.deletedBy = currentUserIdentifier;
-        break;
-      case 'snake':
-        obj.delete_date = this.fireWrapper.serverTimestamp();
-        obj.deleted_by = currentUserIdentifier;
-        break;
-      case 'pascal':
-        obj.DeleteDate = this.fireWrapper.serverTimestamp();
-        obj.DeletedBy = currentUserIdentifier;
-        break;
-      case 'kebab':
-        obj['delete-date'] = this.fireWrapper.serverTimestamp();
-        obj['deleted-by'] = currentUserIdentifier;
-        break;
-      default:
-        obj.deletedate = this.fireWrapper.serverTimestamp();
-        obj.deletedby = currentUserIdentifier;
         break;
     }
   }

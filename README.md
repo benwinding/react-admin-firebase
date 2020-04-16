@@ -84,7 +84,8 @@ const options = {
   disableMeta: false,
   // Prevents document from getting the ID field added as a property
   dontAddIdFieldToDoc: false,
-  // Adds 'deletedate' and 'deletedby' meta fields for non-destructive deleting functionality
+  // Adds 'deleted' meta field for non-destructive deleting functionality
+  // NOTE: Hides 'deleted' records from list views unless overridden by filtering for {deleted: true} 
   softDelete: false,
   // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
   associateUsersById: false,

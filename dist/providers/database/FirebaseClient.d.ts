@@ -26,7 +26,6 @@ export declare class FirebaseClient implements IFirebaseClient {
     private checkRemoveIdField;
     private addCreatedByFields;
     private addUpdatedByFields;
-    private addDeletedByFields;
     private parseDataField;
     private uploadAndGetLink;
     private saveFile;
