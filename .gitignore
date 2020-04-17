@@ -11,7 +11,7 @@ node_modules
 /build
 
 # ignore dist now
-# dist
+dist
 
 # misc
 .DS_Store
