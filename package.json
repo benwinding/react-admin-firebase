@@ -41,7 +41,7 @@
     "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
     "start-demo": "gulp start-demo",
-    "test": "jest --watchAll"
+    "test": "echo jest... not implemented yet"
   },
   "files": [
     "dist",
