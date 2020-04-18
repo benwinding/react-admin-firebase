@@ -84,8 +84,13 @@ const options = {
   disableMeta: false,
   // Prevents document from getting the ID field added as a property
   dontAddIdFieldToDoc: false,
+  // Adds 'deleted' meta field for non-destructive deleting functionality
+  // NOTE: Hides 'deleted' records from list views unless overridden by filtering for {deleted: true} 
+  softDelete: false,
+  // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
+  associateUsersById: false,
   // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
-  metaFieldCasing: 'session',
+  metaFieldCasing: 'lower'
 }
 
 const dataProvider = FirebaseDataProvider(config, options);

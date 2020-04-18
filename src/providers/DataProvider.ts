@@ -64,9 +64,11 @@ export function DataProvider(
           res = await fb.apiUpdateMany(resourceName, params);
           break;
         case DELETE:
+          if (options.softDelete) res = await fb.apiSoftDelete(resourceName, params);
           res = await fb.apiDelete(resourceName, params);
           break;
         case DELETE_MANY:
+          if (options.softDelete) res = await fb.apiSoftDeleteMany(resourceName, params);
           res = await fb.apiDeleteMany(resourceName, params);
           break;
         default:

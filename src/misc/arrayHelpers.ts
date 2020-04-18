@@ -36,14 +36,16 @@ export function filterArray(
   data: Array<{}>,
   searchFields: { [field: string]: string }
 ): Array<{}> {
+  const permittedData = data.filter(row => !row['deleted']);
   if (isEmptyObj(searchFields)) {
-    return data;
+    return permittedData;
   }
   const searchObjs = Object.keys(searchFields).map(n => ({
     name: n,
-    value: (searchFields[n] || '').toLowerCase()
+    value: n === 'deleted' ? searchFields[n] : (searchFields[n] || '').toLowerCase()
   }));
-  return data.filter(row =>
+  const dataToFilter = searchObjs.some(obj => obj.name === 'deleted' && obj.value) ? data : permittedData;
+  return dataToFilter.filter(row =>
     searchObjs.reduce(
       (prev, curr) => doesRowMatch(row, curr.name, curr.value) && prev,
       true
@@ -54,9 +56,10 @@ export function filterArray(
 function doesRowMatch(
   row: {},
   searchField: string,
-  searchValue: string
+  searchValue: any
 ): boolean {
   const searchPart = row[searchField];
+  if (searchField === 'deleted') return (searchPart && searchValue) || (!searchPart && !searchValue);
   if (typeof searchPart !== "string") {
     return false;
   }
