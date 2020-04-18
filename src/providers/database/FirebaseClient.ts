@@ -315,8 +315,28 @@ export class FirebaseClient implements IFirebaseClient {
       return;
     }
     const currentUserEmail = await this.getCurrentUserEmail();
-    obj.createdate = this.fireWrapper.serverTimestamp();
-    obj.createdby = currentUserEmail;
+    switch (this.options.metaFieldCasing) {
+      case 'camel':
+        obj.createDate = this.fireWrapper.serverTimestamp();
+        obj.createdBy = currentUserEmail;
+        break;
+      case 'snake':
+        obj.create_date = this.fireWrapper.serverTimestamp();
+        obj.created_by = currentUserEmail;
+        break;
+      case 'pascal':
+        obj.CreateDate = this.fireWrapper.serverTimestamp();
+        obj.CreatedBy = currentUserEmail;
+        break;
+      case 'kebab':
+        obj['create-date'] = this.fireWrapper.serverTimestamp();
+        obj['created-by'] = currentUserEmail;
+        break;
+      default:
+        obj.createdate = this.fireWrapper.serverTimestamp();
+        obj.createdby = currentUserEmail;
+        break;
+    }
   }
 
   private async addUpdatedByFields(obj: any) {
@@ -324,8 +344,28 @@ export class FirebaseClient implements IFirebaseClient {
       return;
     }
     const currentUserEmail = await this.getCurrentUserEmail();
-    obj.lastupdate = this.fireWrapper.serverTimestamp();
-    obj.updatedby = currentUserEmail;
+    switch (this.options.metaFieldCasing) {
+      case 'camel':
+        obj.lastUpdate = this.fireWrapper.serverTimestamp();
+        obj.updatedBy = currentUserEmail;
+        break;
+      case 'snake':
+        obj.last_update = this.fireWrapper.serverTimestamp();
+        obj.updated_by = currentUserEmail;
+        break;
+      case 'pascal':
+        obj.LastUpdate = this.fireWrapper.serverTimestamp();
+        obj.UpdatedBy = currentUserEmail;
+        break;
+      case 'kebab':
+        obj['last-update'] = this.fireWrapper.serverTimestamp();
+        obj['updated-by'] = currentUserEmail;
+        break;
+      default:
+        obj.lastupdate = this.fireWrapper.serverTimestamp();
+        obj.updatedby = currentUserEmail;
+        break;
+    }
   }
 
   private async parseDataField(ref: any, docPath: string, fieldPath: string) {

@@ -83,7 +83,9 @@ const options = {
   // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
   disableMeta: false,
   // Prevents document from getting the ID field added as a property
-  dontAddIdFieldToDoc: false
+  dontAddIdFieldToDoc: false,
+  // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
+  metaFieldCasing: 'session',
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
