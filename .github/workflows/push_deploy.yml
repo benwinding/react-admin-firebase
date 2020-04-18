@@ -1,5 +1,5 @@
 on: push
-name: Build and Test
+name: "Build, Test & Deploy 🚀"
 jobs:
   build:
     name: Build & Test
@@ -23,3 +23,9 @@ jobs:
         run: npm run-script build
       - name: Test
         run: npm run-script test
+      - name: Deploy to npm! 🚀
+        if: github.ref == 'refs/heads/master'
+        uses: benwinding/merge-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
