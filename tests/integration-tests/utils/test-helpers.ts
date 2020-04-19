@@ -1,26 +1,20 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
+import * as firebase from "@firebase/testing";
 
 import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
 import { FirebaseWrapperStub } from './FirebaseWrapperStub';
-import { config } from './TEST.config';
+
+const testOptions = {projectId: 'testing'};
 
 export function initFireWrapper(): IFirebaseWrapper {
   const fire: IFirebaseWrapper = new FirebaseWrapperStub();
-  fire.init(config, {});
+  const app = firebase.initializeTestApp(testOptions);
+  fire.init({}, {app: app});
   return fire;
 }
 
-export function delayPromise(ms: number) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  })
-}
-
-export async function deleteCollection(db: FirebaseFirestore, collectionName: string): Promise<void> {
-  const allDocs = await db.collection(collectionName).get();
-  await Promise.all(allDocs.docs.map(doc => doc.ref.delete()));
+export async function clearDb() {
+  return firebase.clearFirestoreData(testOptions);
 }
 
 export async function createDoc(db: FirebaseFirestore, collectionName: string, docName: string, obj: {}): Promise<void> {

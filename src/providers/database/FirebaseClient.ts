@@ -23,6 +23,7 @@ export class FirebaseClient implements IFirebaseClient {
     this.db = fireWrapper.db();
     this.rm = new ResourceManager(this.fireWrapper, this.options);
   }
+
   public async apiGetList(
     resourceName: string,
     params: messageTypes.IParamsGetList
