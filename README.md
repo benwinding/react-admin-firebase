@@ -194,4 +194,10 @@ const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 
 Now all local changes in the library source code can be tested immediately in the demo app.
 
+### Run tests
+To run the tests, either watch for changes or just run all tests.
+
+- `yarn test-watch`
+- `yarn test`
+
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ben.winding%40gmail.com&item_name=Development&currency_code=AUD&source=url)
