@@ -2,7 +2,7 @@ on:
   pull_request:
     types: [closed]
 
-name: Deploy to npm
+name: PR Merge
 jobs:
   build:
     name: Build & Deploy
