@@ -1,7 +1,7 @@
 import { ResourceManager } from '../../src/providers/database/ResourceManager';
 import { initFireWrapper } from './utils/test-helpers';
 
-const fire = initFireWrapper();
+const fire = initFireWrapper('root-test');
 
 test('rootref1', async () => {
   const rm = new ResourceManager(fire, {
