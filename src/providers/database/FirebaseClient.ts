@@ -18,7 +18,7 @@ export class FirebaseClient implements IFirebaseClient {
 
   constructor(
     private fireWrapper: IFirebaseWrapper,
-    private options: RAFirebaseOptions
+    public options: RAFirebaseOptions
   ) {
     this.db = fireWrapper.db();
     this.rm = new ResourceManager(this.fireWrapper, this.options);
@@ -30,8 +30,10 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
 
-    const collectionQuery = params.filter.collectionQuery;
-    delete params.filter.collectionQuery;
+    const filterSafe = params.filter || {};
+
+    const collectionQuery = filterSafe.collectionQuery;
+    delete filterSafe.collectionQuery;
 
     const r = await this.tryGetResource(
       resourceName,
@@ -48,7 +50,7 @@ export class FirebaseClient implements IFirebaseClient {
       }
     }
     // @ts-ignore
-    const filteredData = filterArray(data, params.filter);
+    const filteredData = filterArray(data, filterSafe);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);

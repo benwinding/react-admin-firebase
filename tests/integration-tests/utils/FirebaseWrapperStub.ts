@@ -6,9 +6,11 @@ import * as firebase from "@firebase/testing";
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
   private app: any;
+  options: RAFirebaseOptions;
 
   constructor() {}
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
+    this.options = options;
     this.app = options.app;
     this.firestore = this.app.firestore();
   }

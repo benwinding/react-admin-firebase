@@ -101,7 +101,8 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<void> {
-    const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
+    const rootRef = this.options && this.options.rootRef;
+    const absolutePath = getAbsolutePath(rootRef, relativePath);
     const hasBeenInited = !!this.resources[relativePath];
     log("resourceManager.initPath()", {
       absolutePath,

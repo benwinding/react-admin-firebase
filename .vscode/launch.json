@@ -13,7 +13,10 @@
         "${relativeFile}"
       ],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ]
     }
   ]
 }
