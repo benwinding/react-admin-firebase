@@ -11,8 +11,10 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   private app: firebase.app.App;
 
   constructor() { }
+  public options: RAFirebaseOptions;
 
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
+    this.options = options;
     this.app = ObtainFirebaseApp(firebaseConfig, options);
     this.firestore = this.app.firestore();
   }

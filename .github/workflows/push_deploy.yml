@@ -19,11 +19,11 @@ jobs:
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: npm install
-      - name: Build Library
+      - name: Check Build
         run: npm run-script build
-      - name: Test
+      - name: Check Tests
         run: npm run-script test
-      - name: Deploy to npm! 🚀
+      - name: Deploy to npm! 🚀 (if master branch)
         if: github.ref == 'refs/heads/master'
         uses: benwinding/merge-release@master
         env:
