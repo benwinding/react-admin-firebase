@@ -18,19 +18,22 @@ export class FirebaseClient implements IFirebaseClient {
 
   constructor(
     private fireWrapper: IFirebaseWrapper,
-    private options: RAFirebaseOptions
+    public options: RAFirebaseOptions
   ) {
     this.db = fireWrapper.db();
     this.rm = new ResourceManager(this.fireWrapper, this.options);
   }
+
   public async apiGetList(
     resourceName: string,
     params: messageTypes.IParamsGetList
   ): Promise<messageTypes.IResponseGetList> {
     log("apiGetList", { resourceName, params });
 
-    const collectionQuery = params.filter.collectionQuery;
-    delete params.filter.collectionQuery;
+    const filterSafe = params.filter || {};
+
+    const collectionQuery = filterSafe.collectionQuery;
+    delete filterSafe.collectionQuery;
 
     const r = await this.tryGetResource(
       resourceName,
@@ -47,7 +50,7 @@ export class FirebaseClient implements IFirebaseClient {
       }
     }
     // @ts-ignore
-    const filteredData = filterArray(data, params.filter);
+    const filteredData = filterArray(data, filterSafe);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
@@ -157,12 +160,9 @@ export class FirebaseClient implements IFirebaseClient {
         const docObj = { ...data };
         this.checkRemoveIdField(docObj);
         await this.addUpdatedByFields(docObj);
-        r.collection
+        await r.collection
           .doc(id)
           .update(docObj)
-          .catch(error => {
-            logError("apiUpdateMany error", { error });
-          });
         return {
           ...data,
           id: id
@@ -250,9 +250,7 @@ export class FirebaseClient implements IFirebaseClient {
       batch.delete(r.collection.doc(id));
       returnData.push({ id });
     }
-    batch.commit().catch(error => {
-      logError("apiDeleteMany error", { error });
-    });
+    await batch.commit();
     return { data: returnData };
   }
   public async apiGetMany(

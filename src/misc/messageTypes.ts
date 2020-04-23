@@ -28,6 +28,7 @@ export namespace messageTypes {
   export interface IParamsCreate {
     data: {
       id?: string;
+      [key: string]: any;
     };
   }
 
