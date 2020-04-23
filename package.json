@@ -42,6 +42,7 @@
     "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
     "start-demo": "gulp start-demo",
+    "start-emulator": "yarn firebase emulators:start --only firestore",
     "test": "yarn firebase emulators:exec \"yarn jest --forceExit --detectOpenHandles\"",
     "test-watch": "yarn firebase emulators:exec \"yarn jest --watchAll --detectOpenHandles\""
   },

@@ -12,6 +12,8 @@ export function initFireWrapper(projectId: string): IFirebaseWrapper {
   return fire;
 }
 
+export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
 export async function clearDb(projectId: string) {
   const testOptions = { projectId: projectId };
   return firebase.clearFirestoreData(testOptions);

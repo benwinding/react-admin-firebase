@@ -251,9 +251,7 @@ export class FirebaseClient implements IFirebaseClient {
       batch.delete(r.collection.doc(id));
       returnData.push({ id });
     }
-    batch.commit().catch(error => {
-      logError("apiDeleteMany error", { error });
-    });
+    await batch.commit();
     return { data: returnData };
   }
   public async apiGetMany(
