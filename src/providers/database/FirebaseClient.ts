@@ -160,12 +160,9 @@ export class FirebaseClient implements IFirebaseClient {
         const docObj = { ...data };
         this.checkRemoveIdField(docObj);
         await this.addUpdatedByFields(docObj);
-        r.collection
+        await r.collection
           .doc(id)
           .update(docObj)
-          .catch(error => {
-            logError("apiUpdateMany error", { error });
-          });
         return {
           ...data,
           id: id
