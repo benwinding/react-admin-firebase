@@ -14,6 +14,7 @@ export namespace messageTypes {
     };
     filter?: {
       collectionQuery?: CollectionQueryType;
+      [fieldName: string]: any;
     };
   }
 
