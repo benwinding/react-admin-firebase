@@ -9,8 +9,10 @@ import {
   log,
   logError,
   messageTypes,
-  sortArray
+  sortArray,
+  parseDocGetAllUploads,
 } from "../../misc";
+import { set } from 'lodash'
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -332,33 +334,11 @@ export class FirebaseClient implements IFirebaseClient {
     }
     const docPath = r.collection.doc(id).path;
 
+    const uploads = parseDocGetAllUploads(data);
     await Promise.all(
-      Object.keys(data).map(async fieldName => {
-        const val = data[fieldName];
-        const isArray = Array.isArray(val);
-        if (isArray) {
-          await Promise.all(
-            (val as []).map((arrayObj, index) => {
-              if (!!val[index] && val[index].hasOwnProperty("rawFile")) {
-                return Promise.all([
-                  this.parseDataField(val[index], docPath, fieldName + index)
-                ]);
-              } else {
-                return Promise.all(
-                  Object.keys(arrayObj).map(arrayObjFieldName => {
-                    const arrayObjVal = arrayObj[arrayObjFieldName];
-                    return this.parseDataField(
-                      arrayObjVal,
-                      docPath,
-                      fieldName + arrayObjFieldName + index
-                    );
-                  })
-                );
-              }
-            })
-          );
-        }
-        await this.parseDataField(val, docPath, fieldName);
+      uploads.map(async (u) => {
+        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath)
+        set(data, u.fieldDotsPath + '.src', link);
       })
     );
     return data;
@@ -426,15 +406,6 @@ export class FirebaseClient implements IFirebaseClient {
         obj.updatedby = currentUserIdentifier;
         break;
     }
-  }
-
-  private async parseDataField(ref: any, docPath: string, fieldPath: string) {
-    const hasRawFile = !!ref && ref.hasOwnProperty("rawFile");
-    if (!hasRawFile) {
-      return;
-    }
-    ref.src = await this.uploadAndGetLink(ref.rawFile, docPath, fieldPath);
-    delete ref.rawFile;
   }
 
   private async uploadAndGetLink(
