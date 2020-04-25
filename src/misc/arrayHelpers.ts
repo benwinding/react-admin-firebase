@@ -1,9 +1,4 @@
-function isEmptyObj(obj) {
-  if (!obj) {
-    return true;
-  }
-  return JSON.stringify(obj) === "{}";
-}
+import { isEmpty } from "lodash";
 
 export function sortArray(
   data: Array<{}>,
@@ -34,37 +29,46 @@ export function sortArray(
 
 export function filterArray(
   data: Array<{}>,
-  searchFields: { [field: string]: string }
+  searchFields: { [field: string]: string | number | boolean }
 ): Array<{}> {
-  const permittedData = data.filter(row => !row['deleted']);
-  if (isEmptyObj(searchFields)) {
-    return permittedData;
+  if (isEmpty(searchFields)) {
+    return data;
   }
-  const searchObjs = Object.keys(searchFields).map(n => ({
-    name: n,
-    value: n === 'deleted' ? searchFields[n] : (searchFields[n] || '').toLowerCase()
+  const searchObjs = Object.keys(searchFields).map((field) => ({
+    searchField: field,
+    searchValue: searchFields[field],
   }));
-  const dataToFilter = searchObjs.some(obj => obj.name === 'deleted' && obj.value) ? data : permittedData;
-  return dataToFilter.filter(row =>
+  const filtered = data.filter((row) =>
     searchObjs.reduce(
-      (prev, curr) => doesRowMatch(row, curr.name, curr.value) && prev,
+      (prev, curr) =>
+        doesRowMatch(row, curr.searchField, curr.searchValue) && prev,
       true
     )
   );
+  return filtered;
 }
 
-function doesRowMatch(
+export function doesRowMatch(
   row: {},
   searchField: string,
   searchValue: any
 ): boolean {
-  const searchPart = row[searchField];
-  if (searchField === 'deleted') return (searchPart && searchValue) || (!searchPart && !searchValue);
-  if (typeof searchPart !== "string") {
-    return false;
+  const searchThis = row[searchField];
+  const isFalseySearch = !searchThis && !searchValue;
+  if (isFalseySearch) {
+    return true;
   }
-  return searchPart
-    .toString()
-    .toLowerCase()
-    .includes(searchValue.toLowerCase());
+  const isStringSearch = typeof searchValue === "string";
+  if (isStringSearch) {
+    return searchThis
+      .toString()
+      .toLowerCase()
+      .includes(searchValue.toLowerCase());
+  }
+  const isBooleanOrNumber =
+    typeof searchValue === "boolean" || typeof searchValue === "number";
+  if (isBooleanOrNumber) {
+    return searchThis === searchValue;
+  }
+  return false;
 }

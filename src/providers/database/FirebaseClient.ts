@@ -49,8 +49,11 @@ export class FirebaseClient implements IFirebaseClient {
         sortArray(data, field, "desc");
       }
     }
-    // @ts-ignore
-    const filteredData = filterArray(data, filterSafe);
+    let softDeleted = data;
+    if (this.options.softDelete) {
+      softDeleted = data.filter(doc => !doc['deleted'])
+    }
+    const filteredData = filterArray(softDeleted, filterSafe);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
