@@ -8,23 +8,34 @@ export function sortArray(
   data.sort((a: {}, b: {}) => {
     const rawA = a[field];
     const rawB = b[field];
+    const isAsc = dir === 'asc';
+
     const isNumberField = Number.isFinite(rawA) && Number.isFinite(rawB);
-    let aValue: string, bValue: string;
     if (isNumberField) {
-      aValue = rawA;
-      bValue = rawB;
-    } else {
-      aValue = (a[field] || "").toString().toLowerCase();
-      bValue = (b[field] || "").toString().toLowerCase();
+      return basicSort(rawA, rawB, isAsc);
     }
-    if (aValue > bValue) {
-      return dir === "asc" ? 1 : -1;
+    const isStringField = typeof rawA == 'string' && typeof rawB == 'string';
+    if (isStringField) {
+      const aParsed = rawA.toLowerCase();
+      const bParsed = rawB.toLowerCase();
+      return basicSort(aParsed, bParsed, isAsc);
     }
-    if (aValue < bValue) {
-      return dir === "asc" ? -1 : 1;
+    const isDateField = rawA instanceof Date && rawB instanceof Date;
+    if (isDateField) {
+      return basicSort(rawA, rawB, isAsc);
     }
-    return 0;
+    return basicSort(!!rawA, !!rawB, isAsc);
   });
+}
+
+function basicSort(aValue: any, bValue: any, isAsc: boolean) {
+  if (aValue > bValue) {
+    return isAsc ? 1 : -1;
+  }
+  if (aValue < bValue) {
+    return isAsc ? -1 : 1;
+  }
+  return 0;
 }
 
 export function filterArray(
