@@ -1,33 +1,17 @@
-import { filterArray } from "../src/misc";
+import { filterArray, doesRowMatch } from "../src/misc";
 
 describe("array filter", () => {
   test("filter array, filter empty", () => {
-    const input = [
-      { name: "Apple" },
-      { name: "Pear" },
-      { name: "Banana" },
-    ];
+    const input = [{ name: "Apple" }, { name: "Pear" }, { name: "Banana" }];
     const result = filterArray(input, null);
-    const expected = [
-      { name: "Apple" },
-      { name: "Pear" },
-      { name: "Banana" },
-    ];
+    const expected = [{ name: "Apple" }, { name: "Pear" }, { name: "Banana" }];
     expect(result).toEqual(expected);
   });
 
   test("filter array, filter empty obj", () => {
-    const input = [
-      { name: "Apple" },
-      { name: "Pear" },
-      { name: "Banana" },
-    ];
+    const input = [{ name: "Apple" }, { name: "Pear" }, { name: "Banana" }];
     const result = filterArray(input, {});
-    const expected = [
-      { name: "Apple" },
-      { name: "Pear" },
-      { name: "Banana" },
-    ];
+    const expected = [{ name: "Apple" }, { name: "Pear" }, { name: "Banana" }];
     expect(result).toEqual(expected);
   });
 
@@ -97,5 +81,23 @@ describe("array filter", () => {
       { name: "Pear", enabled: false },
     ];
     expect(result).toEqual(expected);
+  });
+
+  test("doesRowMatch, partial", () => {
+    const inputRow = { name: "Banana", enabled: true };
+    const result = doesRowMatch(inputRow, 'name', 'ana');
+    expect(result).toEqual(true);
+  });
+
+  test("doesRowMatch, deep object", () => {
+    const inputRow = { name: "Banana", deep: { enabled: 'Apple' } };
+    const result = doesRowMatch(inputRow, 'deep.enabled', 'Apple');
+    expect(result).toEqual(true);
+  });
+
+  test("doesRowMatch, deep object path doesn't exist", () => {
+    const inputRow = { name: "Banana", deep: { enabled: 'Apple' } };
+    const result = doesRowMatch(inputRow, 'deep.enabled.sss', 'Apple');
+    expect(result).toEqual(false);
   });
 });

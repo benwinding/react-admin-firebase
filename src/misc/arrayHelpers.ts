@@ -1,4 +1,4 @@
-import { isEmpty } from "lodash";
+import { isEmpty, get } from "lodash";
 
 export function sortArray(
   data: Array<{}>,
@@ -64,10 +64,18 @@ export function doesRowMatch(
   searchField: string,
   searchValue: any
 ): boolean {
-  const searchThis = row[searchField];
-  const isFalseySearch = !searchThis && !searchValue;
-  if (isFalseySearch) {
+  let searchThis = row[searchField];
+  const isDeepField = searchField.includes('.');
+  if (isDeepField) {
+    searchThis = get(row, searchField);
+  }
+  const bothAreFalsey = !searchThis && !searchValue;
+  if (bothAreFalsey) {
     return true;
+  }
+  const nothingToSearch = !searchThis;
+  if (nothingToSearch) {
+    return false;
   }
   const isStringSearch = typeof searchValue === "string";
   if (isStringSearch) {
