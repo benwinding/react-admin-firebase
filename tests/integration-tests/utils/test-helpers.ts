@@ -1,40 +1,52 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
+import * as firebase from "@firebase/testing";
 
-import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
-import { FirebaseWrapperStub } from './FirebaseWrapperStub';
-import { config } from './TEST.config';
+import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
+import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
+import { RAFirebaseOptions } from "../../../src/providers/RAFirebaseOptions";
 
-export function initFireWrapper(): IFirebaseWrapper {
+function makeSafeId(projectId: string): string {
+  return projectId.split(' ').join('').toLowerCase();
+}
+
+export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
+  const safeId = makeSafeId(projectId);
+  const testOptions = { projectId: safeId };
   const fire: IFirebaseWrapper = new FirebaseWrapperStub();
-  fire.init(config, {});
+  const app = firebase.initializeTestApp(testOptions);
+  fire.init({}, { app: app, ...rafOptions });
   return fire;
 }
 
-export function delayPromise(ms: number) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  })
+export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+export async function clearDb(projectId: string) {
+  const safeId = makeSafeId(projectId);
+  const testOptions = { projectId: safeId };
+  return firebase.clearFirestoreData(testOptions);
 }
 
-export async function deleteCollection(db: FirebaseFirestore, collectionName: string): Promise<void> {
-  const allDocs = await db.collection(collectionName).get();
-  await Promise.all(allDocs.docs.map(doc => doc.ref.delete()));
-}
-
-export async function createDoc(db: FirebaseFirestore, collectionName: string, docName: string, obj: {}): Promise<void> {
+export async function createDoc(
+  db: FirebaseFirestore,
+  collectionName: string,
+  docName: string,
+  obj: {}
+): Promise<void> {
   await db.collection(collectionName).doc(docName).set(obj);
 }
 
-export async function getDocsFromCollection(db: FirebaseFirestore, collectionName: string): Promise<any[]> {
+export async function getDocsFromCollection(
+  db: FirebaseFirestore,
+  collectionName: string
+): Promise<any[]> {
   const allDocs = await db.collection(collectionName).get();
-  const docsData = await Promise.all(allDocs.docs.map(doc => {
-    return {
-      ...doc.data(),
-      id: doc.id
-    }
-  }));
+  const docsData = await Promise.all(
+    allDocs.docs.map((doc) => {
+      return {
+        ...doc.data(),
+        id: doc.id,
+      };
+    })
+  );
   return docsData;
 }
-

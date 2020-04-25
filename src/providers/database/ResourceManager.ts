@@ -7,7 +7,7 @@ import {
 import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { User } from "@firebase/auth-types";
-import { log, getAbsolutePath, messageTypes, logError } from "../../misc";
+import { log, getAbsolutePath, messageTypes, logError, parseAllDatesDoc } from "../../misc";
 
 export interface IResource {
   path: string;
@@ -101,7 +101,8 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<void> {
-    const absolutePath = getAbsolutePath(this.options.rootRef, relativePath);
+    const rootRef = this.options && this.options.rootRef;
+    const absolutePath = getAbsolutePath(rootRef, relativePath);
     const hasBeenInited = !!this.resources[relativePath];
     log("resourceManager.initPath()", {
       absolutePath,
@@ -130,12 +131,7 @@ export class ResourceManager {
 
   private parseFireStoreDocument(doc: QueryDocumentSnapshot): {} {
     const data = doc.data();
-    Object.keys(data).forEach(key => {
-      const value = data[key];
-      if (value && value.toDate && value.toDate instanceof Function) {
-        data[key] = value.toDate();
-      }
-    });
+    parseAllDatesDoc(data);
     // React Admin requires an id field on every document,
     // So we can just using the firestore document id
     return { id: doc.id, ...data };

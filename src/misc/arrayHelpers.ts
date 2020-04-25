@@ -1,9 +1,4 @@
-function isEmptyObj(obj) {
-  if (!obj) {
-    return true;
-  }
-  return JSON.stringify(obj) === "{}";
-}
+import { isEmpty, get } from "lodash";
 
 export function sortArray(
   data: Array<{}>,
@@ -13,58 +8,86 @@ export function sortArray(
   data.sort((a: {}, b: {}) => {
     const rawA = a[field];
     const rawB = b[field];
+    const isAsc = dir === 'asc';
+
     const isNumberField = Number.isFinite(rawA) && Number.isFinite(rawB);
-    let aValue: string, bValue: string;
     if (isNumberField) {
-      aValue = rawA;
-      bValue = rawB;
-    } else {
-      aValue = (a[field] || "").toString().toLowerCase();
-      bValue = (b[field] || "").toString().toLowerCase();
+      return basicSort(rawA, rawB, isAsc);
     }
-    if (aValue > bValue) {
-      return dir === "asc" ? 1 : -1;
+    const isStringField = typeof rawA == 'string' && typeof rawB == 'string';
+    if (isStringField) {
+      const aParsed = rawA.toLowerCase();
+      const bParsed = rawB.toLowerCase();
+      return basicSort(aParsed, bParsed, isAsc);
     }
-    if (aValue < bValue) {
-      return dir === "asc" ? -1 : 1;
+    const isDateField = rawA instanceof Date && rawB instanceof Date;
+    if (isDateField) {
+      return basicSort(rawA, rawB, isAsc);
     }
-    return 0;
+    return basicSort(!!rawA, !!rawB, isAsc);
   });
+}
+
+function basicSort(aValue: any, bValue: any, isAsc: boolean) {
+  if (aValue > bValue) {
+    return isAsc ? 1 : -1;
+  }
+  if (aValue < bValue) {
+    return isAsc ? -1 : 1;
+  }
+  return 0;
 }
 
 export function filterArray(
   data: Array<{}>,
-  searchFields: { [field: string]: string }
+  searchFields: { [field: string]: string | number | boolean }
 ): Array<{}> {
-  const permittedData = data.filter(row => !row['deleted']);
-  if (isEmptyObj(searchFields)) {
-    return permittedData;
+  if (isEmpty(searchFields)) {
+    return data;
   }
-  const searchObjs = Object.keys(searchFields).map(n => ({
-    name: n,
-    value: n === 'deleted' ? searchFields[n] : (searchFields[n] || '').toLowerCase()
+  const searchObjs = Object.keys(searchFields).map((field) => ({
+    searchField: field,
+    searchValue: searchFields[field],
   }));
-  const dataToFilter = searchObjs.some(obj => obj.name === 'deleted' && obj.value) ? data : permittedData;
-  return dataToFilter.filter(row =>
+  const filtered = data.filter((row) =>
     searchObjs.reduce(
-      (prev, curr) => doesRowMatch(row, curr.name, curr.value) && prev,
+      (prev, curr) =>
+        doesRowMatch(row, curr.searchField, curr.searchValue) && prev,
       true
     )
   );
+  return filtered;
 }
 
-function doesRowMatch(
+export function doesRowMatch(
   row: {},
   searchField: string,
   searchValue: any
 ): boolean {
-  const searchPart = row[searchField];
-  if (searchField === 'deleted') return (searchPart && searchValue) || (!searchPart && !searchValue);
-  if (typeof searchPart !== "string") {
+  let searchThis = row[searchField];
+  const isDeepField = searchField.includes('.');
+  if (isDeepField) {
+    searchThis = get(row, searchField);
+  }
+  const bothAreFalsey = !searchThis && !searchValue;
+  if (bothAreFalsey) {
+    return true;
+  }
+  const nothingToSearch = !searchThis;
+  if (nothingToSearch) {
     return false;
   }
-  return searchPart
-    .toString()
-    .toLowerCase()
-    .includes(searchValue.toLowerCase());
+  const isStringSearch = typeof searchValue === "string";
+  if (isStringSearch) {
+    return searchThis
+      .toString()
+      .toLowerCase()
+      .includes(searchValue.toLowerCase());
+  }
+  const isBooleanOrNumber =
+    typeof searchValue === "boolean" || typeof searchValue === "number";
+  if (isBooleanOrNumber) {
+    return searchThis === searchValue;
+  }
+  return false;
 }

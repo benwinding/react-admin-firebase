@@ -9,6 +9,7 @@
     "react-dom": "^16.x"
   },
   "dependencies": {
+    "lodash": "4.x",
     "path-browserify": "^1.0.0",
     "rxjs": "^6.5.x"
   },
@@ -16,16 +17,18 @@
     "@firebase/app-types": "^0.3.9",
     "@firebase/auth-types": "^0.6.0",
     "@firebase/firestore-types": "1.2.0",
+    "@firebase/testing": "^0.19.1",
     "@firebase/util": "^0.2.11",
     "@types/firebase": "^3.2.1",
     "@types/jest": "^24.0.13",
+    "@types/lodash": "^4.14.150",
     "@types/node": "^10.9.4",
     "@types/react": "^16.8.13",
     "@types/rx": "^4.1.1",
-    "concurrently": "^4.1.1",
     "cpx": "^1.5.0",
     "del": "^3.0.0",
     "firebase": "^7.9.1",
+    "firebase-tools": "^8.1.1",
     "gulp": "^3.9.1",
     "gulp-sequence": "^1.0.0",
     "jest": "^23.6.0",
@@ -41,7 +44,9 @@
     "build": "rm -rf dist && microbundle",
     "watch": "microbundle watch",
     "start-demo": "gulp start-demo",
-    "test": "echo jest... not implemented yet"
+    "start-emulator": "yarn firebase emulators:start --only firestore",
+    "test": "yarn firebase emulators:exec \"yarn jest --forceExit --detectOpenHandles\"",
+    "test-watch": "yarn firebase emulators:exec \"yarn jest --watchAll --detectOpenHandles\""
   },
   "files": [
     "dist",

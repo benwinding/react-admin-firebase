@@ -2,10 +2,10 @@ on:
   pull_request:
     types: [closed]
 
-name: Deploy to npm
+name: PR Merge
 jobs:
   build:
-    name: Build & Deploy
+    name: Build & Comment
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
