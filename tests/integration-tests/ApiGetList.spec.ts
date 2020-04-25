@@ -26,7 +26,7 @@ describe("api methods", () => {
     expect(result.data.length).toBe(3);
   }, 100000);
 
-  test("FirebaseClient list docs", async () => {
+  test("FirebaseClient list docs with boolean filter", async () => {
     const testDocs = [
       {
         title: "A",
