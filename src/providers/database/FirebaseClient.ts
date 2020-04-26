@@ -285,8 +285,15 @@ export class FirebaseClient implements IFirebaseClient {
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
-    const matches = data.filter(val => val[targetField] === targetValue);
-    const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
+    const filterSafe = params.filter || {};
+    let softDeleted = data;
+    if (this.options.softDelete) {
+      softDeleted = data.filter(doc => !doc['deleted'])
+    }
+    const filteredData = filterArray(softDeleted, filterSafe);
+    const targetIdFilter = {}
+    targetIdFilter[targetField] = targetValue;
+    const permittedData = filterArray(filteredData, targetIdFilter);
     if (params.sort != null) {
       const { field, order } = params.sort;
       if (order === "ASC") {

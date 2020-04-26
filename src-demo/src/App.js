@@ -15,7 +15,7 @@ import CustomLoginPage from './CustomLoginPage';
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const options = {
-  logging: false,
+  logging: true,
   // rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
   app: firebaseApp,
   // watch: ['posts'];

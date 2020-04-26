@@ -70,7 +70,10 @@ export namespace messageTypes {
       field: string;
       order: string;
     };
-    filter: {};
+    filter?: {
+      collectionQuery?: CollectionQueryType;
+      [fieldName: string]: any;
+    };
   }
 
   // RESPONSES

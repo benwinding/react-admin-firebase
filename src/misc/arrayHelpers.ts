@@ -1,4 +1,5 @@
 import { isEmpty, get } from "lodash";
+import { SearchObj, getFieldReferences } from "./objectFlatten";
 
 export function sortArray(
   data: Array<{}>,
@@ -8,13 +9,13 @@ export function sortArray(
   data.sort((a: {}, b: {}) => {
     const rawA = a[field];
     const rawB = b[field];
-    const isAsc = dir === 'asc';
+    const isAsc = dir === "asc";
 
     const isNumberField = Number.isFinite(rawA) && Number.isFinite(rawB);
     if (isNumberField) {
       return basicSort(rawA, rawB, isAsc);
     }
-    const isStringField = typeof rawA == 'string' && typeof rawB == 'string';
+    const isStringField = typeof rawA == "string" && typeof rawB == "string";
     if (isStringField) {
       const aParsed = rawA.toLowerCase();
       const bParsed = rawB.toLowerCase();
@@ -45,10 +46,12 @@ export function filterArray(
   if (isEmpty(searchFields)) {
     return data;
   }
-  const searchObjs = Object.keys(searchFields).map((field) => ({
-    searchField: field,
-    searchValue: searchFields[field],
-  }));
+  const searchObjs: SearchObj[] = [];
+  Object.keys(searchFields).map((fieldName) => {
+    const fieldValue = searchFields[fieldName];
+    const getSubObjects = getFieldReferences(fieldName, fieldValue);
+    searchObjs.push(...getSubObjects);
+  });
   const filtered = data.filter((row) =>
     searchObjs.reduce(
       (prev, curr) =>
@@ -65,7 +68,7 @@ export function doesRowMatch(
   searchValue: any
 ): boolean {
   let searchThis = row[searchField];
-  const isDeepField = searchField.includes('.');
+  const isDeepField = searchField.includes(".");
   if (isDeepField) {
     searchThis = get(row, searchField);
   }

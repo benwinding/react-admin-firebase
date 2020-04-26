@@ -1,4 +1,9 @@
-import { filterArray, doesRowMatch } from "../src/misc";
+import {
+  filterArray,
+  doesRowMatch,
+  getFieldReferences,
+  SearchObj,
+} from "../src/misc";
 
 describe("array filter", () => {
   test("filter array, filter empty", () => {
@@ -69,7 +74,7 @@ describe("array filter", () => {
     expect(result).toEqual(expected);
   });
 
-  test("filter array, filter boolean false", () => {
+  test("filter array, filter boolean null", () => {
     const input = [
       { name: "Apple", enabled: false },
       { name: "Pear", enabled: false },
@@ -85,19 +90,41 @@ describe("array filter", () => {
 
   test("doesRowMatch, partial", () => {
     const inputRow = { name: "Banana", enabled: true };
-    const result = doesRowMatch(inputRow, 'name', 'ana');
+    const result = doesRowMatch(inputRow, "name", "ana");
     expect(result).toEqual(true);
   });
 
   test("doesRowMatch, deep object", () => {
-    const inputRow = { name: "Banana", deep: { enabled: 'Apple' } };
-    const result = doesRowMatch(inputRow, 'deep.enabled', 'Apple');
+    const inputRow = { name: "Banana", deep: { enabled: "Apple" } };
+    const result = doesRowMatch(inputRow, "deep.enabled", "Apple");
     expect(result).toEqual(true);
   });
 
   test("doesRowMatch, deep object path doesn't exist", () => {
-    const inputRow = { name: "Banana", deep: { enabled: 'Apple' } };
-    const result = doesRowMatch(inputRow, 'deep.enabled.sss', 'Apple');
+    const inputRow = { name: "Banana", deep: { enabled: "Apple" } };
+    const result = doesRowMatch(inputRow, "deep.enabled.sss", "Apple");
     expect(result).toEqual(false);
+  });
+
+  test("getFieldReferences, simple field", () => {
+    const res = getFieldReferences("name", "Dan");
+    const expected: SearchObj[] = [{ searchField: "name", searchValue: "Dan" }];
+    expect(res).toEqual(expected);
+  });
+
+  test("getFieldReferences, nested field", () => {
+    const res = getFieldReferences("name", { value: "Alex" });
+    const expected: SearchObj[] = [
+      { searchField: "name.value", searchValue: "Alex" },
+    ];
+    expect(res).toEqual(expected);
+  });
+
+  test("getFieldReferences, nested field", () => {
+    const res = getFieldReferences("customer", { details: { age: 25 } });
+    const expected: SearchObj[] = [
+      { searchField: "customer.details.age", searchValue: 25 },
+    ];
+    expect(res).toEqual(expected);
   });
 });

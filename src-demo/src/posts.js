@@ -25,20 +25,33 @@ import {
   FileInput,
   FileField,
   ArrayInput,
-  SimpleFormIterator
+  SimpleFormIterator,
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
-const PostFilter = props => (
+const PostFilter = (props) => (
   <Filter {...props}>
     <TextInput label="Search" source="title" alwaysOn />
   </Filter>
 );
 
-export const PostList = props => (
+const ReferenceFilter = (props) => (
+  <Filter {...props}>
+    <ReferenceInput
+      label="Organization"
+      source="user.id"
+      reference="users"
+      allowEmpty
+    >
+      <SelectInput optionText="name" />
+    </ReferenceInput>
+  </Filter>
+);
+
+export const PostList = (props) => (
   <List
     {...props}
-    filters={<PostFilter />}
+    filters={<ReferenceFilter />}
     filter={{ updatedby: "test@example.com" }}
   >
     <Datagrid>
@@ -58,7 +71,7 @@ export const PostList = props => (
   </List>
 );
 
-export const PostShow = props => (
+export const PostShow = (props) => (
   <Show {...props}>
     <SimpleShowLayout>
       <TextField source="id" />
@@ -78,7 +91,7 @@ export const PostShow = props => (
   </Show>
 );
 
-export const PostCreate = props => (
+export const PostCreate = (props) => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source="id" />
@@ -114,7 +127,7 @@ export const PostCreate = props => (
   </Create>
 );
 
-export const PostEdit = props => (
+export const PostEdit = (props) => (
   <Edit {...props}>
     <SimpleForm>
       <TextInput disabled source="id" />
