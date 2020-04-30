@@ -72,6 +72,8 @@ class AuthClient {
     return Promise.reject("Recieved authentication error from API");
   }
 
+  // From firebase SDK
+  // - https://github.com/firebase/firebase-js-sdk/blob/9f109f85ad0d99f6c13e68dcb549a0b852e35a2a/packages/functions/src/api/error.ts
   private retrieveStatusTxt(status: number): 'ok' | 'unauthenticated' {
     // Make sure any successful status is OK.
     if (status >= 200 && status < 300) {
