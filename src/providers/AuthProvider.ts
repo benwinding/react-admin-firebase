@@ -65,10 +65,36 @@ class AuthClient {
   public HandleAuthError(errorHttp: messageTypes.HttpErrorType) {
     log("HandleAuthLogin: invalid credentials", { errorHttp });
     const status = !!errorHttp && errorHttp.status;
-    if (status === 409 || status === 200) {
+    const statusTxt = this.retrieveStatusTxt(status);
+    if (statusTxt === 'ok') {
       return Promise.resolve("API is authenticated");
     }
     return Promise.reject("Recieved authentication error from API");
+  }
+
+  private retrieveStatusTxt(status: number): 'ok' | 'unauthenticated' {
+    // Make sure any successful status is OK.
+    if (status >= 200 && status < 300) {
+      return "ok";
+    }
+    switch (status) {
+      case 401: // 'unauthenticated'
+      case 403: // 'permission-denied'
+        return 'unauthenticated'
+
+      case 0:   // 'internal'
+      case 400: // 'invalid-argument'
+      case 404: // 'not-found'
+      case 409: // 'aborted'
+      case 429: // 'resource-exhausted'
+      case 499: // 'cancelled'
+      case 500: // 'internal'
+      case 501: // 'unimplemented'
+      case 503: // 'unavailable'
+      case 504: // 'deadline-exceeded'
+      default:  // ignore
+        return 'ok';
+    }
   }
 
   public HandleAuthCheck() {
