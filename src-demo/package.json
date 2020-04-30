@@ -6,7 +6,7 @@
     "firebase": "^7.9.1",
     "ra-input-rich-text": "^3.3.1",
     "react": "^16.5.1",
-    "react-admin": "^3.3.1",
+    "react-admin": "3.3.3",
     "react-admin-firebase": "3",
     "react-dom": "^16.5.1",
     "react-firebaseui": "^4.1.0",
@@ -25,6 +25,6 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build",
-    "postinstall": "cp ./webpack-override.js node_modules/react-scripts/config/webpack.config.dev.js && cp ./webpack-devserver-override.js node_modules/react-scripts/config/webpackDevServer.config.js"
+    "postinstall": "node ./overrides/patch.js"
   }
 }
