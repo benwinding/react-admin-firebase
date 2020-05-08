@@ -52,7 +52,7 @@ export class FirebaseClient implements IFirebaseClient {
       }
     }
     let softDeleted = data;
-    if (this.options.softDelete) {
+    if (this.options.softDelete && !Object.keys(filterSafe).includes('deleted')) {
       softDeleted = data.filter(doc => !doc['deleted'])
     }
     const filteredData = filterArray(softDeleted, filterSafe);
