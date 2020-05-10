@@ -78,8 +78,11 @@ export function DataProvider(
       }
       return res;
     } catch (error) {
-      // TODO: Determine if Auth Error
-      throw { status: 409, message: error.toString(), json: res };
+      const errorMsg = error.toString();
+      if (errorMsg.includes('code=permission-denied')) {
+        throw { status: 403, message: errorMsg, json: res };
+      }
+      throw { status: 409, message: errorMsg, json: res };
     }
   }
   return providerApi;
