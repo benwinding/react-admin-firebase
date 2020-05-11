@@ -2,7 +2,7 @@ import { messageTypes } from './../misc/messageTypes';
 import firebase from "firebase/app";
 import "firebase/auth";
 import { FirebaseAuth } from "@firebase/auth-types";
-import { log, CheckLogging } from "../misc";
+import { log, CheckLogging, retrieveStatusTxt } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 
@@ -65,39 +65,14 @@ class AuthClient {
   public HandleAuthError(errorHttp: messageTypes.HttpErrorType) {
     log("HandleAuthLogin: invalid credentials", { errorHttp });
     const status = !!errorHttp && errorHttp.status;
-    const statusTxt = this.retrieveStatusTxt(status);
+    const statusTxt = retrieveStatusTxt(status);
     if (statusTxt === 'ok') {
       return Promise.resolve("API is authenticated");
     }
     return Promise.reject("Recieved authentication error from API");
   }
 
-  // From firebase SDK
-  // - https://github.com/firebase/firebase-js-sdk/blob/9f109f85ad0d99f6c13e68dcb549a0b852e35a2a/packages/functions/src/api/error.ts
-  private retrieveStatusTxt(status: number): 'ok' | 'unauthenticated' {
-    // Make sure any successful status is OK.
-    if (status >= 200 && status < 300) {
-      return "ok";
-    }
-    switch (status) {
-      case 401: // 'unauthenticated'
-      case 403: // 'permission-denied'
-        return 'unauthenticated'
 
-      case 0:   // 'internal'
-      case 400: // 'invalid-argument'
-      case 404: // 'not-found'
-      case 409: // 'aborted'
-      case 429: // 'resource-exhausted'
-      case 499: // 'cancelled'
-      case 500: // 'internal'
-      case 501: // 'unimplemented'
-      case 503: // 'unavailable'
-      case 504: // 'deadline-exceeded'
-      default:  // ignore
-        return 'ok';
-    }
-  }
 
   public HandleAuthCheck() {
     return this.getUserLogin();

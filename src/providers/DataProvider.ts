@@ -1,3 +1,4 @@
+import { logError } from "./../misc/logger";
 import {
   CREATE,
   DELETE,
@@ -9,12 +10,16 @@ import {
   UPDATE,
   UPDATE_MANY,
 } from "react-admin";
-import { getAbsolutePath, log, CheckLogging, messageTypes } from "../misc";
+import {
+  getAbsolutePath,
+  log,
+  CheckLogging,
+  messageTypes,
+  retrieveStatusCode,
+} from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
-
-import { HttpError } from "react-admin";
 
 export let fb: FirebaseClient;
 
@@ -79,10 +84,10 @@ export function DataProvider(
       return res;
     } catch (error) {
       const errorMsg = error.toString();
-      if (errorMsg.includes('code=permission-denied')) {
-        throw { status: 403, message: errorMsg, json: res };
-      }
-      throw { status: 409, message: errorMsg, json: res };
+      const code = retrieveStatusCode(errorMsg);
+      const errorObj = { status: code, message: errorMsg, json: res };
+      logError('DataProvider:', error, { errorMsg, code, errorObj });
+      throw errorObj;
     }
   }
   return providerApi;

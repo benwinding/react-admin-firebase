@@ -233,12 +233,13 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<messageTypes.IResponseDelete> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
-    r.collection
-      .doc(params.id)
-      .delete()
-      .catch(error => {
-        logError("apiDelete error", { error });
-      });
+    try {
+      await r.collection
+        .doc(params.id)
+        .delete()
+    } catch (error) {
+      throw new Error(error)
+    }
     return {
       data: params.previousData
     };
@@ -255,7 +256,11 @@ export class FirebaseClient implements IFirebaseClient {
       batch.delete(r.collection.doc(id));
       returnData.push({ id });
     }
-    await batch.commit();
+    try {
+      await batch.commit();
+    } catch (error) {
+      throw new Error(error)
+    }
     return { data: returnData };
   }
   public async apiGetMany(
