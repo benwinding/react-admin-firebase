@@ -144,6 +144,11 @@ const authProvider = FirebaseAuthProvider(config);
       >
 ...
 ```
+
+Also checkout how to login with: Google, Facebook, Github etc... [(Example Here)](https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomLoginPage.js)
+
+And you might want a "Forgot password" button... [(Example Here)](https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomForgotPassword.js)
+
 #### Note
 To get the currently logged in user run `const user = await authProvider.checkAuth()`, this will return the firebase user object, or null if there is no currently logged in user.
 
