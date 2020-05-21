@@ -6,3 +6,4 @@ export * from './timestamp-parser';
 export * from './file-parser';
 export * from './objectFlatten';
 export * from './status-code-translator';
+export * from './document-parser';

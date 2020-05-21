@@ -1,5 +1,5 @@
-import { FirebaseFirestore } from "@firebase/firestore-types";
-import { ResourceManager, IResource } from "./ResourceManager";
+import { DocumentSnapshot, FirebaseFirestore, OrderByDirection, Query } from "@firebase/firestore-types";
+import { IResource, ResourceManager } from "./ResourceManager";
 import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
@@ -9,10 +9,11 @@ import {
   log,
   logError,
   messageTypes,
-  sortArray,
   parseDocGetAllUploads,
+  parseFireStoreDocument,
+  sortArray
 } from "../../misc";
-import { set } from 'lodash'
+import { set } from "lodash";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -30,6 +31,11 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: messageTypes.IParamsGetList
   ): Promise<messageTypes.IResponseGetList> {
+    if (this.options.lazyLoading) {
+      return this.apiGetListLazy(resourceName, params);
+    }
+
+
     log("apiGetList", { resourceName, params });
 
     const filterSafe = params.filter || {};
@@ -65,6 +71,45 @@ export class FirebaseClient implements IFirebaseClient {
       total
     };
   }
+  private async apiGetListLazy(
+    resourceName: string,
+    params: messageTypes.IParamsGetList
+  ): Promise<messageTypes.IResponseGetList> {
+    const r = await this.tryGetResource(resourceName);
+    log("apiGetListLazy", { resourceName, params });
+    let query: Query = r.collection;
+
+    const filters = this.options.softDelete ? {
+      ...params.filter,
+      deleted: false
+    } : params.filter;
+
+    query = this.filtersToQuery(query, filters);
+    query = this.sortToQuery(query, params.sort);
+
+    const { page, perPage } = params.pagination;
+    const fullParams = { ...params, filter: filters };
+
+
+    if (page === 1) {
+      query = query.limit(perPage);
+    } else {
+      let queryCursor = this.getQueryCursor(params);
+      if (!queryCursor) {
+        queryCursor = await this.findLastQueryCursor(query, fullParams);
+      }
+      query = query.startAfter(queryCursor).limit(perPage);
+    }
+
+    const snapshots = await query.get();
+    const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
+    this.setQueryCursor(
+      snapshots.docs[snapshots.docs.length - 1],
+      fullParams
+    );
+    return { data, total: 9999 };
+  }
+
   public async apiGetOne(
     resourceName: string,
     params: messageTypes.IParamsGetOne
@@ -72,7 +117,7 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiGetOne", { resourceName, params });
     try {
       const data = await this.rm.GetSingleDoc(resourceName, params.id);
-      return { data: data };
+      return { data };
     } catch (error) {
       throw new Error(
         "Error getting id: " + params.id + " from collection: " + resourceName
@@ -87,44 +132,41 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiCreate", { resourceName, resource: r, params });
     const hasOverridenDocId = params.data && params.data.id;
     log("apiCreate", { hasOverridenDocId });
+
+    let newId: string;
     if (hasOverridenDocId) {
-      const overridenId = params.data.id;
-      const exists = (await r.collection.doc(overridenId).get()).exists;
+      const overriddenId = params.data.id;
+      const exists = (await r.collection.doc(overriddenId).get()).exists;
       if (exists) {
         throw new Error(
-          `the id:"${overridenId}" already exists, please use a unique string if overriding the 'id' field`
+          `the id:"${overriddenId}" already exists, please use a unique string if overriding the 'id' field`
         );
       }
-      const data = await this.parseDataAndUpload(r, overridenId, params.data);
-      if (!overridenId) {
+      if (!overriddenId) {
         throw new Error("id must be a valid string");
       }
+      newId = overriddenId;
+    } else {
+      newId = this.db.collection("collections").doc().id;
+    }
+
+    const createDoc = async (id) => {
+      const data = await this.parseDataAndUpload(r, id, params.data);
       const docObj = { ...data };
       this.checkRemoveIdField(docObj);
       await this.addCreatedByFields(docObj);
       await this.addUpdatedByFields(docObj);
       log("apiCreate", { docObj });
-      await r.collection.doc(overridenId).set(docObj, { merge: false });
+      await r.collection.doc(id).set(docObj, { merge: false });
       return {
         data: {
           ...data,
-          id: overridenId
+          id
         }
       };
-    }
-    const newId = this.db.collection("collections").doc().id;
-    const data = await this.parseDataAndUpload(r, newId, params.data);
-    const docObj = { ...data };
-    this.checkRemoveIdField(docObj);
-    await this.addCreatedByFields(docObj);
-    await this.addUpdatedByFields(docObj);
-    await r.collection.doc(newId).set(docObj, { merge: false });
-    return {
-      data: {
-        ...data,
-        id: newId
-      }
     };
+
+    return createDoc(newId);
   }
   public async apiUpdate(
     resourceName: string,
@@ -267,24 +309,27 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: messageTypes.IParamsGetMany
   ): Promise<messageTypes.IResponseGetMany> {
-    const r = await this.tryGetResource(resourceName, "REFRESH");
+    const r = await this.tryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const matchDocSnaps = await Promise.all(
       ids.map(id => r.collection.doc(id).get())
     );
-    const matches = matchDocSnaps.map(snap => {
-      return { ...snap.data(), id: snap.id };
-    });
+    const matches = matchDocSnaps.map(snap => parseFireStoreDocument(snap));
     const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
     return {
       data: permittedData
     };
   }
+
   public async apiGetManyReference(
     resourceName: string,
     params: messageTypes.IParamsGetManyReference
   ): Promise<messageTypes.IResponseGetManyReference> {
+    if (this.options.lazyLoading) {
+      return this.apiGetManyReferenceLazy(resourceName, params);
+    }
+
     const r = await this.tryGetResource(resourceName, "REFRESH");
     log("apiGetManyReference", { resourceName, resource: r, params });
     const data = r.list;
@@ -296,7 +341,7 @@ export class FirebaseClient implements IFirebaseClient {
       softDeleted = data.filter(doc => !doc['deleted'])
     }
     const filteredData = filterArray(softDeleted, filterSafe);
-    const targetIdFilter = {}
+    const targetIdFilter = {};
     targetIdFilter[targetField] = targetValue;
     const permittedData = filterArray(filteredData, targetIdFilter);
     if (params.sort != null) {
@@ -313,6 +358,99 @@ export class FirebaseClient implements IFirebaseClient {
     const total = permittedData.length;
     return { data: dataPage, total };
   }
+
+  private async apiGetManyReferenceLazy(
+    resourceName: string,
+    params: messageTypes.IParamsGetManyReference
+  ): Promise<messageTypes.IResponseGetManyReference> {
+    const r = await this.tryGetResource(resourceName);
+    log("apiGetManyReference", { resourceName, resource: r, params });
+    let query: Query = r.collection;
+    const queryFilters = this.options.softDelete ? {
+      ...params.filter,
+      [params.target]: params.id,
+      deleted: false
+    } : {
+      ...params.filter,
+      [params.target]: params.id
+    };
+    query = this.filtersToQuery(query, queryFilters);
+    query = this.sortToQuery(query, params.sort);
+
+    const snapshots = await query.get();
+    const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
+    return { data, total: data.length };
+  }
+
+
+  private filtersToQuery(query: Query, filters: { [fieldName: string]: any }): Query {
+    Object.keys(filters).forEach(fieldName => {
+      query = query.where(fieldName, '==', filters[fieldName]);
+    });
+    return query;
+  }
+
+  private sortToQuery(query: Query, sort: { field: string, order: string }): Query {
+    if (sort != null) {
+      const { field, order } = sort;
+      query = query.orderBy(field, order as OrderByDirection);
+    }
+    return query;
+  }
+
+  private setQueryCursor(doc: DocumentSnapshot, params: messageTypes.IParamsGetList) {
+    const key = btoa(JSON.stringify(params));
+    const value = JSON.stringify(doc);
+    localStorage.setItem(key, value);
+
+    const localCursorKeys = localStorage.getItem('ra-firebase-cursor-keys');
+    if (!localCursorKeys) {
+      localStorage.setItem('ra-firebase-cursor-keys', JSON.stringify([key]));
+    } else {
+      const cursors: string[] = JSON.parse(localCursorKeys);
+      const newCursors = cursors.concat(key);
+      localStorage.setItem('ra-firebase-cursor-keys', JSON.stringify(newCursors));
+    }
+  }
+
+  private getQueryCursor(params: messageTypes.IParamsGetList): DocumentSnapshot {
+    const key = btoa(JSON.stringify(params));
+    return JSON.parse(localStorage.getItem(key));
+  }
+
+  private clearQueryCursors() {
+    const localCursorKeys = localStorage.getItem('ra-firebase-cursor-keys');
+    if (localCursorKeys) {
+      const cursors: string[] = JSON.parse(localCursorKeys);
+      cursors.forEach(cursor => localStorage.removeItem(cursor));
+      localStorage.removeItem('ra-firebase-cursor-keys');
+    }
+  }
+
+  private async findLastQueryCursor(query: Query, params: messageTypes.IParamsGetList) {
+    const { page, perPage } = params.pagination;
+    const previousPage = page - 1;
+
+    for (let i = previousPage; i > 1; i--) {
+      const currentPageParams = {
+        ...params,
+        pagination: {
+          ...params.pagination,
+          page: i
+        }
+      };
+
+      const currentPageQueryCursor = this.getQueryCursor(currentPageParams);
+      if (currentPageQueryCursor) {
+        return currentPageQueryCursor;
+      }
+    }
+
+    const limit = previousPage * perPage;
+    const snapshots = await query.limit(limit).get();
+    return snapshots.docs[snapshots.docs.length - 1];
+  }
+
   private async tryGetResource(
     resourceName: string,
     refresh?: "REFRESH",
@@ -349,7 +487,7 @@ export class FirebaseClient implements IFirebaseClient {
     const uploads = parseDocGetAllUploads(data);
     await Promise.all(
       uploads.map(async (u) => {
-        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath)
+        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath);
         set(data, u.fieldDotsPath + '.src', link);
       })
     );
@@ -426,8 +564,7 @@ export class FirebaseClient implements IFirebaseClient {
     fieldPath: string
   ): Promise<string> {
     const storagePath = joinPaths(docPath, fieldPath);
-    const storageLink = await this.saveFile(storagePath, rawFile);
-    return storageLink;
+    return await this.saveFile(storagePath, rawFile);
   }
 
   private async saveFile(storagePath: string, rawFile: any): Promise<string> {
@@ -460,4 +597,5 @@ export class FirebaseClient implements IFirebaseClient {
       }
     }
   }
+
 }

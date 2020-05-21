@@ -40,10 +40,8 @@ function ObtainFirebaseApp(firebaseConfig: {}, options: RAFirebaseOptions): fire
   }
   const isInitialized = !!firebase.apps.length;
   if (isInitialized) {
-    const app = firebase.app();
-    return app;
+    return firebase.app();
   } else {
-    const app = firebase.initializeApp(firebaseConfig);
-    return app;
+    return firebase.initializeApp(firebaseConfig);
   }
 }
