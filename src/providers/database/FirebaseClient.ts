@@ -393,7 +393,8 @@ export class FirebaseClient implements IFirebaseClient {
   private sortToQuery(query: Query, sort: { field: string, order: string }): Query {
     if (sort != null) {
       const { field, order } = sort;
-      query = query.orderBy(field, order as OrderByDirection);
+      const parsedOrder = order.toLocaleLowerCase() as OrderByDirection;
+      query = query.orderBy(field, parsedOrder);
     }
     return query;
   }
