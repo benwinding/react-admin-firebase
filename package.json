@@ -1,7 +1,7 @@
 {
   "name": "react-admin-firebase-test",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "3.2.7",
+  "version": "3.2.9",
   "peerDependencies": {
     "firebase": "^7.9.x",
     "react": "^16.x",

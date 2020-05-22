@@ -83,7 +83,6 @@ export function DataProvider(
       }
       return res;
     } catch (error) {
-      console.log('ERROR', error);
       const errorMsg = error.toString();
       const code = errorMsg ? retrieveStatusCode(errorMsg) : null;
       const errorObj = { status: code, message: errorMsg, json: res };

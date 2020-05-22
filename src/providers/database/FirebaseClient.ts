@@ -109,6 +109,7 @@ export class FirebaseClient implements IFirebaseClient {
     const snapshots = await query.get();
 
     if (snapshots.docs.length === 0) {
+      log("apiGetListLazy - result", { message: 'There are not records for given query' });
       return { data: [], total: 100000 };
     }
 
@@ -402,7 +403,7 @@ export class FirebaseClient implements IFirebaseClient {
   }
 
   private sortToQuery(query: Query, sort: { field: string, order: string }): Query {
-    if (sort != null) {
+    if (sort != null && sort.field !== 'id') {
       const { field, order } = sort;
       const parsedOrder = order.toLocaleLowerCase() as OrderByDirection;
       query = query.orderBy(field, parsedOrder);
