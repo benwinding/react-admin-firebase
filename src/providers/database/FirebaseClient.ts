@@ -1,4 +1,10 @@
-import { DocumentSnapshot, FirebaseFirestore, OrderByDirection, Query } from "@firebase/firestore-types";
+import {
+  CollectionReference,
+  DocumentSnapshot,
+  FirebaseFirestore,
+  OrderByDirection,
+  Query
+} from "@firebase/firestore-types";
 import { IResource, ResourceManager } from "./ResourceManager";
 import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
@@ -90,24 +96,29 @@ export class FirebaseClient implements IFirebaseClient {
     const { page, perPage } = params.pagination;
     const fullParams = { ...params, filter: filters };
 
-
     if (page === 1) {
       query = query.limit(perPage);
     } else {
-      let queryCursor = this.getQueryCursor(params);
+      let queryCursor = await this.getQueryCursor(r.collection, params);
       if (!queryCursor) {
-        queryCursor = await this.findLastQueryCursor(query, fullParams);
+        queryCursor = await this.findLastQueryCursor(r.collection, query, fullParams);
       }
       query = query.startAfter(queryCursor).limit(perPage);
     }
 
     const snapshots = await query.get();
+
+    if (snapshots.docs.length === 0) {
+      return { data: [], total: 100000 };
+    }
+
     const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
     this.setQueryCursor(
       snapshots.docs[snapshots.docs.length - 1],
       fullParams
     );
-    return { data, total: 9999 };
+    log("apiGetListLazy - result", { data });
+    return { data, total: 100000 };
   }
 
   public async apiGetOne(
@@ -209,7 +220,7 @@ export class FirebaseClient implements IFirebaseClient {
         await this.addUpdatedByFields(docObj);
         await r.collection
           .doc(id)
-          .update(docObj)
+          .update(docObj);
         return {
           ...data,
           id: id
@@ -401,8 +412,7 @@ export class FirebaseClient implements IFirebaseClient {
 
   private setQueryCursor(doc: DocumentSnapshot, params: messageTypes.IParamsGetList) {
     const key = btoa(JSON.stringify(params));
-    const value = JSON.stringify(doc);
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, doc.id);
 
     const localCursorKeys = localStorage.getItem('ra-firebase-cursor-keys');
     if (!localCursorKeys) {
@@ -414,9 +424,15 @@ export class FirebaseClient implements IFirebaseClient {
     }
   }
 
-  private getQueryCursor(params: messageTypes.IParamsGetList): DocumentSnapshot {
+  private async getQueryCursor(collection: CollectionReference, params: messageTypes.IParamsGetList): Promise<DocumentSnapshot | boolean> {
     const key = btoa(JSON.stringify(params));
-    return JSON.parse(localStorage.getItem(key));
+    const docId = localStorage.getItem(key);
+    if (!docId) {
+      return false;
+    }
+
+    const doc = await collection.doc(docId).get();
+    return doc.exists && doc;
   }
 
   private clearQueryCursors() {
@@ -428,7 +444,7 @@ export class FirebaseClient implements IFirebaseClient {
     }
   }
 
-  private async findLastQueryCursor(query: Query, params: messageTypes.IParamsGetList) {
+  private async findLastQueryCursor(collection: CollectionReference, query: Query, params: messageTypes.IParamsGetList) {
     const { page, perPage } = params.pagination;
     const previousPage = page - 1;
 
@@ -441,14 +457,14 @@ export class FirebaseClient implements IFirebaseClient {
         }
       };
 
-      const currentPageQueryCursor = this.getQueryCursor(currentPageParams);
+      const currentPageQueryCursor = await this.getQueryCursor(collection, currentPageParams);
       if (currentPageQueryCursor) {
         return currentPageQueryCursor;
       }
     }
-
     const limit = previousPage * perPage;
-    const snapshots = await query.limit(limit).get();
+    const newQuery = query.limit(limit);
+    const snapshots = await newQuery.get();
     return snapshots.docs[snapshots.docs.length - 1];
   }
 

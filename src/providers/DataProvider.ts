@@ -1,4 +1,4 @@
-import { logError } from "./../misc/logger";
+import { logError } from "../misc";
 import {
   CREATE,
   DELETE,
@@ -83,8 +83,9 @@ export function DataProvider(
       }
       return res;
     } catch (error) {
+      console.log('ERROR', error);
       const errorMsg = error.toString();
-      const code = retrieveStatusCode(errorMsg);
+      const code = errorMsg ? retrieveStatusCode(errorMsg) : null;
       const errorObj = { status: code, message: errorMsg, json: res };
       logError('DataProvider:', error, { errorMsg, code, errorObj });
       throw errorObj;
