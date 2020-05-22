@@ -457,24 +457,29 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string
   ) {
     const { page, perPage } = params.pagination;
-    const previousPage = page - 1;
 
-    for (let i = previousPage; i > 1; i--) {
+    let lastQueryCursor = null;
+    let currentPage = page - 1;
+
+    while(!lastQueryCursor && currentPage > 1) {
       const currentPageParams = {
         ...params,
         pagination: {
           ...params.pagination,
-          page: i
+          page: currentPage
         }
       };
 
       const currentPageQueryCursor = await this.getQueryCursor(collection, currentPageParams, resourceName);
       if (currentPageQueryCursor) {
-        return currentPageQueryCursor;
+        lastQueryCursor = currentPageQueryCursor;
+      } else {
+        currentPage--;
       }
     }
-    const limit = previousPage * perPage;
-    const newQuery = query.limit(limit);
+
+    const limit = (page - currentPage) * perPage;
+    const newQuery = query.startAfter(lastQueryCursor).limit(limit);
     const snapshots = await newQuery.get();
     return snapshots.docs[snapshots.docs.length - 1];
   }
