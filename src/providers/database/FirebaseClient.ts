@@ -477,9 +477,10 @@ export class FirebaseClient implements IFirebaseClient {
         currentPage--;
       }
     }
-
     const limit = (page - currentPage) * perPage;
-    const newQuery = query.startAfter(lastQueryCursor).limit(limit);
+    const newQuery = currentPage === 1 ?
+      query.limit(limit) : query.startAfter(lastQueryCursor).limit(limit);
+
     const snapshots = await newQuery.get();
     return snapshots.docs[snapshots.docs.length - 1];
   }
