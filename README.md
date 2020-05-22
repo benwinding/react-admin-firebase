@@ -1,4 +1,4 @@
-# react-admin-firebase
+# react-admin-firebase (lazy-loading test)
 
 <!-- [START badges] -->
 [![NPM Version](https://img.shields.io/npm/v/react-admin-firebase.svg)](https://www.npmjs.com/package/react-admin-firebase) 
@@ -90,7 +90,9 @@ const options = {
   // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
   associateUsersById: false,
   // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
-  metaFieldCasing: 'lower'
+  metaFieldCasing: 'lower',
+  // Use firebase sdk queries for pagination, filtering and sorting
+  lazyLoading: false
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
