@@ -110,7 +110,7 @@ export class FirebaseClient implements IFirebaseClient {
 
     if (snapshots.docs.length === 0) {
       log("apiGetListLazy - result", { message: 'There are not records for given query' });
-      return { data: [], total: 100000 };
+      return { data: [], total: 0 };
     }
 
     const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
@@ -171,6 +171,7 @@ export class FirebaseClient implements IFirebaseClient {
       await this.addUpdatedByFields(docObj);
       log("apiCreate", { docObj });
       await r.collection.doc(id).set(docObj, { merge: false });
+      this.clearQueryCursors(resourceName);
       return {
         data: {
           ...data,
@@ -199,6 +200,7 @@ export class FirebaseClient implements IFirebaseClient {
       .catch(error => {
         logError("apiUpdate error", { error });
       });
+    this.clearQueryCursors(resourceName);
     return {
       data: {
         ...data,
@@ -229,6 +231,7 @@ export class FirebaseClient implements IFirebaseClient {
         };
       })
     );
+    this.clearQueryCursors(resourceName);
     return {
       data: returnData
     };
@@ -248,6 +251,7 @@ export class FirebaseClient implements IFirebaseClient {
       .catch(error => {
         logError("apiSoftDelete error", { error });
       });
+    this.clearQueryCursors(resourceName);
     return {
       data: {
         ...params.previousData,
@@ -278,6 +282,7 @@ export class FirebaseClient implements IFirebaseClient {
         };
       })
     );
+    this.clearQueryCursors(resourceName);
     return {
       data: returnData
     };
@@ -295,6 +300,7 @@ export class FirebaseClient implements IFirebaseClient {
     } catch (error) {
       throw new Error(error)
     }
+    this.clearQueryCursors(resourceName);
     return {
       data: params.previousData
     };
@@ -316,6 +322,7 @@ export class FirebaseClient implements IFirebaseClient {
     } catch (error) {
       throw new Error(error)
     }
+    this.clearQueryCursors(resourceName);
     return { data: returnData };
   }
   public async apiGetMany(
@@ -416,13 +423,14 @@ export class FirebaseClient implements IFirebaseClient {
     const key = btoa(JSON.stringify({ ...params, resourceName }));
     localStorage.setItem(key, doc.id);
 
-    const localCursorKeys = localStorage.getItem('ra-firebase-cursor-keys');
+    const allCursorsKey = `ra-firebase-cursor-keys_${resourceName}`;
+    const localCursorKeys = localStorage.getItem(allCursorsKey);
     if (!localCursorKeys) {
-      localStorage.setItem('ra-firebase-cursor-keys', JSON.stringify([key]));
+      localStorage.setItem(allCursorsKey, JSON.stringify([key]));
     } else {
       const cursors: string[] = JSON.parse(localCursorKeys);
       const newCursors = cursors.concat(key);
-      localStorage.setItem('ra-firebase-cursor-keys', JSON.stringify(newCursors));
+      localStorage.setItem(allCursorsKey, JSON.stringify(newCursors));
     }
   }
 
@@ -441,12 +449,15 @@ export class FirebaseClient implements IFirebaseClient {
     return doc.exists && doc;
   }
 
-  private clearQueryCursors() {
-    const localCursorKeys = localStorage.getItem('ra-firebase-cursor-keys');
-    if (localCursorKeys) {
-      const cursors: string[] = JSON.parse(localCursorKeys);
-      cursors.forEach(cursor => localStorage.removeItem(cursor));
-      localStorage.removeItem('ra-firebase-cursor-keys');
+  private clearQueryCursors(resourceName: string) {
+    if (this.options.lazyLoading) {
+      const allCursorsKey = `ra-firebase-cursor-keys_${resourceName}`;
+      const localCursorKeys = localStorage.getItem(allCursorsKey);
+      if (localCursorKeys) {
+        const cursors: string[] = JSON.parse(localCursorKeys);
+        cursors.forEach(cursor => localStorage.removeItem(cursor));
+        localStorage.removeItem(allCursorsKey);
+      }
     }
   }
 
