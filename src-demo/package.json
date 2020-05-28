@@ -20,7 +20,7 @@
     "gh-pages": "^2.0.1"
   },
   "scripts": {
-    "start": "BROWSER=none PORT=3333 react-scripts start",
+    "start": "NODE_ENV=development BROWSER=none PORT=3333 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
