@@ -83,12 +83,13 @@ export class FirebaseLazyLoadingClient {
   ): Promise<messageTypes.IResponseGetManyReference> {
     const r = await this.tryGetResource(resourceName);
     log("apiGetManyReference", { resourceName, resource: r, reactAdminParams });
+    const filterWithTarget = {
+      ...reactAdminParams.filter,
+      [reactAdminParams.target]: reactAdminParams.id
+    };
     const params = this.getFullParamsForQuery({
       ...reactAdminParams,
-      filter: {
-        ...reactAdminParams.filter,
-        [reactAdminParams.target]: reactAdminParams.id
-      }
+      filter: filterWithTarget
     });
 
     const query = await this.paramsToQuery(

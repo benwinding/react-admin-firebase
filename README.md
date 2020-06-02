@@ -1,5 +1,16 @@
-# react-admin-firebase (lazy-loading test)
+# react-admin-firebase-lazy-loading (v.3.2.20)
 
+### NPM Package for react-admin-firebase with Lazy Loading update
+[react-admin-firebase-lazy-loading](https://www.npmjs.com/package/react-admin-firebase-lazy-loading)
+`yarn add react-admin-firebase-lazy-loading`
+
+#### Original library
+[react-admin-firebase (npm)](https://www.npmjs.com/package/react-admin-firebase)
+
+
+[react-admin-firebase (GitHub)](https://github.com/benwinding/react-admin-firebase)
+
+# react-admin-firebase
 <!-- [START badges] -->
 [![NPM Version](https://img.shields.io/npm/v/react-admin-firebase.svg)](https://www.npmjs.com/package/react-admin-firebase) 
 [![License](https://img.shields.io/npm/l/react-admin-firebase.svg)](https://github.com/benwinding/react-admin-firebase/blob/master/LICENSE) 
