@@ -1,12 +1,6 @@
-import {
-  CollectionReference,
-  DocumentSnapshot,
-  FirebaseFirestore,
-  OrderByDirection,
-  Query
-} from "@firebase/firestore-types";
+import { FirebaseFirestore } from "@firebase/firestore-types";
 import { IResource, ResourceManager } from "./ResourceManager";
-import { RAFirebaseOptions } from "../RAFirebaseOptions";
+import { isLazyLoadingEnabled, isReadsLoggingEnabled, RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
 import {
@@ -20,27 +14,36 @@ import {
   sortArray
 } from "../../misc";
 import { set } from "lodash";
+import { FirebaseLazyLoadingClient } from "./lazyLoading/FirebaseLazyLoadingClient";
+import ReadsLogger, { getFirebaseReadsLogger } from '../../misc/reads-logger';
 
 export class FirebaseClient implements IFirebaseClient {
-  private db: FirebaseFirestore;
-  private rm: ResourceManager;
+  private readonly db: FirebaseFirestore;
+  private readonly rm: ResourceManager;
+  private readonly lazyLoadingClient: FirebaseLazyLoadingClient;
+  private readonly readsLogger: ReadsLogger = getFirebaseReadsLogger();
 
   constructor(
-    private fireWrapper: IFirebaseWrapper,
-    public options: RAFirebaseOptions
+    private readonly fireWrapper: IFirebaseWrapper,
+    public readonly options: RAFirebaseOptions
   ) {
     this.db = fireWrapper.db();
     this.rm = new ResourceManager(this.fireWrapper, this.options);
+    this.lazyLoadingClient = isLazyLoadingEnabled(this.options) ?
+      new FirebaseLazyLoadingClient(
+        this.options,
+        this.rm,
+        this.readsLogger
+      ) : null;
   }
 
   public async apiGetList(
     resourceName: string,
     params: messageTypes.IParamsGetList
   ): Promise<messageTypes.IResponseGetList> {
-    if (this.options.lazyLoading) {
-      return this.apiGetListLazy(resourceName, params);
+    if (isLazyLoadingEnabled(this.options)) {
+      return this.lazyLoadingClient.apiGetList(resourceName, params);
     }
-
 
     log("apiGetList", { resourceName, params });
 
@@ -77,51 +80,7 @@ export class FirebaseClient implements IFirebaseClient {
       total
     };
   }
-  private async apiGetListLazy(
-    resourceName: string,
-    params: messageTypes.IParamsGetList
-  ): Promise<messageTypes.IResponseGetList> {
-    const r = await this.tryGetResource(resourceName);
-    log("apiGetListLazy", { resourceName, params });
-    let query: Query = r.collection;
 
-    const filters = this.options.softDelete ? {
-      ...params.filter,
-      deleted: false
-    } : params.filter;
-
-    query = this.filtersToQuery(query, filters);
-    query = this.sortToQuery(query, params.sort);
-
-    const { page, perPage } = params.pagination;
-    const fullParams = { ...params, filter: filters };
-
-    if (page === 1) {
-      query = query.limit(perPage);
-    } else {
-      let queryCursor = await this.getQueryCursor(r.collection, params, resourceName);
-      if (!queryCursor) {
-        queryCursor = await this.findLastQueryCursor(r.collection, query, fullParams, resourceName);
-      }
-      query = query.startAfter(queryCursor).limit(perPage);
-    }
-
-    const snapshots = await query.get();
-
-    if (snapshots.docs.length === 0) {
-      log("apiGetListLazy - result", { message: 'There are not records for given query' });
-      return { data: [], total: 0 };
-    }
-
-    const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
-    this.setQueryCursor(
-      snapshots.docs[snapshots.docs.length - 1],
-      fullParams,
-      resourceName
-    );
-    log("apiGetListLazy - result", { data });
-    return { data, total: 100000 };
-  }
 
   public async apiGetOne(
     resourceName: string,
@@ -130,6 +89,7 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiGetOne", { resourceName, params });
     try {
       const data = await this.rm.GetSingleDoc(resourceName, params.id);
+      this.incrementFirebaseReadsCounter(1);
       return { data };
     } catch (error) {
       throw new Error(
@@ -151,6 +111,7 @@ export class FirebaseClient implements IFirebaseClient {
       const overriddenId = params.data.id;
       const exists = (await r.collection.doc(overriddenId).get()).exists;
       if (exists) {
+        this.incrementFirebaseReadsCounter(1);
         throw new Error(
           `the id:"${overriddenId}" already exists, please use a unique string if overriding the 'id' field`
         );
@@ -335,6 +296,7 @@ export class FirebaseClient implements IFirebaseClient {
     const matchDocSnaps = await Promise.all(
       ids.map(id => r.collection.doc(id).get())
     );
+    this.incrementFirebaseReadsCounter(matchDocSnaps.length);
     const matches = matchDocSnaps.map(snap => parseFireStoreDocument(snap));
     const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
     return {
@@ -347,7 +309,7 @@ export class FirebaseClient implements IFirebaseClient {
     params: messageTypes.IParamsGetManyReference
   ): Promise<messageTypes.IResponseGetManyReference> {
     if (this.options.lazyLoading) {
-      return this.apiGetManyReferenceLazy(resourceName, params);
+      return this.lazyLoadingClient.apiGetManyReference(resourceName, params);
     }
 
     const r = await this.tryGetResource(resourceName, "REFRESH");
@@ -377,123 +339,6 @@ export class FirebaseClient implements IFirebaseClient {
     const dataPage = permittedData.slice(pageStart, pageEnd);
     const total = permittedData.length;
     return { data: dataPage, total };
-  }
-
-  private async apiGetManyReferenceLazy(
-    resourceName: string,
-    params: messageTypes.IParamsGetManyReference
-  ): Promise<messageTypes.IResponseGetManyReference> {
-    const r = await this.tryGetResource(resourceName);
-    log("apiGetManyReference", { resourceName, resource: r, params });
-    let query: Query = r.collection;
-    const queryFilters = this.options.softDelete ? {
-      ...params.filter,
-      [params.target]: params.id,
-      deleted: false
-    } : {
-      ...params.filter,
-      [params.target]: params.id
-    };
-    query = this.filtersToQuery(query, queryFilters);
-    query = this.sortToQuery(query, params.sort);
-
-    const snapshots = await query.get();
-    const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
-    return { data, total: data.length };
-  }
-
-
-  private filtersToQuery(query: Query, filters: { [fieldName: string]: any }): Query {
-    Object.keys(filters).forEach(fieldName => {
-      query = query.where(fieldName, '==', filters[fieldName]);
-    });
-    return query;
-  }
-
-  private sortToQuery(query: Query, sort: { field: string, order: string }): Query {
-    if (sort != null && sort.field !== 'id') {
-      const { field, order } = sort;
-      const parsedOrder = order.toLocaleLowerCase() as OrderByDirection;
-      query = query.orderBy(field, parsedOrder);
-    }
-    return query;
-  }
-
-  private setQueryCursor(doc: DocumentSnapshot, params: messageTypes.IParamsGetList, resourceName: string) {
-    const key = btoa(JSON.stringify({ ...params, resourceName }));
-    localStorage.setItem(key, doc.id);
-
-    const allCursorsKey = `ra-firebase-cursor-keys_${resourceName}`;
-    const localCursorKeys = localStorage.getItem(allCursorsKey);
-    if (!localCursorKeys) {
-      localStorage.setItem(allCursorsKey, JSON.stringify([key]));
-    } else {
-      const cursors: string[] = JSON.parse(localCursorKeys);
-      const newCursors = cursors.concat(key);
-      localStorage.setItem(allCursorsKey, JSON.stringify(newCursors));
-    }
-  }
-
-  private async getQueryCursor(
-    collection: CollectionReference,
-    params: messageTypes.IParamsGetList,
-    resourceName: string
-  ): Promise<DocumentSnapshot | boolean> {
-    const key = btoa(JSON.stringify({ ...params, resourceName }));
-    const docId = localStorage.getItem(key);
-    if (!docId) {
-      return false;
-    }
-
-    const doc = await collection.doc(docId).get();
-    return doc.exists && doc;
-  }
-
-  private clearQueryCursors(resourceName: string) {
-    if (this.options.lazyLoading) {
-      const allCursorsKey = `ra-firebase-cursor-keys_${resourceName}`;
-      const localCursorKeys = localStorage.getItem(allCursorsKey);
-      if (localCursorKeys) {
-        const cursors: string[] = JSON.parse(localCursorKeys);
-        cursors.forEach(cursor => localStorage.removeItem(cursor));
-        localStorage.removeItem(allCursorsKey);
-      }
-    }
-  }
-
-  private async findLastQueryCursor(
-    collection: CollectionReference,
-    query: Query,
-    params: messageTypes.IParamsGetList,
-    resourceName: string
-  ) {
-    const { page, perPage } = params.pagination;
-
-    let lastQueryCursor = null;
-    let currentPage = page - 1;
-
-    while(!lastQueryCursor && currentPage > 1) {
-      const currentPageParams = {
-        ...params,
-        pagination: {
-          ...params.pagination,
-          page: currentPage
-        }
-      };
-
-      const currentPageQueryCursor = await this.getQueryCursor(collection, currentPageParams, resourceName);
-      if (currentPageQueryCursor) {
-        lastQueryCursor = currentPageQueryCursor;
-      } else {
-        currentPage--;
-      }
-    }
-    const limit = (page - currentPage) * perPage;
-    const newQuery = currentPage === 1 ?
-      query.limit(limit) : query.startAfter(lastQueryCursor).limit(limit);
-
-    const snapshots = await newQuery.get();
-    return snapshots.docs[snapshots.docs.length - 1];
   }
 
   private async tryGetResource(
@@ -643,4 +488,15 @@ export class FirebaseClient implements IFirebaseClient {
     }
   }
 
+  private clearQueryCursors(resourceName: string) {
+    if (isLazyLoadingEnabled(this.options)) {
+      this.lazyLoadingClient.clearQueryCursors(resourceName);
+    }
+  }
+
+  private incrementFirebaseReadsCounter(newReads: number) {
+    if (isReadsLoggingEnabled(this.options)) {
+      this.readsLogger.incrementAll(newReads);
+    }
+  }
 }

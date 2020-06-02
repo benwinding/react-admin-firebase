@@ -17,9 +17,10 @@ import {
   messageTypes,
   retrieveStatusCode,
 } from "../misc";
-import { RAFirebaseOptions } from "./RAFirebaseOptions";
+import { isReadsLoggingEnabled, RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import { initFirebaseReadsLogger } from '../misc/reads-logger';
 
 export let fb: FirebaseClient;
 
@@ -37,6 +38,10 @@ export function DataProvider(
   });
   const fireWrapper = new FirebaseWrapper();
   fireWrapper.init(firebaseConfig, optionsInput);
+  if (isReadsLoggingEnabled(options)) {
+    initFirebaseReadsLogger(options);
+  }
+
   fb = new FirebaseClient(fireWrapper, options);
   async function providerApi(
     type: string,

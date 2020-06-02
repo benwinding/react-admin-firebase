@@ -3,10 +3,10 @@ import {
   CollectionReference,
   FirebaseFirestore
 } from "@firebase/firestore-types";
-import { RAFirebaseOptions } from "../RAFirebaseOptions";
+import { isLazyLoadingEnabled, RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { User } from "@firebase/auth-types";
-import { log, getAbsolutePath, messageTypes, parseFireStoreDocument } from "../../misc";
+import { log, getAbsolutePath, messageTypes, parseFireStoreDocument, logWarn } from "../../misc";
 
 export interface IResource {
   path: string;
@@ -62,7 +62,17 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery: messageTypes.CollectionQueryType
   ) {
-    log("resourceManager.RefreshResource", { relativePath, collectionQuery });
+    if (isLazyLoadingEnabled(this.options)) {
+      logWarn(
+        'resourceManager.RefreshResource',
+        { warn: 'RefreshResource is not available in lazy loading mode' }
+        );
+      throw new Error(
+        'react-admin-firebase: RefreshResource is not available in lazy loading mode'
+      );
+    }
+
+    log('resourceManager.RefreshResource', { relativePath, collectionQuery });
     await this.initPath(relativePath, collectionQuery);
     const resource = this.resources[relativePath];
 
@@ -71,7 +81,7 @@ export class ResourceManager {
     const newDocs = await query.get();
 
     resource.list = newDocs.docs.map(doc => parseFireStoreDocument(doc));
-    log("resourceManager.RefreshResource", {
+    log('resourceManager.RefreshResource', {
       newDocs,
       resource,
       collectionPath: collection.path
