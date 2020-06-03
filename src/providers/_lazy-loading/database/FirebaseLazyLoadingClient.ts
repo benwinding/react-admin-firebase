@@ -82,6 +82,12 @@ export class FirebaseLazyLoadingClient {
       log('apiGetListLazy', { message: 'It\'s last page of collection.' });
     }
 
+    log('apiGetListLazy result', {
+      docs: data,
+      resource: r,
+      collectionPath: r.collection.path
+    });
+
     return { data, total };
   }
 
@@ -90,7 +96,11 @@ export class FirebaseLazyLoadingClient {
     reactAdminParams: messageTypes.IParamsGetManyReference
   ): Promise<messageTypes.IResponseGetManyReference> {
     const r = await this.tryGetResource(resourceName);
-    log('apiGetManyReference', { resourceName, resource: r, reactAdminParams });
+    log('apiGetManyReferenceLazy', {
+      resourceName,
+      resource: r,
+      reactAdminParams
+    });
     const filterWithTarget = {
       ...reactAdminParams.filter,
       [reactAdminParams.target]: reactAdminParams.id
@@ -109,6 +119,11 @@ export class FirebaseLazyLoadingClient {
     const snapshots = await query.get();
     this.incrementFirebaseReadsCounter(snapshots.docs.length);
     const data = snapshots.docs.map(parseFireStoreDocument);
+    log('apiGetManyReferenceLazy result', {
+      docs: data,
+      resource: r,
+      collectionPath: r.collection.path
+    });
     return { data, total: data.length };
   }
 
