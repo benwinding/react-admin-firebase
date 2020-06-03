@@ -1,14 +1,13 @@
 import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
-import { RAFirebaseOptions } from '../../../src/providers/RAFirebaseOptions';
+import { RAFirebaseOptions } from '../../../src/providers/options';
 import { firestore } from 'firebase';
-import * as firebase from "@firebase/testing";
+import * as firebase from '@firebase/testing';
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
   private app: any;
   options: RAFirebaseOptions;
 
-  constructor() {}
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
     this.options = options;
     this.app = options.app;

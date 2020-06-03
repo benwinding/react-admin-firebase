@@ -2,11 +2,18 @@
 import {
   CollectionReference,
   FirebaseFirestore
-} from "@firebase/firestore-types";
-import { isLazyLoadingEnabled, RAFirebaseOptions } from "../RAFirebaseOptions";
-import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
-import { User } from "@firebase/auth-types";
-import { log, getAbsolutePath, messageTypes, parseFireStoreDocument, logWarn } from "../../misc";
+} from '@firebase/firestore-types';
+import { RAFirebaseOptions } from '../options';
+import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
+import { User } from '@firebase/auth-types';
+import {
+  log,
+  getAbsolutePath,
+  messageTypes,
+  parseFireStoreDocument,
+  logWarn
+} from '../../misc';
+import { isLazyLoadingEnabled } from '../../misc/options-utils';
 
 export interface IResource {
   path: string;
@@ -33,7 +40,7 @@ export class ResourceManager {
     const resource: IResource = this.resources[relativePath];
     if (!resource) {
       throw new Error(
-        `react-admin-firebase: Cant find resource: "${relativePath}"`
+        `react-admin-firebase: Can't find resource: "${relativePath}"`
       );
     }
     return resource;
@@ -43,7 +50,7 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery: messageTypes.CollectionQueryType
   ): Promise<IResource> {
-    log("resourceManager.TryGetResourcePromise", {
+    log('resourceManager.TryGetResourcePromise', {
       relativePath,
       collectionQuery
     });
@@ -80,7 +87,7 @@ export class ResourceManager {
     const query = this.applyQuery(collection, collectionQuery);
     const newDocs = await query.get();
 
-    resource.list = newDocs.docs.map(doc => parseFireStoreDocument(doc));
+    resource.list = newDocs.docs.map(parseFireStoreDocument);
     log('resourceManager.RefreshResource', {
       newDocs,
       resource,
@@ -93,10 +100,10 @@ export class ResourceManager {
     const resource = this.GetResource(relativePath);
     const docSnap = await resource.collection.doc(docId).get();
     if (!docSnap.exists) {
-      throw new Error("react-admin-firebase: No id found matching: " + docId);
+      throw new Error('react-admin-firebase: No id found matching: ' + docId);
     }
     const result = parseFireStoreDocument(docSnap);
-    log("resourceManager.GetSingleDoc", {
+    log('resourceManager.GetSingleDoc', {
       relativePath,
       resource,
       docId,
@@ -113,12 +120,12 @@ export class ResourceManager {
     const rootRef = this.options && this.options.rootRef;
     const absolutePath = getAbsolutePath(rootRef, relativePath);
     const hasBeenInited = !!this.resources[relativePath];
-    log("resourceManager.initPath()", {
+    log('resourceManager.initPath()', {
       absolutePath,
       hasBeenInited
     });
     if (hasBeenInited) {
-      log("resourceManager.initPath() has been initialized already...");
+      log('resourceManager.initPath() has been initialized already...');
       return;
     }
     const collection = this.db.collection(absolutePath);
@@ -130,7 +137,7 @@ export class ResourceManager {
       pathAbsolute: absolutePath
     };
     this.resources[relativePath] = resource;
-    log("resourceManager.initPath() setting resource...", {
+    log('resourceManager.initPath() setting resource...', {
       resource,
       allResources: this.resources,
       collection: collection,
@@ -154,17 +161,14 @@ export class ResourceManager {
     collection: CollectionReference,
     collectionQuery?: messageTypes.CollectionQueryType
   ): CollectionReference {
-    let collref: CollectionReference;
-    if (collectionQuery) {
-      collref = collectionQuery(collection);
-    } else {
-      collref = collection;
-    }
-    log("resourceManager.applyQuery() ...", {
+    const collRef: CollectionReference = collectionQuery ?
+      collectionQuery(collection) : collection;
+
+    log('resourceManager.applyQuery() ...', {
       collection,
-      collectionQuery: (collectionQuery || "-").toString(),
-      collref
+      collectionQuery: (collectionQuery || '-').toString(),
+      collRef
     });
-    return collref;
+    return collRef;
   }
 }

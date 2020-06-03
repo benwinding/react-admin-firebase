@@ -1,5 +1,5 @@
-import { QueryDocumentSnapshot } from "@firebase/firestore-types";
-import { parseAllDatesDoc } from "./timestamp-parser";
+import { QueryDocumentSnapshot } from '@firebase/firestore-types';
+import { parseAllDatesDoc } from './timestamp-parser';
 
 export const parseFireStoreDocument = (doc: QueryDocumentSnapshot) => {
   const data = doc.data();

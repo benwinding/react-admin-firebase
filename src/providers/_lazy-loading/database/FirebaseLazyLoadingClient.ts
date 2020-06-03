@@ -1,8 +1,9 @@
-import { log, messageTypes, parseFireStoreDocument } from "../../../misc";
-import { CollectionReference, DocumentSnapshot, OrderByDirection, Query } from "@firebase/firestore-types";
-import { IResource, ResourceManager } from "../ResourceManager";
-import { isReadsLoggingEnabled, RAFirebaseOptions } from "../../RAFirebaseOptions";
-import ReadsLogger from '../../../misc/reads-logger';
+import { log, messageTypes, parseFireStoreDocument } from '../../../misc';
+import { CollectionReference, DocumentSnapshot, OrderByDirection, Query } from '@firebase/firestore-types';
+import { IResource, ResourceManager } from '../../database/ResourceManager';
+import { RAFirebaseOptions } from '../../options';
+import { FiReLogger } from '../../../tools/reads-logger';
+import { isReadsLoggerEnabled } from '../../../misc/options-utils';
 
 interface ParamsToQueryOptions {
   filters?: boolean;
@@ -21,8 +22,12 @@ export class FirebaseLazyLoadingClient {
   constructor(
     private readonly options: RAFirebaseOptions,
     private readonly rm: ResourceManager,
-    private readonly readsLogger: ReadsLogger
+    private readsLogger: FiReLogger | false
   ) {}
+
+  public setReadsLogger(readsLogger: FiReLogger | false) {
+    this.readsLogger = readsLogger;
+  }
 
   public async apiGetList(
     resourceName: string,
@@ -31,7 +36,7 @@ export class FirebaseLazyLoadingClient {
     const r = await this.tryGetResource(resourceName);
     const params = this.getFullParamsForQuery(reactAdminParams);
 
-    log("apiGetListLazy", { resourceName, params });
+    log('apiGetListLazy', { resourceName, params });
 
     const query = await this.paramsToQuery(
       r.collection,
@@ -42,13 +47,16 @@ export class FirebaseLazyLoadingClient {
     const snapshots = await query.get();
 
     if (snapshots.docs.length === 0) {
-      log("apiGetListLazy", { message: 'There are not records for given query' });
+      log(
+        'apiGetListLazy',
+        { message: 'There are not records for given query' }
+      );
       return { data: [], total: 0 };
     }
 
     this.incrementFirebaseReadsCounter(snapshots.docs.length);
 
-    const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
+    const data = snapshots.docs.map(parseFireStoreDocument);
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
     // After fetching documents save queryCursor for next page
     this.setQueryCursor(
@@ -71,7 +79,7 @@ export class FirebaseLazyLoadingClient {
     if (isOnLastPage) {
       const { page, perPage } = params.pagination;
       total = ((page - 1) * perPage) + data.length;
-      log("apiGetListLazy", { message: 'It\'s last page of collection.' });
+      log('apiGetListLazy', { message: 'It\'s last page of collection.' });
     }
 
     return { data, total };
@@ -82,7 +90,7 @@ export class FirebaseLazyLoadingClient {
     reactAdminParams: messageTypes.IParamsGetManyReference
   ): Promise<messageTypes.IResponseGetManyReference> {
     const r = await this.tryGetResource(resourceName);
-    log("apiGetManyReference", { resourceName, resource: r, reactAdminParams });
+    log('apiGetManyReference', { resourceName, resource: r, reactAdminParams });
     const filterWithTarget = {
       ...reactAdminParams.filter,
       [reactAdminParams.target]: reactAdminParams.id
@@ -100,7 +108,7 @@ export class FirebaseLazyLoadingClient {
 
     const snapshots = await query.get();
     this.incrementFirebaseReadsCounter(snapshots.docs.length);
-    const data = snapshots.docs.map(doc => parseFireStoreDocument(doc));
+    const data = snapshots.docs.map(parseFireStoreDocument);
     return { data, total: data.length };
   }
 
@@ -126,14 +134,20 @@ export class FirebaseLazyLoadingClient {
       ) : sortStepQuery;
   }
 
-  private filtersToQuery(query: Query, filters: { [fieldName: string]: any }): Query {
+  private filtersToQuery(
+    query: Query,
+    filters: { [fieldName: string]: any }
+  ): Query {
     Object.keys(filters).forEach(fieldName => {
       query = query.where(fieldName, '==', filters[fieldName]);
     });
     return query;
   }
 
-  private sortToQuery(query: Query, sort: { field: string, order: string }): Query {
+  private sortToQuery(
+    query: Query,
+    sort: { field: string, order: string }
+  ): Query {
     if (sort != null && sort.field !== 'id') {
       const { field, order } = sort;
       const parsedOrder = order.toLocaleLowerCase() as OrderByDirection;
@@ -152,9 +166,18 @@ export class FirebaseLazyLoadingClient {
     if (page === 1) {
       query = query.limit(perPage);
     } else {
-      let queryCursor = await this.getQueryCursor(collection, params, resourceName);
+      let queryCursor = await this.getQueryCursor(
+        collection,
+        params,
+        resourceName
+      );
       if (!queryCursor) {
-        queryCursor = await this.findLastQueryCursor(collection, query, params, resourceName);
+        queryCursor = await this.findLastQueryCursor(
+          collection,
+          query,
+          params,
+          resourceName
+        );
       }
       query = query.startAfter(queryCursor).limit(perPage);
     }
@@ -210,7 +233,11 @@ export class FirebaseLazyLoadingClient {
     return nextElementSnapshot.empty;
   }
 
-  private setQueryCursor(doc: DocumentSnapshot, params: messageTypes.IParamsGetList, resourceName: string) {
+  private setQueryCursor(
+    doc: DocumentSnapshot,
+    params: messageTypes.IParamsGetList,
+    resourceName: string
+  ) {
     const key = btoa(JSON.stringify({ ...params, resourceName }));
     localStorage.setItem(key, doc.id);
 
@@ -274,7 +301,11 @@ export class FirebaseLazyLoadingClient {
         }
       };
 
-      const currentPageQueryCursor = await this.getQueryCursor(collection, currentPageParams, resourceName);
+      const currentPageQueryCursor = await this.getQueryCursor(
+        collection,
+        currentPageParams,
+        resourceName
+      );
       if (currentPageQueryCursor) {
         lastQueryCursor = currentPageQueryCursor;
       } else {
@@ -298,7 +329,7 @@ export class FirebaseLazyLoadingClient {
   }
 
   public incrementFirebaseReadsCounter(newReads: number) {
-    if (isReadsLoggingEnabled(this.options)) {
+    if (isReadsLoggerEnabled(this.options) && this.readsLogger) {
       this.readsLogger.incrementAll(newReads);
     }
   }

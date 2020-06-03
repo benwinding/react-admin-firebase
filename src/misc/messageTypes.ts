@@ -1,5 +1,5 @@
 // Firebase types
-import { CollectionReference } from "@firebase/firestore-types";
+import { CollectionReference } from '@firebase/firestore-types';
 
 // PARAMETERS
 export namespace messageTypes {

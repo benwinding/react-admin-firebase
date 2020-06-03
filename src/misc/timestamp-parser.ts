@@ -10,8 +10,8 @@ export function parseAllDatesDoc(obj: {}) {
 }
 
 export function recusivelyCheckObjectValue(input: any) {
-  const isFalsey = !input;
-  if (isFalsey) {
+  const isFalsy = !input;
+  if (isFalsy) {
     return input;
   }
   const isPrimitive = typeof input !== 'object';
@@ -24,7 +24,7 @@ export function recusivelyCheckObjectValue(input: any) {
   }
   const isArray = Array.isArray(input);
   if (isArray) {
-    return input.map(value => recusivelyCheckObjectValue(value));
+    return input.map(recusivelyCheckObjectValue);
   }
   const isObject = typeof input === 'object';
   if (isObject) {

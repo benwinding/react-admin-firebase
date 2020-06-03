@@ -1,30 +1,42 @@
-import { RAFirebaseReadsLoggerError, RAFirebaseReadsLoggerStorageKeys } from "./types";
-import { RAFirebaseOptions, RAFirebaseReadsLoggingOptions } from "../../providers/RAFirebaseOptions";
-import firebase from "firebase/app";
-import "firebase/auth";
+import { FiReLoggerInternalError } from '../utils/logger-errors';
+import { RAFirebaseOptions } from '../../../providers/options';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import { getFiReLoggerOptions } from '../../../misc/options-utils';
+import FiReLoggerOptions from '../options';
+import { readsLoggerConsole } from '../utils/readsLoggerConsole';
 
 type ReadsKey = 'customReads' | 'sessionReads';
-type GetReadsFn = (readsKey: keyof RAFirebaseReadsLoggerStorageKeys) => number;
+type GetReadsFn = (readsKey: keyof FiReLoggerStorageKeys) => number;
 type ResetReadsFn = (readsKey: ReadsKey) => void;
 type IncrementReadsFn = (newReads: number, readsKey: ReadsKey) => void;
+type CheckUserStateFn = (snapshot: firebase.User | null) => boolean;
+
+interface FiReLoggerStorageKeys {
+  customReads: string;
+  lastCustomReads: string;
+  sessionReads: string;
+  lastSessionReads: string;
+}
 
 export default class ReadsLoggerLocalStorageUtils {
   /*
    * PRIVATE FIELDS
    */
-  private storageKeys: RAFirebaseReadsLoggerStorageKeys = null;
+  private storageKeys: FiReLoggerStorageKeys = null;
   private get hasKeys(): boolean {
-    return !!this.storageKeys;
+    return Boolean(this.storageKeys);
   }
-  private readonly loggerOptions: RAFirebaseReadsLoggingOptions;
+  private readonly loggerOptions: FiReLoggerOptions;
   private readonly DEFAULT_PREFIX: string = 'ra-firebase-reads';
   private isInitialized: boolean = false;
+  private currentUserId: string = null;
+  private emitSessionReadsStreams: () => void = null;
+  private authStateUnsubscribe: firebase.Unsubscribe;
   /*
    * PUBLIC LOCAL STORAGE UTILS INTERFACE
    */
-  public authStateUnsubscribe: firebase.Unsubscribe;
-
-  public get keys(): RAFirebaseReadsLoggerStorageKeys {
+  public get keys(): FiReLoggerStorageKeys {
     return this.storageKeys;
   }
 
@@ -63,13 +75,19 @@ export default class ReadsLoggerLocalStorageUtils {
    *
    * Should be called before any action in
    */
-  public async init() {
+  public async init(sessionStreamEmitCallback: () => void) {
     if (this.isInitialized) {
-      throw new RAFirebaseReadsLoggerError('Storage utils already initialized.');
+      throw new FiReLoggerInternalError('Storage utils already initialized!');
     }
-    this.isInitialized = await this.startUserSubscription();
-    return this.isInitialized;
+
+    this.emitSessionReadsStreams = sessionStreamEmitCallback;
+
+    return this.isInitialized = await this.startUserSubscription();
   }
+  /*
+   * Clean
+   */
+  public clean = () => this.authStateUnsubscribe();
   /*
    * Class will be only imported in ReadsLogger file
    * and constructor will be only called in ReadsLogger.init()
@@ -77,41 +95,64 @@ export default class ReadsLoggerLocalStorageUtils {
   constructor(
     private readonly options: RAFirebaseOptions
   ) {
-    this.loggerOptions = this.options.lazyLoading.firebaseReadsLogging;
+    this.loggerOptions = getFiReLoggerOptions(this.options);
   }
   /*
    * Initial subscription for user id to save counters for user
    */
   private async startUserSubscription(): Promise<boolean> {
+    const isLoggedOut: CheckUserStateFn = snapshot =>
+      !snapshot && this.currentUserId !== null && this.hasKeys;
+
+    const userChanged: CheckUserStateFn = snapshot =>
+      snapshot && snapshot.uid && this.currentUserId !== snapshot.uid;
+
     return new Promise((resolve, reject) => {
       const firebaseAuth = this.options.app.auth() || firebase.app().auth();
       this.authStateUnsubscribe = firebaseAuth.onAuthStateChanged(
         userSnapshot => {
-          if (userSnapshot.uid) {
-            this.storageKeys = this.getLocalStorageKeys(userSnapshot.uid);
+          if (isLoggedOut(userSnapshot)) {
+            this.resetSessionReads();
+            this.currentUserId = null;
+            this.storageKeys = null;
+          } else if (userChanged(userSnapshot)) {
+            this.currentUserId = userSnapshot.uid;
+            this.storageKeys = this.getLocalStorageKeys();
             resolve(true);
           }
         },
-        error => reject(error)
+        reject
       );
     });
+  }
+  private resetSessionReads() {
+    this.resetReads('sessionReads');
+    if (this.emitSessionReadsStreams) {
+      this.emitSessionReadsStreams();
+    }
   }
   /*
    * INTERNAL UTILS
    */
   private setReadsInStorage(
-    key: keyof RAFirebaseReadsLoggerStorageKeys,
+    key: keyof FiReLoggerStorageKeys,
     reads: number
   ): void {
     localStorage.setItem(this.keys[key], String(reads));
   }
 
-  private getLocalStorageKeys(
-    userId: string
-  ): RAFirebaseReadsLoggerStorageKeys {
+  private getLocalStorageKeys(): FiReLoggerStorageKeys {
     const customPrefix = this.loggerOptions &&
-      this.loggerOptions.localStoragePrefix;
+      this.loggerOptions.storagePrefix;
     const prefix = customPrefix || this.DEFAULT_PREFIX;
+    const userId = this.currentUserId;
+
+    readsLoggerConsole.log({
+      action: 'get local storage keys for reads for current user',
+      reason: 'get new user snapshot from firebase auth',
+      userId,
+      prefix
+    });
 
     return {
       customReads: `${prefix}-${userId}-custom-reads`,
@@ -128,13 +169,13 @@ export default class ReadsLoggerLocalStorageUtils {
 
   private checkKeysError() {
     if (!this.hasKeys) {
-      throw new RAFirebaseReadsLoggerError('Cannot read local storage keys.');
+      throw new FiReLoggerInternalError('Cannot read local storage keys.');
     }
   }
 
   private checkInitError() {
     if (!this.isInitialized) {
-      throw new RAFirebaseReadsLoggerError('Storage utils not initialized.');
+      throw new FiReLoggerInternalError('Storage utils not initialized.');
     }
   }
 }

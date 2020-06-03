@@ -1,5 +1,5 @@
-import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
-import { FirebaseAuth } from "@firebase/auth-types";
+import { RAFirebaseOptions } from 'providers/options';
+import { FirebaseAuth } from '@firebase/auth-types';
 
 export interface IFirebaseWrapper {
   init(firebaseConfig: {}, options: RAFirebaseOptions): void;

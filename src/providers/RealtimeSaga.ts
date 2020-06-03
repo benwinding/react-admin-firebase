@@ -1,7 +1,11 @@
-import realtimeSaga from "ra-realtime";
-import { RAFirebaseOptions } from "./RAFirebaseOptions";
+import realtimeSaga from 'ra-realtime';
+import { RAFirebaseOptions } from './options';
 
-const observeRequest = (dataProvider, options?: RAFirebaseOptions) => (type, resource, params) => {
+const observeRequest = (dataProvider, options?: RAFirebaseOptions) => (
+  type,
+  resource,
+  params
+) => {
   const safeOptions = options || {};
   if (Array.isArray(safeOptions.watch)) {
     const mustWatchResource = safeOptions.watch.includes(resource);
@@ -19,8 +23,10 @@ const observeRequest = (dataProvider, options?: RAFirebaseOptions) => (type, res
   return {
     subscribe(observer) {
       dataProvider(type, resource, params)
-        .then((results) => observer.next(results)) // New data received, notify the observer
-        .catch((error) => observer.error(error)); // Ouch, an error occured, notify the observer
+        // New data received, notify the observer
+        .then((results) => observer.next(results))
+        // Ouch, an error occured, notify the observer
+        .catch((error) => observer.error(error));
 
       const subscription = {
         unsubscribe() {

@@ -1,54 +1,27 @@
-import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
+import { RAFirebaseOptions } from 'providers/options';
 
-// UTILS
+type LogFn = (...args) => void;
 
-export class SimpleLogger {
-  private title = "🔥r-a-f: ";
+const disabledLogFn: LogFn = () => null;
 
-  isEnabled() {
-    return !!localStorage.getItem('LOGGING_ENABLED');
-  }
+const isEnabled: () => boolean =
+  () => !!localStorage.getItem('LOGGING_ENABLED');
 
-  public get log() {
-    if (!this.isEnabled()) {
-      return (...any) => {};
-    }
-    const boundLogFn: (...any) => void = console.log.bind(console, this.title);
-    return boundLogFn;
-  }
+const logTitle = '🔥r-a-f: ';
 
-  public get warn() {
-    if (!this.isEnabled()) {
-      return (...any) => {};
-    }
-    const boundLogFn: (...any) => void = console.warn.bind(console, this.title);
-    return boundLogFn;
-  }
+const getLogFn: (level: keyof Console) => LogFn = level =>
+  isEnabled() ? console[level].bind(console, logTitle) : disabledLogFn;
 
-  public get error() {
-    if (!this.isEnabled()) {
-      return (...any) => {};
-    }
-    const boundLogFn: (...any) => void = console.error.bind(
-      console,
-      this.title
-    );
-    return boundLogFn;
-  }
-}
+export const log = getLogFn('log');
+export const logWarn = getLogFn('warn');
+export const logError = getLogFn('error');
 
-const logger = new SimpleLogger();
-
-export function CheckLogging(config: {}, options: RAFirebaseOptions) {
-  const logSignalDeprecated = config && config["debug"];
+export function checkLogging(config: {}, options: RAFirebaseOptions) {
+  const logSignalDeprecated = config && config['debug'];
   const logSignal = options.logging;
   if (logSignalDeprecated || logSignal) {
-    localStorage.setItem('LOGGING_ENABLED', 'true')
+    localStorage.setItem('LOGGING_ENABLED', 'true');
   } else {
-    localStorage.removeItem('LOGGING_ENABLED')
+    localStorage.removeItem('LOGGING_ENABLED');
   }
 }
-
-export const log = logger.log;
-export const logWarn = logger.warn;
-export const logError = logger.error;
