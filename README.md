@@ -103,7 +103,14 @@ const options = {
   // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
   metaFieldCasing: 'lower',
   // Use firebase sdk queries for pagination, filtering and sorting
-  lazyLoading: false
+  lazyLoading: {
+    enabled: false
+  },
+  // Logging of all reads performed by app (additional feature, for lazy-loading testing)
+  firebaseReadsLogger: {
+    enabled: false,
+    localStoragePrefix // optional
+  }
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
