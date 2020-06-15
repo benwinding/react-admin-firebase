@@ -1,10 +1,11 @@
 import { getFirebaseReadsLogger } from './getFirebaseReadsLogger';
 import { SetStateAction, Dispatch } from 'react';
-import { FiReLogger } from '../../../reads-logger';
+import { loggerTypes } from '../../../reads-logger/utils/logger-helpers';
+
 type CounterType = 'page' | 'custom' | 'session';
 type GetCounterKeysFn = (counterType: CounterType) => [string, string];
-type InitLoggerCallbackFn = (logger: FiReLogger) => any |
-  Promise<(logger: FiReLogger) => any>;
+type InitLoggerCallbackFn = (logger: loggerTypes.ReadsLogger) => any |
+  Promise<(logger: loggerTypes.ReadsLogger) => any>;
 
 const getCounterKeys: GetCounterKeysFn = counterType => {
   switch (counterType) {
@@ -18,7 +19,7 @@ const getCounterKeys: GetCounterKeysFn = counterType => {
 };
 
 const setReadsSubscriptions = async (
-  logger: FiReLogger,
+  logger: loggerTypes.ReadsLogger,
   counterType: CounterType,
   setCurrentReads: Dispatch<SetStateAction<number>>,
   setLastReads: Dispatch<SetStateAction<number>>
@@ -38,7 +39,7 @@ export const initFirebaseReadsLoggerSubscriptions = async (
   setLastReads: Dispatch<SetStateAction<number>>,
   callback: InitLoggerCallbackFn = null
 ) => {
-  const firebaseReadsLogger: FiReLogger | false =
+  const firebaseReadsLogger: loggerTypes.ReadsLogger | false =
     await getFirebaseReadsLogger();
 
   if (!firebaseReadsLogger) {

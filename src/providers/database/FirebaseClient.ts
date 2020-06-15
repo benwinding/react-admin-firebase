@@ -15,14 +15,15 @@ import {
 } from '../../misc';
 import { set } from 'lodash';
 import { FirebaseLazyLoadingClient } from '../_lazy-loading/database/FirebaseLazyLoadingClient';
-import logger, { FiReLogger } from '../../tools/reads-logger';
+import * as logger from '../../tools/reads-logger';
 import { isLazyLoadingEnabled, isReadsLoggerEnabled } from '../../misc/options-utils';
+import { loggerTypes } from '../../tools/reads-logger/utils/logger-helpers';
 
 export class FirebaseClient implements IFirebaseClient {
   private readonly db: FirebaseFirestore;
   private readonly rm: ResourceManager;
   private readonly lazyLoadingClient: FirebaseLazyLoadingClient;
-  private readsLogger: FiReLogger | false;
+  private readsLogger: loggerTypes.ReadsLogger | false;
 
   constructor(
     private readonly fireWrapper: IFirebaseWrapper,

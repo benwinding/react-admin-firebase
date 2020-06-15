@@ -1,4 +1,4 @@
-import logger from '../../../reads-logger';
+import * as logger from '../../../reads-logger';
 
 /**
  * getFirebaseReadsLogger

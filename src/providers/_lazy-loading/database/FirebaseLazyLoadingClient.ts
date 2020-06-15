@@ -2,7 +2,7 @@ import { log, messageTypes, parseFireStoreDocument } from '../../../misc';
 import { CollectionReference, DocumentSnapshot, OrderByDirection, Query } from '@firebase/firestore-types';
 import { IResource, ResourceManager } from '../../database/ResourceManager';
 import { RAFirebaseOptions } from '../../options';
-import { FiReLogger } from '../../../tools/reads-logger';
+import { loggerTypes } from '../../../tools/reads-logger/utils/logger-helpers';
 import { isReadsLoggerEnabled } from '../../../misc/options-utils';
 
 interface ParamsToQueryOptions {
@@ -22,10 +22,10 @@ export class FirebaseLazyLoadingClient {
   constructor(
     private readonly options: RAFirebaseOptions,
     private readonly rm: ResourceManager,
-    private readsLogger: FiReLogger | false
+    private readsLogger: loggerTypes.ReadsLogger | false
   ) {}
 
-  public setReadsLogger(readsLogger: FiReLogger | false) {
+  public setReadsLogger(readsLogger: loggerTypes.ReadsLogger | false) {
     this.readsLogger = readsLogger;
   }
 
