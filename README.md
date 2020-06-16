@@ -90,7 +90,12 @@ const options = {
   // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
   associateUsersById: false,
   // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
-  metaFieldCasing: 'lower'
+  metaFieldCasing: 'lower',
+  // Instead of saving full download url for file, save just relative path and then get download url
+  // when getting docs - main use case is handling multiple firebase projects (environments)
+  // and moving/copying documents/storage files between them - with relativeFilePaths, download url
+  // always point to projects storage
+  relativeFilePaths: false 
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
