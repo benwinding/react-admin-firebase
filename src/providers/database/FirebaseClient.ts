@@ -1,5 +1,5 @@
 import { FirebaseFirestore } from "@firebase/firestore-types";
-import { ResourceManager, IResource } from "./ResourceManager";
+import { IResource, ResourceManager } from "./ResourceManager";
 import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IFirebaseClient } from "./IFirebaseClient";
@@ -9,10 +9,11 @@ import {
   log,
   logError,
   messageTypes,
-  sortArray,
   parseDocGetAllUploads,
+  recursivelyMapStorageUrls,
+  sortArray
 } from "../../misc";
-import { set } from 'lodash'
+import { set } from "lodash";
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -60,6 +61,25 @@ export class FirebaseClient implements IFirebaseClient {
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
     const total = filteredData.length;
+
+    if (this.options.relativeFilePaths) {
+      const data = await Promise.all(
+        dataPage.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+      return {
+        data,
+        total
+      };
+    }
+
     return {
       data: dataPage,
       total
@@ -72,6 +92,13 @@ export class FirebaseClient implements IFirebaseClient {
     log("apiGetOne", { resourceName, params });
     try {
       const data = await this.rm.GetSingleDoc(resourceName, params.id);
+      for (let fieldName in data) {
+        data[fieldName] = await recursivelyMapStorageUrls(
+          this.fireWrapper,
+          data[fieldName]
+        );
+      }
+
       return { data: data };
     } catch (error) {
       throw new Error(
@@ -167,7 +194,7 @@ export class FirebaseClient implements IFirebaseClient {
         await this.addUpdatedByFields(docObj);
         await r.collection
           .doc(id)
-          .update(docObj)
+          .update(docObj);
         return {
           ...data,
           id: id
@@ -267,7 +294,9 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: messageTypes.IParamsGetMany
   ): Promise<messageTypes.IResponseGetMany> {
-    const r = await this.tryGetResource(resourceName, "REFRESH");
+    // No refresh here, it was probably bug, as in this method,
+    // we are getting docs by ids
+    const r = await this.tryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const matchDocSnaps = await Promise.all(
@@ -277,6 +306,23 @@ export class FirebaseClient implements IFirebaseClient {
       return { ...snap.data(), id: snap.id };
     });
     const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
+    if (this.options.relativeFilePaths) {
+      const data = await Promise.all(
+        permittedData.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+      return {
+        data
+      };
+    }
+
     return {
       data: permittedData
     };
@@ -296,7 +342,7 @@ export class FirebaseClient implements IFirebaseClient {
       softDeleted = data.filter(doc => !doc['deleted'])
     }
     const filteredData = filterArray(softDeleted, filterSafe);
-    const targetIdFilter = {}
+    const targetIdFilter = {};
     targetIdFilter[targetField] = targetValue;
     const permittedData = filterArray(filteredData, targetIdFilter);
     if (params.sort != null) {
@@ -311,6 +357,22 @@ export class FirebaseClient implements IFirebaseClient {
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = permittedData.slice(pageStart, pageEnd);
     const total = permittedData.length;
+
+    if (this.options.relativeFilePaths) {
+      const data = await Promise.all(
+        permittedData.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+      return { data, total };
+    }
+
     return { data: dataPage, total };
   }
   private async tryGetResource(
@@ -349,7 +411,7 @@ export class FirebaseClient implements IFirebaseClient {
     const uploads = parseDocGetAllUploads(data);
     await Promise.all(
       uploads.map(async (u) => {
-        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath)
+        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath);
         set(data, u.fieldDotsPath + '.src', link);
       })
     );
@@ -426,8 +488,7 @@ export class FirebaseClient implements IFirebaseClient {
     fieldPath: string
   ): Promise<string> {
     const storagePath = joinPaths(docPath, fieldPath);
-    const storageLink = await this.saveFile(storagePath, rawFile);
-    return storageLink;
+    return await this.saveFile(storagePath, rawFile);
   }
 
   private async saveFile(storagePath: string, rawFile: any): Promise<string> {
@@ -446,7 +507,7 @@ export class FirebaseClient implements IFirebaseClient {
         taskResult,
         getDownloadURL
       });
-      return getDownloadURL;
+      return this.options.relativeFilePaths ? storagePath : getDownloadURL;
     } catch (storageError) {
       if (storageError.code === "storage/unknown") {
         logError(
