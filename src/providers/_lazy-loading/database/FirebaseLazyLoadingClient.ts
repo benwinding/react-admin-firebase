@@ -1,9 +1,15 @@
-import { log, messageTypes, parseFireStoreDocument } from '../../../misc';
+import {
+  log,
+  messageTypes,
+  parseFireStoreDocument,
+  recursivelyMapStorageUrls
+} from '../../../misc';
 import { CollectionReference, DocumentSnapshot, OrderByDirection, Query } from '@firebase/firestore-types';
 import { IResource, ResourceManager } from '../../database/ResourceManager';
 import { RAFirebaseOptions } from '../../options';
 import { loggerTypes } from '../../../tools/reads-logger/utils/logger-helpers';
 import { isReadsLoggerEnabled } from '../../../misc/options-utils';
+import { IFirebaseWrapper } from '../../database/firebase/IFirebaseWrapper';
 
 interface ParamsToQueryOptions {
   filters?: boolean;
@@ -22,7 +28,8 @@ export class FirebaseLazyLoadingClient {
   constructor(
     private readonly options: RAFirebaseOptions,
     private readonly rm: ResourceManager,
-    private readsLogger: loggerTypes.ReadsLogger | false
+    private readsLogger: loggerTypes.ReadsLogger | false,
+    private fireWrapper: IFirebaseWrapper
   ) {}
 
   public setReadsLogger(readsLogger: loggerTypes.ReadsLogger | false) {
@@ -82,6 +89,31 @@ export class FirebaseLazyLoadingClient {
       log('apiGetListLazy', { message: 'It\'s last page of collection.' });
     }
 
+    if (this.options.relativeFilePaths) {
+      const parsedData = await Promise.all(
+        data.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+
+      log('apiGetListLazy result', {
+        docs: parsedData,
+        resource: r,
+        collectionPath: r.collection.path
+      });
+
+      return {
+        data: parsedData,
+        total
+      };
+    }
+
     log('apiGetListLazy result', {
       docs: data,
       resource: r,
@@ -119,6 +151,31 @@ export class FirebaseLazyLoadingClient {
     const snapshots = await query.get();
     this.incrementFirebaseReadsCounter(snapshots.docs.length);
     const data = snapshots.docs.map(parseFireStoreDocument);
+    if (this.options.relativeFilePaths) {
+      const parsedData = await Promise.all(
+        data.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+
+      log('apiGetManyReferenceLazy result', {
+        docs: parsedData,
+        resource: r,
+        collectionPath: r.collection.path
+      });
+
+      return {
+        data: parsedData,
+        total: data.length
+      };
+    }
+
     log('apiGetManyReferenceLazy result', {
       docs: data,
       resource: r,

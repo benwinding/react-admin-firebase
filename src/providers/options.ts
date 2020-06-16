@@ -14,6 +14,7 @@ export interface RAFirebaseOptions {
   softDelete?: boolean;
   associateUsersById?: boolean;
   metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
+  relativeFilePaths?: boolean;
   lazyLoading?: LazyLoadingOptions;
   firebaseReadsLogger?: FiReLoggerOptions;
 }

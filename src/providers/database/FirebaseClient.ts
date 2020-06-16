@@ -11,6 +11,7 @@ import {
   messageTypes,
   parseDocGetAllUploads,
   parseFireStoreDocument,
+  recursivelyMapStorageUrls,
   sortArray
 } from '../../misc';
 import { set } from 'lodash';
@@ -37,7 +38,8 @@ export class FirebaseClient implements IFirebaseClient {
       new FirebaseLazyLoadingClient(
         this.options,
         this.rm,
-        this.readsLogger
+        this.readsLogger,
+        this.fireWrapper
       ) : null;
     this.getLoggerAsync();
   }
@@ -92,13 +94,31 @@ export class FirebaseClient implements IFirebaseClient {
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = filteredData.slice(pageStart, pageEnd);
     const total = filteredData.length;
+
+    if (this.options.relativeFilePaths) {
+      // tslint:disable-next-line:no-shadowed-variable
+      const data = await Promise.all(
+        dataPage.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+      return {
+        data,
+        total
+      };
+    }
+
     return {
       data: dataPage,
       total
     };
   }
-
-
   public async apiGetOne(
     resourceName: string,
     params: messageTypes.IParamsGetOne
@@ -106,6 +126,14 @@ export class FirebaseClient implements IFirebaseClient {
     log('apiGetOne', { resourceName, params });
     try {
       const data = await this.rm.GetSingleDoc(resourceName, params.id);
+
+      for (let fieldName in data) {
+        data[fieldName] = await recursivelyMapStorageUrls(
+          this.fireWrapper,
+          data[fieldName]
+        );
+      }
+
       this.incrementFirebaseReadsCounter(1);
       return { data };
     } catch (error) {
@@ -316,11 +344,27 @@ export class FirebaseClient implements IFirebaseClient {
     this.incrementFirebaseReadsCounter(matchDocSnaps.length);
     const matches = matchDocSnaps.map(parseFireStoreDocument);
     const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
+    if (this.options.relativeFilePaths) {
+      const data = await Promise.all(
+        permittedData.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+      return {
+        data
+      };
+    }
+
     return {
       data: permittedData
     };
   }
-
   public async apiGetManyReference(
     resourceName: string,
     params: messageTypes.IParamsGetManyReference
@@ -355,9 +399,25 @@ export class FirebaseClient implements IFirebaseClient {
     const pageEnd = pageStart + params.pagination.perPage;
     const dataPage = permittedData.slice(pageStart, pageEnd);
     const total = permittedData.length;
+
+    if (this.options.relativeFilePaths) {
+      // tslint:disable-next-line:no-shadowed-variable
+      const data = await Promise.all(
+        permittedData.map(async doc => {
+          for (let fieldName in doc) {
+            doc[fieldName] = await recursivelyMapStorageUrls(
+              this.fireWrapper,
+              doc[fieldName]
+            );
+          }
+          return doc;
+        })
+      );
+      return { data, total };
+    }
+
     return { data: dataPage, total };
   }
-
   private async tryGetResource(
     resourceName: string,
     refresh?: 'REFRESH',
@@ -490,13 +550,22 @@ export class FirebaseClient implements IFirebaseClient {
       const taskResult: firebase.storage.UploadTaskSnapshot = await new Promise(
         (res, rej) => task.then(res).catch(rej)
       );
-      const getDownloadURL = await taskResult.ref.getDownloadURL();
-      log('saveFile() saved file', {
-        storagePath,
-        taskResult,
-        getDownloadURL
-      });
-      return getDownloadURL;
+
+      if (this.options.relativeFilePaths) {
+        log('saveFile() saved file', {
+          storagePath,
+          taskResult
+        });
+        return storagePath;
+      } else {
+        const getDownloadURL = await taskResult.ref.getDownloadURL();
+        log('saveFile() saved file', {
+          storagePath,
+          taskResult,
+          getDownloadURL
+        });
+        return getDownloadURL;
+      }
     } catch (storageError) {
       if (storageError.code === 'storage/unknown') {
         logError(
