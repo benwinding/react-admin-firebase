@@ -94,7 +94,7 @@ const options = {
   // Instead of saving full download url for file, save just relative path and then get download url
   // when getting docs - main use case is handling multiple firebase projects (environments)
   // and moving/copying documents/storage files between them - with relativeFilePaths, download url
-  // always point to projects storage
+  // always point to project own storage
   relativeFilePaths: false 
 }
 
