@@ -14,6 +14,7 @@ import {
   sortArray
 } from "../../misc";
 import { set } from "lodash";
+import path from 'path-browserify'
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -461,7 +462,7 @@ export class FirebaseClient implements IFirebaseClient {
     docPath: string,
     fieldPath: string
   ): Promise<string> {
-    const storagePath = joinPaths(docPath, fieldPath);
+    const storagePath = path.join(docPath, fieldPath, rawFile.name);
     return await this.saveFile(storagePath, rawFile);
   }
 
