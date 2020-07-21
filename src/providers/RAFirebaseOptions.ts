@@ -12,4 +12,5 @@ export interface RAFirebaseOptions {
   associateUsersById?: boolean;
   metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
   relativeFilePaths?: boolean;
+  useFileNamesInStorage?: boolean;
 }

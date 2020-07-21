@@ -14,6 +14,7 @@ import {
   sortArray
 } from "../../misc";
 import { set } from "lodash";
+import path from 'path-browserify'
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -385,7 +386,7 @@ export class FirebaseClient implements IFirebaseClient {
     const uploads = parseDocGetAllUploads(data);
     await Promise.all(
       uploads.map(async (u) => {
-        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath);
+        const link = await this.uploadAndGetLink(u.rawFile, docPath, u.fieldSlashesPath, this.options.useFileNamesInStorage);
         set(data, u.fieldDotsPath + '.src', link);
       })
     );
@@ -459,9 +460,12 @@ export class FirebaseClient implements IFirebaseClient {
   private async uploadAndGetLink(
     rawFile: any,
     docPath: string,
-    fieldPath: string
+    fieldPath: string,
+    useFileName: boolean
   ): Promise<string> {
-    const storagePath = joinPaths(docPath, fieldPath);
+    const storagePath = useFileName ? 
+      joinPaths(docPath, fieldPath, rawFile.name) : 
+      joinPaths(docPath, fieldPath);
     return await this.saveFile(storagePath, rawFile);
   }
 

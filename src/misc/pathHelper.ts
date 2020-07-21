@@ -17,6 +17,6 @@ e.g. /collection/document/ or /collection/document/collection/document/`);
   return withOutSlashes;
 }
 
-export function joinPaths(path1, path2) {
-  return path.join(path1, path2);
+export function joinPaths(...args: string[]) {
+  return path.join(...args);
 }

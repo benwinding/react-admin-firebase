@@ -95,7 +95,9 @@ const options = {
   // when getting docs - main use case is handling multiple firebase projects (environments)
   // and moving/copying documents/storage files between them - with relativeFilePaths, download url
   // always point to project own storage
-  relativeFilePaths: false 
+  relativeFilePaths: false, 
+  // Add file name to storage path, when set to true the file name is included in the path
+  useFileNamesInStorage: false 
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
