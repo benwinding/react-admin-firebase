@@ -1,5 +1,24 @@
-# react-admin-firebase
+# react-admin-firebase-lazy-loading (v.3.2.20)
 
+### NPM Package for react-admin-firebase with Lazy Loading update
+[react-admin-firebase-lazy-loading](https://www.npmjs.com/package/react-admin-firebase-lazy-loading)
+`yarn add react-admin-firebase-lazy-loading`
+
+#### New Features
+- lazy-loading - fetching lists and references, using native Firebase SDK Query for filters, sort and pagination  
+  - it's solution for the High Reads issue in library (pre-loading all collection docs)
+- Firestore reads logger - functionality for testing lazy-loading solution - it's logging
+  all reads performed by library (for current page, for session and custom resettable)
+  - it's providing React hooks to access logged values
+- Relative File Paths - new option, if set to true, only relative paths to files in storage
+  will be saved in documents - more desciption in [Options](#options) section
+
+
+#### Original library
+[react-admin-firebase (npm)](https://www.npmjs.com/package/react-admin-firebase)
+[react-admin-firebase (GitHub)](https://github.com/benwinding/react-admin-firebase)
+
+# react-admin-firebase
 <!-- [START badges] -->
 [![NPM Version](https://img.shields.io/npm/v/react-admin-firebase.svg)](https://www.npmjs.com/package/react-admin-firebase) 
 [![License](https://img.shields.io/npm/l/react-admin-firebase.svg)](https://github.com/benwinding/react-admin-firebase/blob/master/LICENSE) 
@@ -98,6 +117,15 @@ const options = {
   relativeFilePaths: false, 
   // Add file name to storage path, when set to true the file name is included in the path
   useFileNamesInStorage: false 
+  // Use firebase sdk queries for pagination, filtering and sorting
+  lazyLoading: {
+    enabled: false
+  },
+  // Logging of all reads performed by app (additional feature, for lazy-loading testing)
+  firebaseReadsLogger: {
+    enabled: false,
+    localStoragePrefix // optional
+  }
 }
 
 const dataProvider = FirebaseDataProvider(config, options);

@@ -1,3 +1,6 @@
+import LazyLoadingOptions from './_lazy-loading/options';
+import FiReLoggerOptions from '../tools/reads-logger/options';
+
 export interface RAFirebaseOptions {
   rootRef?: string;
   app?: any;
@@ -13,4 +16,6 @@ export interface RAFirebaseOptions {
   metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
   relativeFilePaths?: boolean;
   useFileNamesInStorage?: boolean;
+  lazyLoading?: LazyLoadingOptions;
+  firebaseReadsLogger?: FiReLoggerOptions;
 }

@@ -10,14 +10,38 @@
     "no-console": false,
     "ordered-imports": false,
     "no-string-literal": false,
-    "no-empty": false,
+    "no-empty": true,
     "object-literal-sort-keys": false,
     "no-floating-promises": true,
-    "trailing-comma": false,
+    "trailing-comma": [true, {
+      "multiline": "never",
+      "singleline": "never"
+    }],
     "interface-name": false,
     "whitespace": [
       true,
       "check-module"
-    ]
+    ],
+    "max-line-length": [true, 80],
+    "no-trailing-whitespace": [true, "ignore-comments", "ignore-blank-lines", "ignore-jsdoc", "ignore-template-strings"],
+    "no-unsafe-any": true,
+    "no-unused-variable": [true, "check-parameters"],
+    "no-unused-expression": [true, "allow-fast-null-checks"],
+    "arrow-return-shorthand": [true, "multiline"],
+    "no-duplicate-imports": true,
+    "no-duplicate-variable": [true, "check-parameters"],
+    "no-return-await": true,
+    "no-shadowed-variable": true,
+    "only-arrow-functions": [true, "allow-named-functions", "allow-declarations"],
+    "deprecation": true,
+    "indent": [true, "spaces", 2],
+    "curly": [true, "ignore-same-line"],
+    "class-name": true,
+    "prefer-conditional-expression": [true, "check-else-if"],
+    "promise-function-async": true,
+    "quotemark": [true, "single"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "triple-equals": [true, "allow-null-check", "allow-undefined-check"],
+    "no-unnecessary-callback-wrapper": true
   }
 }

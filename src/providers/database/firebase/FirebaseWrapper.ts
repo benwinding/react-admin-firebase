@@ -1,16 +1,15 @@
-import { IFirebaseWrapper } from "./IFirebaseWrapper";
-import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
+import { IFirebaseWrapper } from './IFirebaseWrapper';
+import { RAFirebaseOptions } from 'providers/options';
 
-import firebase from "firebase/app";
-import "firebase/firestore";
-import "firebase/auth";
-import "firebase/storage";
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/auth';
+import 'firebase/storage';
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firebase.firestore.Firestore;
   private app: firebase.app.App;
 
-  constructor() { }
   public options: RAFirebaseOptions;
 
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
@@ -34,16 +33,17 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   }
 }
 
-function ObtainFirebaseApp(firebaseConfig: {}, options: RAFirebaseOptions): firebase.app.App {
+function ObtainFirebaseApp(
+  firebaseConfig: {},
+  options: RAFirebaseOptions
+): firebase.app.App {
   if (options.app) {
     return options.app;
   }
   const isInitialized = !!firebase.apps.length;
   if (isInitialized) {
-    const app = firebase.app();
-    return app;
+    return firebase.app();
   } else {
-    const app = firebase.initializeApp(firebaseConfig);
-    return app;
+    return firebase.initializeApp(firebaseConfig);
   }
 }

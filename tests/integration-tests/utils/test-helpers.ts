@@ -1,15 +1,18 @@
-import { FirebaseFirestore } from "@firebase/firestore-types";
-import * as firebase from "@firebase/testing";
+import { FirebaseFirestore } from '@firebase/firestore-types';
+import * as firebase from '@firebase/testing';
 
-import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
-import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
-import { RAFirebaseOptions } from "../../../src/providers/RAFirebaseOptions";
+import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
+import { FirebaseWrapperStub } from './FirebaseWrapperStub';
+import { RAFirebaseOptions } from '../../../src/providers/options';
 
 function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();
 }
 
-export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
+export function initFireWrapper(
+  projectId: string,
+  rafOptions: RAFirebaseOptions = {}
+): IFirebaseWrapper {
   const safeId = makeSafeId(projectId);
   const testOptions = { projectId: safeId };
   const fire: IFirebaseWrapper = new FirebaseWrapperStub();
@@ -41,12 +44,11 @@ export async function getDocsFromCollection(
 ): Promise<any[]> {
   const allDocs = await db.collection(collectionName).get();
   const docsData = await Promise.all(
-    allDocs.docs.map((doc) => {
-      return {
+    allDocs.docs.map((doc) =>
+      ({
         ...doc.data(),
-        id: doc.id,
-      };
-    })
+        id: doc.id
+      }))
   );
   return docsData;
 }

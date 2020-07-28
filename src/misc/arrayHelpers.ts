@@ -1,21 +1,21 @@
-import { isEmpty, get } from "lodash";
-import { SearchObj, getFieldReferences } from "./objectFlatten";
+import { get, isEmpty } from 'lodash';
+import { getFieldReferences, SearchObj } from './objectFlatten';
 
 export function sortArray(
   data: Array<{}>,
   field: string,
-  dir: "asc" | "desc"
+  dir: 'asc' | 'desc'
 ): void {
   data.sort((a: {}, b: {}) => {
     const rawA = a[field];
     const rawB = b[field];
-    const isAsc = dir === "asc";
+    const isAsc = dir === 'asc';
 
     const isNumberField = Number.isFinite(rawA) && Number.isFinite(rawB);
     if (isNumberField) {
       return basicSort(rawA, rawB, isAsc);
     }
-    const isStringField = typeof rawA == "string" && typeof rawB == "string";
+    const isStringField = typeof rawA === 'string' && typeof rawB === 'string';
     if (isStringField) {
       const aParsed = rawA.toLowerCase();
       const bParsed = rawB.toLowerCase();
@@ -52,14 +52,13 @@ export function filterArray(
     const getSubObjects = getFieldReferences(fieldName, fieldValue);
     searchObjs.push(...getSubObjects);
   });
-  const filtered = data.filter((row) =>
+  return data.filter((row) =>
     searchObjs.reduce(
       (prev, curr) =>
         doesRowMatch(row, curr.searchField, curr.searchValue) && prev,
       true
     )
   );
-  return filtered;
 }
 
 export function doesRowMatch(
@@ -68,7 +67,7 @@ export function doesRowMatch(
   searchValue: any
 ): boolean {
   let searchThis = row[searchField];
-  const isDeepField = searchField.includes(".");
+  const isDeepField = searchField.includes('.');
   if (isDeepField) {
     searchThis = get(row, searchField);
   }
@@ -80,7 +79,7 @@ export function doesRowMatch(
   if (nothingToSearch) {
     return false;
   }
-  const isStringSearch = typeof searchValue === "string";
+  const isStringSearch = typeof searchValue === 'string';
   if (isStringSearch) {
     return searchThis
       .toString()
@@ -88,7 +87,7 @@ export function doesRowMatch(
       .includes(searchValue.toLowerCase());
   }
   const isBooleanOrNumber =
-    typeof searchValue === "boolean" || typeof searchValue === "number";
+    typeof searchValue === 'boolean' || typeof searchValue === 'number';
   if (isBooleanOrNumber) {
     return searchThis === searchValue;
   }

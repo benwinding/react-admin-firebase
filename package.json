@@ -1,12 +1,13 @@
 {
-  "name": "react-admin-firebase",
-  "description": "A firebase data provider for the React Admin framework",
-  "version": "3.1.6",
+  "name": "react-admin-firebase-lazy-loading",
+  "description": "A firebase data provider for the React Admin framework (version with Lazy Loading update)",
+  "version": "3.2.28",
   "peerDependencies": {
     "firebase": "^7.9.x",
     "react": "^16.x",
     "react-admin": "^3.x",
-    "react-dom": "^16.x"
+    "react-dom": "^16.x",
+    "react-router-dom": "^5.x"
   },
   "dependencies": {
     "lodash": "4.x",
@@ -24,6 +25,7 @@
     "@types/lodash": "^4.14.150",
     "@types/node": "^10.9.4",
     "@types/react": "^16.8.13",
+    "@types/react-router-dom": "^5.1.5",
     "@types/rx": "^4.1.1",
     "cpx": "^1.5.0",
     "del": "^3.0.0",
@@ -37,7 +39,7 @@
     "tslint": "^5.16.0",
     "typescript": "^3.0.3"
   },
-  "homepage": "https://github.com/benwinding/react-admin-firebase",
+  "homepage": "https://github.com/adamf92/react-admin-firebase",
   "email": "hello@benwinding.com",
   "license": "MIT",
   "scripts": {

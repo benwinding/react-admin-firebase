@@ -18,13 +18,13 @@ test('path test - minimum paths', () => {
 test('path test - test null resource', () => {
   const run = () => {
     const santized = getAbsolutePath('/root/doc/', null);
-  }
+  };
   expect(run).toThrowError()
 });
 
 test('path test - test incorrect rootRef', () => {
   const run = () => {
     const santized = getAbsolutePath('/root/doc/asdasd', 'scaascasc');
-  }
+  };
   expect(run).toThrowError()
 });

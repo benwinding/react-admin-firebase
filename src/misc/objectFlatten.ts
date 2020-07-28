@@ -6,17 +6,18 @@ export function getFieldReferences(
   fieldName: string,
   value: {} | number | string | boolean
 ): SearchObj[] {
-  const isFalsey = !value;
-  const isSimple = isFalsey;
-  typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean";
+  const isFalsy = !value;
+  const isSimple = isFalsy ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean';
+
   if (isSimple) {
     return [
       {
         searchField: fieldName,
-        searchValue: value as number | string | boolean,
-      },
+        searchValue: value as number | string | boolean
+      }
     ];
   }
   const tree = {};
@@ -25,15 +26,15 @@ export function getFieldReferences(
 }
 
 export function objectFlatten(tree: {}): SearchObj[] {
-  var leaves: SearchObj[] = [];
-  var recursivelyWalk = function (obj: {}, path) {
-    path = path || "";
-    for (var key in obj) {
+  let leaves: SearchObj[] = [];
+  const recursivelyWalk = (obj: {}, path) => {
+    path = path || '';
+    for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         const objVal = obj[key];
-        const currentPath = !!path ? path + "." + key : key;
+        const currentPath = !!path ? path + '.' + key : key;
         const isWalkable =
-          typeof objVal === "object" || objVal instanceof Array;
+          typeof objVal === 'object' || objVal instanceof Array;
         if (isWalkable) {
           recursivelyWalk(objVal, currentPath);
         } else {
