@@ -1,7 +1,7 @@
 import { messageTypes } from './../misc/messageTypes';
 import firebase from "firebase/app";
 import "firebase/auth";
-import { FirebaseAuth } from "@firebase/auth-types";
+import { FirebaseAuth, User } from "@firebase/auth-types";
 import { log, CheckLogging, retrieveStatusTxt } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
@@ -78,7 +78,7 @@ class AuthClient {
     return this.getUserLogin();
   }
 
-  public getUserLogin() {
+  public getUserLogin(): Promise<User> {
     return new Promise((resolve, reject) => {
       if (this.auth.currentUser) return resolve(this.auth.currentUser);
       const unsubscribe = this.auth.onAuthStateChanged(user => {
@@ -109,9 +109,7 @@ class AuthClient {
 
   public async HandleGetIdentity() {
     try {
-      const { uid, displayName, photoURL } = await this.getUserLogin();
-      // @ts-ignore
-      
+      const { uid, displayName, photoURL } = await this.getUserLogin();      
       return { id: uid, fullName: displayName, avatar: photoURL }
     } catch (e) {
       log("HandleGetIdentity: no user is logged in", {
