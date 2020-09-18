@@ -26,10 +26,10 @@ jobs:
       run: npm run-script build
     - name: Test
       run: npm run-script test
-    - name: Write comment on PR
-      uses: fastlane/github-actions/communicate-on-pull-request-merged@master
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
-        fetch-depth: 1
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        pr-comment: "Successfulily merged! currently deploying to npm! 🚀"
+    # - name: Write comment on PR
+    #   uses: fastlane/github-actions/communicate-on-pull-request-merged@master
+    #   with:
+    #     ref: ${{ github.event.pull_request.head.ref }}
+    #     fetch-depth: 1
+    #     repo-token: ${{ secrets.GITHUB_TOKEN }}
+    #     pr-comment: "Successfulily merged! currently deploying to npm! 🚀"
