@@ -107,6 +107,20 @@ class AuthClient {
     }
   }
 
+  public async HandleGetIdentity() {
+    try {
+      const { uid, displayName, photoURL } = await this.getUserLogin();
+      // @ts-ignore
+      
+      return { id: uid, fullName: displayName, avatar: photoURL }
+    } catch (e) {
+      log("HandleGetIdentity: no user is logged in", {
+        e
+      });
+      return null;
+    }
+  }
+  
   public async HandleGetJWTAuthTime() {
     try {
       const user = await this.getUserLogin();
@@ -194,6 +208,7 @@ export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
     checkAuth: () => auth.HandleAuthCheck(),
     checkError: error => auth.HandleAuthError(error),
     getPermissions: () => auth.HandleGetPermissions(),
+    getIdentity: () => auth.HandleGetIdentity(),
     getJWTAuthTime: () => auth.HandleGetJWTAuthTime(),
     getJWTExpirationTime: () => auth.HandleGetJWTExpirationTime(),
     getJWTSignInProvider: () => auth.HandleGetJWTSignInProvider(),
