@@ -69,7 +69,7 @@ const config = {
 // All options are optional
 const options = {
   // Use a different root document to set your resource collections, by default it uses the root collections of firestore
-  rootRef: 'root-collection/some-doc',
+  rootRef: 'root-collection/some-doc' | () => 'root-collection/some-doc',
   // Your own, previously initialized firebase app instance
   app: firebaseAppInstance,
   // Enable logging of react-admin-firebase
