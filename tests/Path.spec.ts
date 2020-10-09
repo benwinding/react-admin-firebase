@@ -28,3 +28,7 @@ test('path test - test incorrect rootRef', () => {
   }
   expect(run).toThrowError()
 });
+
+test('path test - function returns same results as string', () => {
+  expect(getAbsolutePath(() => 'root/doc', 'col1')).toBe(getAbsolutePath('root/doc', 'col1'))
+});
