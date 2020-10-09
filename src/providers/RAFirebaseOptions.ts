@@ -1,5 +1,5 @@
 export interface RAFirebaseOptions {
-  rootRef?: string;
+  rootRef?: string | (() => string);
   app?: any;
   logging?: boolean;
   watch?: string[];
