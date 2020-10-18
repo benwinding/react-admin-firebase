@@ -312,12 +312,19 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: messageTypes.IParamsGetManyReference
   ): Promise<messageTypes.IResponseGetManyReference> {
-    const r = await this.tryGetResource(resourceName, "REFRESH");
+    const filterSafe = params.filter || {};
+    const collectionQuery = filterSafe.collectionQuery;
+    delete filterSafe.collectionQuery;
+
+    const r = await this.tryGetResource(
+      resourceName,
+      "REFRESH",
+      collectionQuery
+    );
     log("apiGetManyReference", { resourceName, resource: r, params });
     const data = r.list;
     const targetField = params.target;
     const targetValue = params.id;
-    const filterSafe = params.filter || {};
     let softDeleted = data;
     if (this.options.softDelete) {
       softDeleted = data.filter(doc => !doc['deleted'])
