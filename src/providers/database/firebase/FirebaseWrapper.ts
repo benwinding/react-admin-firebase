@@ -5,6 +5,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
 import "firebase/storage";
+import { log } from "misc";
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firebase.firestore.Firestore;
@@ -31,6 +32,15 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   }
   public storage() {
     return this.app.storage();
+  }
+  public OnUserLogout(callBack: (u: firebase.User) => any) {
+    this.app.auth().onAuthStateChanged(user => {
+      const isLoggedOut = !user;
+      log('FirebaseWrapper.OnUserLogout', {user, isLoggedOut});
+      if (isLoggedOut) {
+        callBack(user);
+      }
+    });
   }
 }
 

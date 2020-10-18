@@ -28,6 +28,10 @@ export class ResourceManager {
     private options: RAFirebaseOptions
   ) {
     this.db = fireWrapper.db();
+
+    this.fireWrapper.OnUserLogout(user => {
+      this.resources = {};
+    });
   }
 
   public GetResource(relativePath: string): IResource {

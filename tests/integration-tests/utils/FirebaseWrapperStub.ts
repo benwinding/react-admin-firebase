@@ -1,6 +1,6 @@
 import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
 import { RAFirebaseOptions } from '../../../src/providers/RAFirebaseOptions';
-import { firestore } from 'firebase';
+import { firestore, User } from 'firebase';
 import * as firebase from "@firebase/testing";
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
@@ -25,5 +25,8 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   }
   public serverTimestamp() {
     return firebase.firestore.FieldValue.serverTimestamp();
+  }
+  public OnUserLogout(callBack: (u: User) => any) {
+    
   }
 }
