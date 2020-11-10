@@ -15,13 +15,13 @@ describe("api methods", () => {
     const id = "test123";
     const collName = "t2";
     const docRef = fire.db().collection(collName).doc(id);
-    await docRef.set({ name: "Jim" });
+    const docObj = { id, name: "Jim" }
+    await docRef.set(docObj);
 
     const client = new FirebaseClient(fire, fire.options);
     await client.apiSoftDelete(collName, {
       id: id,
-      data: { id: id },
-      previousData: { name: "Jim" },
+      previousData: docObj,
     });
 
     const res = await docRef.get();

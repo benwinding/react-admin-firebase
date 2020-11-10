@@ -18,6 +18,11 @@ describe("api methods", () => {
 
     const client = new FirebaseClient(fire, {});
     const result = await client.apiGetList(collName, {
+      sort: {
+        field: "title",
+        order: "asc",
+      },
+      filter: {},
       pagination: {
         page: 1,
         perPage: 10,
@@ -47,13 +52,17 @@ describe("api methods", () => {
 
     const client = new FirebaseClient(fire, {});
     const result = await client.apiGetList(collName, {
+      sort: {
+        field: "title",
+        order: "asc",
+      },
       pagination: {
         page: 1,
         perPage: 10,
       },
       filter: {
-        isEnabled: false
-      } as any
+        isEnabled: false,
+      },
     });
     expect(result.data.length).toBe(2);
   }, 100000);
@@ -62,19 +71,19 @@ describe("api methods", () => {
     const testDocs = [
       {
         obj: {
-          title: "A"
+          title: "A",
         },
         isEnabled: false,
       },
       {
         obj: {
-          title: "C"
+          title: "C",
         },
         isEnabled: false,
       },
       {
         obj: {
-          title: "B"
+          title: "B",
         },
         isEnabled: true,
       },
@@ -85,17 +94,18 @@ describe("api methods", () => {
 
     const client = new FirebaseClient(fire, {});
     const result = await client.apiGetList(collName, {
+      filter: {},
       pagination: {
         page: 1,
         perPage: 10,
       },
       sort: {
-        field: 'obj.title',
-        order: 'ASC'
-      }
+        field: "obj.title",
+        order: "ASC",
+      },
     });
-    const second = result.data[1] as any
+    const second = result.data[1] as any;
     expect(second).toBeTruthy();
-    expect(second.obj.title).toBe('B');
+    expect(second.obj.title).toBe("B");
   }, 100000);
 });

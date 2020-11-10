@@ -14,17 +14,17 @@ describe("api methods", () => {
   afterEach(async () => clearDb(testId));
 
   test("FirebaseClient delete doc", async () => {
-    const docName = "test123";
-    await fire.db().collection("t2").doc(docName).set({ name: "Jim" });
+    const docId = "test123";
+    const docObj = { id: docId, name: "Jim" };
+    await fire.db().collection("t2").doc(docId).set(docObj);
 
     const client = new FirebaseClient(fire, {});
     await client.apiDelete("t2", {
-      id: docName,
-      previousData: {},
+      id: docId,
+      previousData: docObj,
     });
 
     const users = await getDocsFromCollection(fire.db(), "t2");
     expect(users.length).toBe(0);
   }, 100000);
 });
-

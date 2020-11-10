@@ -22,9 +22,6 @@ describe("api methods", () => {
     const client = new FirebaseClient(fire, fire.options);
     await client.apiSoftDeleteMany(collName, {
       ids: docIds.slice(1),
-      data: {
-        id: null
-      }
     });
     const res = await collection.get();
     expect(res.docs.length).toBe(3);

@@ -17,8 +17,8 @@ describe("api methods", () => {
     const client = new FirebaseClient(fire, fire.options);
     await client.apiUpdate(collName, {
       id: id,
-      data: { id: id, title: 'asd' } as any,
-      previousData: { name: "Jim" },
+      data: { id: id, title: 'asd' },
+      previousData: { id: id, name: "Jim" },
     });
 
     const res = await docRef.get();

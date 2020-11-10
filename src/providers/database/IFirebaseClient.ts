@@ -1,16 +1,40 @@
-import { messageTypes } from '../../misc'
+import * as ra from '../../misc/react-admin-models';
 
 export interface IFirebaseClient {
-  apiGetList(resourceName: string, params: messageTypes.IParamsGetList): Promise<messageTypes.IResponseGetList>;
-  apiGetOne(resourceName: string, params: messageTypes.IParamsGetOne): Promise<messageTypes.IResponseGetOne>;
-  apiCreate(resourceName: string, params: messageTypes.IParamsCreate): Promise<messageTypes.IResponseCreate>;
-  apiUpdate(resourceName: string, params: messageTypes.IParamsUpdate): Promise<messageTypes.IResponseUpdate>;
-  apiUpdateMany(resourceName: string, params: messageTypes.IParamsUpdateMany): Promise<messageTypes.IResponseUpdateMany>;
-  apiDelete(resourceName: string, params: messageTypes.IParamsDelete): Promise<messageTypes.IResponseDelete>;
-  apiDeleteMany(resourceName: string, params: messageTypes.IParamsDeleteMany): Promise<messageTypes.IResponseDeleteMany>;
-  apiGetMany(resourceName: string, params: messageTypes.IParamsGetMany): Promise<messageTypes.IResponseGetMany>;
-  apiGetManyReference(
+  apiGetList<T>(
     resourceName: string,
-    params: messageTypes.IParamsGetManyReference
-  ): Promise<messageTypes.IResponseGetManyReference>;
+    params: ra.GetListParams
+  ): Promise<ra.GetListResult<T>>;
+  apiGetOne<T>(
+    resourceName: string,
+    params: ra.GetOneParams
+  ): Promise<ra.GetOneResult<T>>;
+  apiCreate<T>(
+    resourceName: string,
+    params: ra.CreateParams
+  ): Promise<ra.CreateResult<T>>;
+  apiUpdate<T>(
+    resourceName: string,
+    params: ra.UpdateParams
+  ): Promise<ra.UpdateResult<T>>;
+  apiUpdateMany(
+    resourceName: string,
+    params: ra.UpdateManyParams
+  ): Promise<ra.UpdateManyResult>;
+  apiDelete<T extends ra.Record>(
+    resourceName: string,
+    params: ra.DeleteParams
+  ): Promise<ra.DeleteResult<T>>;
+  apiDeleteMany(
+    resourceName: string,
+    params: ra.DeleteManyParams
+  ): Promise<ra.DeleteManyResult>;
+  apiGetMany<T extends ra.Record>(
+    resourceName: string,
+    params: ra.GetManyParams
+  ): Promise<ra.GetManyResult<T>>;
+  apiGetManyReference<T>(
+    resourceName: string,
+    params: ra.GetManyReferenceParams
+  ): Promise<ra.GetManyReferenceResult<T>>;
 }

@@ -13,8 +13,8 @@ import {
   recursivelyMapStorageUrls,
   sortArray
 } from "../../misc";
+import * as ra from '../../misc/react-admin-models';
 import { set } from "lodash";
-import path from 'path-browserify'
 
 export class FirebaseClient implements IFirebaseClient {
   private db: FirebaseFirestore;
@@ -28,10 +28,10 @@ export class FirebaseClient implements IFirebaseClient {
     this.rm = new ResourceManager(this.fireWrapper, this.options);
   }
 
-  public async apiGetList(
+  public async apiGetList<T>(
     resourceName: string,
-    params: messageTypes.IParamsGetList
-  ): Promise<messageTypes.IResponseGetList> {
+    params: ra.GetListParams
+  ): Promise<ra.GetListResult<T>> {
     log("apiGetList", { resourceName, params });
 
     const filterSafe = params.filter || {};
@@ -60,7 +60,7 @@ export class FirebaseClient implements IFirebaseClient {
     const filteredData = filterArray(softDeleted, filterSafe);
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
-    const dataPage = filteredData.slice(pageStart, pageEnd);
+    const dataPage = filteredData.slice(pageStart, pageEnd) as T[];
     const total = filteredData.length;
 
     if (this.options.relativeFilePaths) {
@@ -78,13 +78,14 @@ export class FirebaseClient implements IFirebaseClient {
       total
     };
   }
-  public async apiGetOne(
+  public async apiGetOne<T>(
     resourceName: string,
-    params: messageTypes.IParamsGetOne
-  ): Promise<messageTypes.IResponseGetOne> {
+    params: ra.GetOneParams
+  ): Promise<ra.GetOneResult<T>> {
     log("apiGetOne", { resourceName, params });
     try {
-      const dataSingle = await this.rm.GetSingleDoc(resourceName, params.id);
+      const id = params.id + '';
+      const dataSingle = await this.rm.GetSingleDoc(resourceName, id);
       const data = await recursivelyMapStorageUrls(this.fireWrapper, dataSingle);
       return { data: data };
     } catch (error) {
@@ -93,10 +94,10 @@ export class FirebaseClient implements IFirebaseClient {
       );
     }
   }
-  public async apiCreate(
+  public async apiCreate<T>(
     resourceName: string,
-    params: messageTypes.IParamsCreate
-  ): Promise<messageTypes.IResponseCreate> {
+    params: ra.CreateParams
+  ): Promise<ra.CreateResult<T>> {
     const r = await this.tryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
     const hasOverridenDocId = params.data && params.data.id;
@@ -140,11 +141,11 @@ export class FirebaseClient implements IFirebaseClient {
       }
     };
   }
-  public async apiUpdate(
+  public async apiUpdate<T>(
     resourceName: string,
-    params: messageTypes.IParamsUpdate
-  ): Promise<messageTypes.IResponseUpdate> {
-    const id = params.id;
+    params: ra.UpdateParams
+  ): Promise<ra.UpdateResult<T>> {
+    const id = params.id+'';
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
@@ -167,24 +168,25 @@ export class FirebaseClient implements IFirebaseClient {
   }
   public async apiUpdateMany(
     resourceName: string,
-    params: messageTypes.IParamsUpdateMany
-  ): Promise<messageTypes.IResponseUpdateMany> {
+    params: ra.UpdateManyParams
+  ): Promise<ra.UpdateManyResult> {
     delete params.data.id;
     const r = await this.tryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const returnData = await Promise.all(
       ids.map(async id => {
-        const data = await this.parseDataAndUpload(r, id, params.data);
+        const idStr = id+'';
+        const data = await this.parseDataAndUpload(r, idStr, params.data);
         const docObj = { ...data };
         this.checkRemoveIdField(docObj);
         await this.addUpdatedByFields(docObj);
         await r.collection
-          .doc(id)
+          .doc(idStr)
           .update(docObj);
         return {
           ...data,
-          id: id
+          id: idStr
         };
       })
     );
@@ -194,9 +196,9 @@ export class FirebaseClient implements IFirebaseClient {
   }
   public async apiSoftDelete(
     resourceName: string,
-    params: messageTypes.IParamsUpdate
-  ): Promise<messageTypes.IResponseUpdate> {
-    const id = params.id;
+    params: ra.DeleteParams
+  ): Promise<ra.DeleteResult> {
+    const id = params.id+'';
     const r = await this.tryGetResource(resourceName);
     log("apiSoftDelete", { resourceName, resource: r, params });
     const docObj = { deleted: true };
@@ -216,59 +218,59 @@ export class FirebaseClient implements IFirebaseClient {
   }
   public async apiSoftDeleteMany(
     resourceName: string,
-    params: messageTypes.IParamsUpdateMany
-  ): Promise<messageTypes.IResponseUpdateMany> {
+    params: ra.DeleteManyParams
+  ): Promise<ra.DeleteManyResult> {
     const r = await this.tryGetResource(resourceName);
     log("apiSoftDeleteMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const returnData = await Promise.all(
       ids.map(async id => {
+        const idStr = id+'';
         const docObj = { deleted: true };
         await this.addUpdatedByFields(docObj);
         r.collection
-          .doc(id)
+          .doc(idStr)
           .update(docObj)
           .catch(error => {
             logError("apiSoftDeleteMany error", { error });
           });
-        return {
-          ...params.data,
-          id: id
-        };
+        return idStr;
       })
     );
     return {
       data: returnData
     };
   }
-  public async apiDelete(
+  public async apiDelete<T extends ra.Record>(
     resourceName: string,
-    params: messageTypes.IParamsDelete
-  ): Promise<messageTypes.IResponseDelete> {
+    params: ra.DeleteParams
+  ): Promise<ra.DeleteResult<T>> {
     const r = await this.tryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
     try {
+      const id = params.id+'';
       await r.collection
-        .doc(params.id)
+        .doc(id)
         .delete()
     } catch (error) {
       throw new Error(error)
     }
     return {
-      data: params.previousData
+      data: params.previousData as T
     };
   }
   public async apiDeleteMany(
     resourceName: string,
-    params: messageTypes.IParamsDeleteMany
-  ): Promise<messageTypes.IResponseDeleteMany> {
+    params: ra.DeleteManyParams
+  ): Promise<ra.DeleteManyResult> {
     const r = await this.tryGetResource(resourceName);
     log("apiDeleteMany", { resourceName, resource: r, params });
-    const returnData: { id: string }[] = [];
+    const returnData: ra.Identifier[] = [];
     const batch = this.db.batch();
     for (const id of params.ids) {
-      batch.delete(r.collection.doc(id));
-      returnData.push({ id });
+      const idStr = id + '';
+      batch.delete(r.collection.doc(idStr));
+      returnData.push(id);
     }
     try {
       await batch.commit();
@@ -277,22 +279,22 @@ export class FirebaseClient implements IFirebaseClient {
     }
     return { data: returnData };
   }
-  public async apiGetMany(
+  public async apiGetMany<T extends ra.Record>(
     resourceName: string,
-    params: messageTypes.IParamsGetMany
-  ): Promise<messageTypes.IResponseGetMany> {
+    params: ra.GetManyParams
+  ): Promise<ra.GetManyResult<T>> {
     // No refresh here, it was probably bug, as in this method,
     // we are getting docs by ids
     const r = await this.tryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const matchDocSnaps = await Promise.all(
-      ids.map(id => r.collection.doc(id).get())
+      ids.map(id => r.collection.doc(id+'').get())
     );
     const matches = matchDocSnaps.map(snap => {
-      return { ...snap.data(), id: snap.id };
+      return { ...snap.data(), id: snap.id } as T;
     });
-    const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']) : matches;
+    const permittedData = this.options.softDelete ? matches.filter(row => !row['deleted']): matches;
     if (this.options.relativeFilePaths) {
       const data = await Promise.all(
         permittedData.map((doc) =>
@@ -308,10 +310,10 @@ export class FirebaseClient implements IFirebaseClient {
       data: permittedData
     };
   }
-  public async apiGetManyReference(
+  public async apiGetManyReference<T>(
     resourceName: string,
-    params: messageTypes.IParamsGetManyReference
-  ): Promise<messageTypes.IResponseGetManyReference> {
+    params: ra.GetManyReferenceParams
+  ): Promise<ra.GetManyReferenceResult<T>> {
     const filterSafe = params.filter || {};
     const collectionQuery = filterSafe.collectionQuery;
     delete filterSafe.collectionQuery;
@@ -343,7 +345,7 @@ export class FirebaseClient implements IFirebaseClient {
     }
     const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
     const pageEnd = pageStart + params.pagination.perPage;
-    const dataPage = permittedData.slice(pageStart, pageEnd);
+    const dataPage = permittedData.slice(pageStart, pageEnd) as T[];
     const total = permittedData.length;
 
     if (this.options.relativeFilePaths) {
