@@ -57,4 +57,45 @@ describe("api methods", () => {
     });
     expect(result.data.length).toBe(2);
   }, 100000);
+
+  test("FirebaseClient list docs with dotpath sort", async () => {
+    const testDocs = [
+      {
+        obj: {
+          title: "A"
+        },
+        isEnabled: false,
+      },
+      {
+        obj: {
+          title: "C"
+        },
+        isEnabled: false,
+      },
+      {
+        obj: {
+          title: "B"
+        },
+        isEnabled: true,
+      },
+    ];
+    const collName = "list-filtered";
+    const collection = fire.db().collection(collName);
+    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+
+    const client = new FirebaseClient(fire, {});
+    const result = await client.apiGetList(collName, {
+      pagination: {
+        page: 1,
+        perPage: 10,
+      },
+      sort: {
+        field: 'obj.title',
+        order: 'ASC'
+      }
+    });
+    const second = result.data[1] as any
+    expect(second).toBeTruthy();
+    expect(second.obj.title).toBe('B');
+  }, 100000);
 });
