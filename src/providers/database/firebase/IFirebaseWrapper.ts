@@ -1,6 +1,8 @@
 import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 import { FirebaseAuth } from "@firebase/auth-types";
 
+export type FireApp = firebase.app.App;
+
 export interface IFirebaseWrapper {
   OnUserLogout(arg0: (user: firebase.User) => void): void;
   init(firebaseConfig: {}, options: RAFirebaseOptions): void;
@@ -9,4 +11,5 @@ export interface IFirebaseWrapper {
   storage(): firebase.storage.Storage;
   auth(): FirebaseAuth;
   serverTimestamp(): any;
+  GetApp(): FireApp;
 }

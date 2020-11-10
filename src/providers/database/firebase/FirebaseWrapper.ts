@@ -1,4 +1,4 @@
-import { IFirebaseWrapper } from "./IFirebaseWrapper";
+import { FireApp, IFirebaseWrapper } from "./IFirebaseWrapper";
 import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
 
 import firebase from "firebase/app";
@@ -9,7 +9,11 @@ import { log } from "misc";
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firebase.firestore.Firestore;
-  private app: firebase.app.App;
+  private app: FireApp;
+
+  public GetApp(): FireApp {
+    return this.app;
+  }
 
   constructor() { }
   public options: RAFirebaseOptions;

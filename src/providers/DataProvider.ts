@@ -9,13 +9,18 @@ import * as ra from "../misc/react-admin-models";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import { FireApp } from "./database/firebase/IFirebaseWrapper";
 
 export let fb: FirebaseClient;
+
+export interface IDataProvider extends ra.DataProvider {
+  app: FireApp;
+}
 
 export function DataProvider(
   firebaseConfig: {},
   optionsInput?: RAFirebaseOptions
-) {
+): IDataProvider {
   const options = optionsInput || {};
   VerifyDataProviderArgs(firebaseConfig, options);
   CheckLogging(firebaseConfig, options);
@@ -39,9 +44,10 @@ export function DataProvider(
       logError("DataProvider:", error, { errorMsg, code, errorObj });
       throw errorObj;
     }
-  };
+  }
 
-  const newProviderApi: ra.DataProvider = {
+  const newProviderApi: IDataProvider = {
+    app: fireWrapper.GetApp(),
     getList<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.GetListParams
@@ -101,8 +107,8 @@ export function DataProvider(
       if (options.softDelete)
         return runCommand(() => fb.apiSoftDeleteMany(resource, params));
       else return runCommand(() => fb.apiDeleteMany(resource, params));
-    }
-  }
+    },
+  };
 
   return newProviderApi;
 }
