@@ -7,6 +7,9 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore;
   private app: any;
   options: RAFirebaseOptions;
+  GetApp() {
+    return this.app;
+  }
 
   constructor() {}
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
