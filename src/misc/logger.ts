@@ -41,7 +41,7 @@ const logger = new SimpleLogger();
 
 export function CheckLogging(config: {}, options: RAFirebaseOptions) {
   const logSignalDeprecated = config && config["debug"];
-  const logSignal = options.logging;
+  const logSignal = options && options.logging;
   if (logSignalDeprecated || logSignal) {
     localStorage.setItem('LOGGING_ENABLED', 'true')
   } else {
