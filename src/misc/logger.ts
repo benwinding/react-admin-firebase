@@ -1,4 +1,4 @@
-import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
+import { RAFirebaseOptions } from "../providers/RAFirebaseOptions";
 
 // UTILS
 
