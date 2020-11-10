@@ -9,7 +9,7 @@ describe("api methods", () => {
   afterEach(async () => clearDb(testId));
 
   test("FirebaseClient update doc", async () => {
-    const id = "test123";
+    const id = "testsss123";
     const collName = "t2";
     const docRef = fire.db().collection(collName).doc(id);
     await docRef.set({ name: "Jim" });

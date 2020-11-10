@@ -11,7 +11,7 @@ describe("api methods", () => {
   );
   afterEach(async () => clearDb(testId));
 
-  test("FirebaseClient update doc", async () => {
+  test("FirebaseClient updatemany doc", async () => {
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "updatec";
     const collection = fire.db().collection(collName);

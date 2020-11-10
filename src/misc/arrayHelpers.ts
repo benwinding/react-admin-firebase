@@ -7,8 +7,8 @@ export function sortArray(
   dir: "asc" | "desc"
 ): void {
   data.sort((a: {}, b: {}) => {
-    const rawA = a[field];
-    const rawB = b[field];
+    const rawA = get(a, field);
+    const rawB = get(b, field);
     const isAsc = dir === "asc";
 
     const isNumberField = Number.isFinite(rawA) && Number.isFinite(rawB);
@@ -67,11 +67,7 @@ export function doesRowMatch(
   searchField: string,
   searchValue: any
 ): boolean {
-  let searchThis = row[searchField];
-  const isDeepField = searchField.includes(".");
-  if (isDeepField) {
-    searchThis = get(row, searchField);
-  }
+  const searchThis = get(row, searchField);
   const bothAreFalsey = !searchThis && !searchValue;
   if (bothAreFalsey) {
     return true;
