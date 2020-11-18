@@ -108,4 +108,42 @@ describe("api methods", () => {
     expect(second).toBeTruthy();
     expect(second.obj.title).toBe("B");
   }, 100000);
+
+
+  test("FirebaseClient with filter gte", async () => {
+    const testDocs = [
+      {
+        title: "A",
+        obj: {volume: 100},
+      },
+      {
+        title: "B",
+        obj: {volume: 101},
+      },
+      {
+        title: "C",
+        obj: {volume: 99},
+      }
+    ];
+    const collName = "list-filtered";
+    const collection = fire.db().collection(collName);
+    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+
+    const client = new FirebaseClient(fire, {});
+    const result = await client.apiGetList(collName, {
+      filter: {
+        collectionQuery: (c: firebase.firestore.CollectionReference) => c.where('obj.volume', '>=', 100) 
+      },
+      pagination: {
+        page: 1,
+        perPage: 10,
+      },
+      sort: {
+        field: "obj.volume",
+        order: "ASC",
+      },
+    });
+    const third = result.data.length as any;
+    expect(third).toBe(2);
+  }, 100000);
 });
