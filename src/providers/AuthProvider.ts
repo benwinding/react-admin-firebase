@@ -2,9 +2,10 @@ import { messageTypes } from './../misc/messageTypes';
 import firebase from "firebase/app";
 import "firebase/auth";
 import { FirebaseAuth, User } from "@firebase/auth-types";
-import { log, CheckLogging, retrieveStatusTxt } from "../misc";
+import { log, CheckLogging, retrieveStatusTxt, logWarn } from "../misc";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import { AuthProvider as RaAuthProvider } from '../misc/react-admin-models'
 
 class AuthClient {
   private auth: FirebaseAuth;
@@ -67,15 +68,15 @@ class AuthClient {
     const status = !!errorHttp && errorHttp.status;
     const statusTxt = retrieveStatusTxt(status);
     if (statusTxt === 'ok') {
-      return Promise.resolve("API is authenticated");
+      log('API is actually authenticated')
+      return Promise.resolve();
     }
-    return Promise.reject("Recieved authentication error from API");
+    logWarn('Recieved authentication error from API')
+    return Promise.reject();
   }
 
-
-
-  public HandleAuthCheck() {
-    return this.getUserLogin();
+  public async HandleAuthCheck(): Promise<void> {
+    return this.getUserLogin() as any; // Prevents breaking change
   }
 
   public getUserLogin(): Promise<User> {
@@ -195,24 +196,31 @@ class AuthClient {
   }
 }
 
-export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
+export function AuthProvider(
+  firebaseConfig: {},
+  options: RAFirebaseOptions
+): RaAuthProvider {
   VerifyAuthProviderArgs(firebaseConfig, options);
   const auth = new AuthClient(firebaseConfig, options);
   CheckLogging(firebaseConfig, options);
 
-  return {
-    login: params => auth.HandleAuthLogin(params),
+  const provider: RaAuthProvider = {
+    // React Admin Interface
+    login: (params) => auth.HandleAuthLogin(params),
     logout: () => auth.HandleAuthLogout(),
     checkAuth: () => auth.HandleAuthCheck(),
-    checkError: error => auth.HandleAuthError(error),
+    checkError: (error) => auth.HandleAuthError(error),
     getPermissions: () => auth.HandleGetPermissions(),
     getIdentity: () => auth.HandleGetIdentity(),
+    // Custom Functions
+    getAuthUser: () => auth.getUserLogin(),
     getJWTAuthTime: () => auth.HandleGetJWTAuthTime(),
     getJWTExpirationTime: () => auth.HandleGetJWTExpirationTime(),
     getJWTSignInProvider: () => auth.HandleGetJWTSignInProvider(),
     getJWTClaims: () => auth.HandleGetPermissions(),
-    getJWTToken: () => auth.HandleGetJWTToken()
+    getJWTToken: () => auth.HandleGetJWTToken(),
   };
+  return provider;
 }
 
 function VerifyAuthProviderArgs(

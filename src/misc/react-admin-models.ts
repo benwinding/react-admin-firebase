@@ -20,5 +20,7 @@ export {
   UpdateManyResult,
   UpdateParams,
   UpdateResult,
-  Identifier
+  Identifier,
+  AuthProvider,
+  UserIdentity
 } from "ra-core";
