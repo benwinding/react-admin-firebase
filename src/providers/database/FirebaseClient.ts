@@ -16,68 +16,18 @@ import {
 import * as ra from '../../misc/react-admin-models';
 import { set } from "lodash";
 
-export class FirebaseClient implements IFirebaseClient {
+export class FirebaseClient {
   private db: FirebaseFirestore;
-  private rm: ResourceManager;
+  public rm: ResourceManager;
 
   constructor(
-    private fireWrapper: IFirebaseWrapper,
+    public fireWrapper: IFirebaseWrapper,
     public options: RAFirebaseOptions
   ) {
     this.db = fireWrapper.db();
     this.rm = new ResourceManager(this.fireWrapper, this.options);
   }
 
-  public async apiGetList<T>(
-    resourceName: string,
-    params: ra.GetListParams
-  ): Promise<ra.GetListResult<T>> {
-    log("apiGetList", { resourceName, params });
-
-    const filterSafe = params.filter || {};
-
-    const collectionQuery = filterSafe.collectionQuery;
-    delete filterSafe.collectionQuery;
-
-    const r = await this.tryGetResource(
-      resourceName,
-      "REFRESH",
-      collectionQuery
-    );
-    const data = r.list;
-    if (params.sort != null) {
-      const { field, order } = params.sort;
-      if (order === "ASC") {
-        sortArray(data, field, "asc");
-      } else {
-        sortArray(data, field, "desc");
-      }
-    }
-    let softDeleted = data;
-    if (this.options.softDelete && !Object.keys(filterSafe).includes('deleted')) {
-      softDeleted = data.filter(doc => !doc['deleted'])
-    }
-    const filteredData = filterArray(softDeleted, filterSafe);
-    const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
-    const pageEnd = pageStart + params.pagination.perPage;
-    const dataPage = filteredData.slice(pageStart, pageEnd) as T[];
-    const total = filteredData.length;
-
-    if (this.options.relativeFilePaths) {
-      const data = await Promise.all(
-        dataPage.map((doc) => recursivelyMapStorageUrls(this.fireWrapper, doc))
-      );
-      return {
-        data,
-        total
-      };
-    }
-
-    return {
-      data: dataPage,
-      total
-    };
-  }
   public async apiGetOne<T>(
     resourceName: string,
     params: ra.GetOneParams
@@ -98,7 +48,7 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: ra.CreateParams
   ): Promise<ra.CreateResult<T>> {
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiCreate", { resourceName, resource: r, params });
     const hasOverridenDocId = params.data && params.data.id;
     log("apiCreate", { hasOverridenDocId });
@@ -147,7 +97,7 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<ra.UpdateResult<T>> {
     const id = params.id+'';
     delete params.data.id;
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiUpdate", { resourceName, resource: r, params });
     const data = await this.parseDataAndUpload(r, id, params.data);
     const docObj = { ...data };
@@ -168,7 +118,7 @@ export class FirebaseClient implements IFirebaseClient {
     params: ra.UpdateManyParams
   ): Promise<ra.UpdateManyResult> {
     delete params.data.id;
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiUpdateMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const returnData = await Promise.all(
@@ -196,7 +146,7 @@ export class FirebaseClient implements IFirebaseClient {
     params: ra.DeleteParams
   ): Promise<ra.DeleteResult> {
     const id = params.id+'';
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiSoftDelete", { resourceName, resource: r, params });
     const docObj = { deleted: true };
     await this.addUpdatedByFields(docObj);
@@ -217,7 +167,7 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: ra.DeleteManyParams
   ): Promise<ra.DeleteManyResult> {
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiSoftDeleteMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const returnData = await Promise.all(
@@ -242,7 +192,7 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: ra.DeleteParams
   ): Promise<ra.DeleteResult<T>> {
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiDelete", { resourceName, resource: r, params });
     try {
       const id = params.id+'';
@@ -260,7 +210,7 @@ export class FirebaseClient implements IFirebaseClient {
     resourceName: string,
     params: ra.DeleteManyParams
   ): Promise<ra.DeleteManyResult> {
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiDeleteMany", { resourceName, resource: r, params });
     const returnData: ra.Identifier[] = [];
     const batch = this.db.batch();
@@ -282,7 +232,7 @@ export class FirebaseClient implements IFirebaseClient {
   ): Promise<ra.GetManyResult<T>> {
     // No refresh here, it was probably bug, as in this method,
     // we are getting docs by ids
-    const r = await this.tryGetResource(resourceName);
+    const r = await this.TryGetResource(resourceName);
     log("apiGetMany", { resourceName, resource: r, params });
     const ids = params.ids;
     const matchDocSnaps = await Promise.all(
@@ -315,7 +265,7 @@ export class FirebaseClient implements IFirebaseClient {
     const collectionQuery = filterSafe.collectionQuery;
     delete filterSafe.collectionQuery;
 
-    const r = await this.tryGetResource(
+    const r = await this.TryGetResource(
       resourceName,
       "REFRESH",
       collectionQuery
@@ -329,7 +279,7 @@ export class FirebaseClient implements IFirebaseClient {
       softDeleted = data.filter(doc => !doc['deleted'])
     }
     const filteredData = filterArray(softDeleted, filterSafe);
-    const targetIdFilter = {};
+    const targetIdFilter = {} as any;
     targetIdFilter[targetField] = targetValue;
     const permittedData = filterArray(filteredData, targetIdFilter);
     if (params.sort != null) {
@@ -356,7 +306,7 @@ export class FirebaseClient implements IFirebaseClient {
 
     return { data: dataPage, total };
   }
-  private async tryGetResource(
+  public async TryGetResource(
     resourceName: string,
     refresh?: "REFRESH",
     collectionQuery?: messageTypes.CollectionQueryType
@@ -475,7 +425,7 @@ export class FirebaseClient implements IFirebaseClient {
     return await this.saveFile(storagePath, rawFile);
   }
 
-  private async saveFile(storagePath: string, rawFile: any): Promise<string> {
+  private async saveFile(storagePath: string, rawFile: any): Promise<any> {
     log("saveFile() saving file...", { storagePath, rawFile });
     const task = this.fireWrapper
       .storage()

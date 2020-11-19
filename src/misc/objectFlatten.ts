@@ -19,18 +19,18 @@ export function getFieldReferences(
       },
     ];
   }
-  const tree = {};
+  const tree = {} as any;
   tree[fieldName] = value;
   return objectFlatten(tree);
 }
 
 export function objectFlatten(tree: {}): SearchObj[] {
   var leaves: SearchObj[] = [];
-  var recursivelyWalk = function (obj: {}, path) {
+  var recursivelyWalk = function (obj: any, path: string | null) {
     path = path || "";
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) {
-        const objVal = obj[key];
+        const objVal = obj && obj[key];
         const currentPath = !!path ? path + "." + key : key;
         const isWalkable =
           typeof objVal === "object" || objVal instanceof Array;

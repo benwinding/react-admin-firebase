@@ -8,19 +8,20 @@ import "firebase/storage";
 import { log } from "misc";
 
 export class FirebaseWrapper implements IFirebaseWrapper {
-  private firestore: firebase.firestore.Firestore;
-  private app: FireApp;
+  private firestore: firebase.firestore.Firestore = null as any;
+  private app: FireApp = null as any;
+  public options: RAFirebaseOptions = {};
 
   public GetApp(): FireApp {
     return this.app;
   }
 
   constructor() { }
-  public options: RAFirebaseOptions;
 
-  public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
-    this.options = options;
-    this.app = ObtainFirebaseApp(firebaseConfig, options);
+  public init(firebaseConfig: {}, options?: RAFirebaseOptions): void {
+    const optionsSafe = options || {};
+    this.options = optionsSafe;
+    this.app = ObtainFirebaseApp(firebaseConfig, optionsSafe);
     this.firestore = this.app.firestore();
   }
   public db(): firebase.firestore.Firestore {
@@ -37,7 +38,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   public storage() {
     return this.app.storage();
   }
-  public OnUserLogout(callBack: (u: firebase.User) => any) {
+  public OnUserLogout(callBack: (u: firebase.User | null) => any) {
     this.app.auth().onAuthStateChanged(user => {
       const isLoggedOut = !user;
       log('FirebaseWrapper.OnUserLogout', {user, isLoggedOut});

@@ -53,11 +53,10 @@ export function filterArray(
     searchObjs.push(...getSubObjects);
   });
   const filtered = data.filter((row) =>
-    searchObjs.reduce(
-      (prev, curr) =>
-        doesRowMatch(row, curr.searchField, curr.searchValue) && prev,
-      true
-    )
+    searchObjs.reduce((acc, cur) => {
+      const res = doesRowMatch(row, cur.searchField, cur.searchValue);
+      return res && acc;
+    }, true as boolean)
   );
   return filtered;
 }

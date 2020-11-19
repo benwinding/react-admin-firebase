@@ -4,7 +4,7 @@ import { FirebaseAuth } from "@firebase/auth-types";
 export type FireApp = firebase.app.App;
 
 export interface IFirebaseWrapper {
-  OnUserLogout(arg0: (user: firebase.User) => void): void;
+  OnUserLogout(arg0: (user: firebase.User | null) => void): void;
   init(firebaseConfig: {}, options: RAFirebaseOptions): void;
   options: RAFirebaseOptions;
   db(): firebase.firestore.Firestore;

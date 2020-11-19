@@ -6,6 +6,7 @@
     "target": "es5",
     "lib": ["es6", "es2016", "dom"],
     "baseUrl": "src",
+    "strict": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "resolveJsonModule": true,
