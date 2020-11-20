@@ -10,9 +10,9 @@ function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();
 }
 
-export function GetMockClient() {
-  const fire = null;
-  const options = null;
+export function MakeMockClient(options: RAFirebaseOptions = {}) {
+  const randomProjectId = Math.random().toString(32).slice(2,10);
+  const fire = initFireWrapper(randomProjectId, options);
   return new FireClient(fire, options);
 }
 

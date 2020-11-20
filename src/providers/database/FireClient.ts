@@ -6,6 +6,9 @@ import { IResource, ResourceManager } from "./ResourceManager";
 
 export class FireClient {
   public rm: ResourceManager;
+  public db() {
+    return this.fireWrapper.db();
+  }
 
   constructor(
     public fireWrapper: IFirebaseWrapper,
