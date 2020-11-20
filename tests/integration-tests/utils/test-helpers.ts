@@ -4,9 +4,16 @@ import * as firebase from "@firebase/testing";
 import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
 import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
 import { RAFirebaseOptions } from "../../../src/providers/RAFirebaseOptions";
+import { FireClient } from "../../../src/providers/database/FireClient";
 
 function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();
+}
+
+export function GetMockClient() {
+  const fire = null;
+  const options = null;
+  return new FireClient(fire, options);
 }
 
 export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
