@@ -1,0 +1,56 @@
+import { FireClient } from "providers/database/FireClient";
+import { filterArray, log, recursivelyMapStorageUrls, sortArray } from "../../misc";
+import * as ra from "../../misc/react-admin-models";
+
+export async function GetList<T extends ra.Record>(
+  resourceName: string,
+  params: ra.GetListParams,
+  client: FireClient
+): Promise<ra.GetListResult<T>> {
+  log("GetList", { resourceName, params });
+  const {
+    rm,
+    fireWrapper,
+    options
+  } = client;
+
+  const filterSafe = params.filter || {};
+
+  const collectionQuery = filterSafe.collectionQuery;
+  delete filterSafe.collectionQuery;
+
+  const r = await rm.TryGetResource(resourceName, "REFRESH", collectionQuery);
+  const data = r.list;
+  if (params.sort != null) {
+    const { field, order } = params.sort;
+    if (order === "ASC") {
+      sortArray(data, field, "asc");
+    } else {
+      sortArray(data, field, "desc");
+    }
+  }
+  let softDeleted = data;
+  if (options.softDelete && !Object.keys(filterSafe).includes("deleted")) {
+    softDeleted = data.filter((doc) => !doc.deleted);
+  }
+  const filteredData = filterArray(softDeleted, filterSafe);
+  const pageStart = (params.pagination.page - 1) * params.pagination.perPage;
+  const pageEnd = pageStart + params.pagination.perPage;
+  const dataPage = filteredData.slice(pageStart, pageEnd) as T[];
+  const total = filteredData.length;
+
+  if (options.relativeFilePaths) {
+    const data = await Promise.all(
+      dataPage.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
+    );
+    return {
+      data,
+      total,
+    };
+  }
+
+  return {
+    data: dataPage,
+    total,
+  };
+}

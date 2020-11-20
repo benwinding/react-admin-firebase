@@ -1,4 +1,4 @@
-export function parseAllDatesDoc(obj: {}) {
+export function parseAllDatesDoc(obj: any) {
   const isObject = !!obj && typeof obj === 'object';
   if (!isObject) {
     return;
@@ -9,7 +9,7 @@ export function parseAllDatesDoc(obj: {}) {
   });
 }
 
-export function recusivelyCheckObjectValue(input: any) {
+export function recusivelyCheckObjectValue(input: any): any {
   const isFalsey = !input;
   if (isFalsey) {
     return input;
@@ -24,7 +24,7 @@ export function recusivelyCheckObjectValue(input: any) {
   }
   const isArray = Array.isArray(input);
   if (isArray) {
-    return input.map(value => recusivelyCheckObjectValue(value));
+    return (input as []).map(value => recusivelyCheckObjectValue(value));
   }
   const isObject = typeof input === 'object';
   if (isObject) {

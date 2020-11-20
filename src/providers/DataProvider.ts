@@ -7,11 +7,11 @@ import {
 } from "../misc";
 import * as ra from "../misc/react-admin-models";
 import { RAFirebaseOptions } from "./RAFirebaseOptions";
-import { FirebaseClient } from "./database/FirebaseClient";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 import { FireApp } from "./database/firebase/IFirebaseWrapper";
-
-export let fb: FirebaseClient;
+import { FireClient } from "./database/FireClient";
+import { GetList, GetMany, GetManyReference, GetOne } from "./queries";
+import { Create, Delete, DeleteMany, Update, UpdateMany } from "./commands";
 
 export interface IDataProvider extends ra.DataProvider {
   app: FireApp;
@@ -29,10 +29,11 @@ export function DataProvider(
     firebaseConfig,
     options,
   });
+
   const fireWrapper = new FirebaseWrapper();
   fireWrapper.init(firebaseConfig, optionsInput);
-  fb = new FirebaseClient(fireWrapper, options);
-  async function runCommand<T>(cb: () => Promise<T>) {
+
+  async function run<T>(cb: () => Promise<T>) {
     let res: any;
     try {
       res = await cb();
@@ -45,6 +46,7 @@ export function DataProvider(
       throw errorObj;
     }
   }
+  const client = new FireClient(fireWrapper, options);
 
   const newProviderApi: IDataProvider = {
     app: fireWrapper.GetApp(),
@@ -52,61 +54,57 @@ export function DataProvider(
       resource: string,
       params: ra.GetListParams
     ): Promise<ra.GetListResult<RecordType>> {
-      return runCommand(() => fb.apiGetList<RecordType>(resource, params));
+      return run(() => GetList<RecordType>(resource, params, client));
     },
     getOne<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.GetOneParams
     ): Promise<ra.GetOneResult<RecordType>> {
-      return runCommand(() => fb.apiGetOne<RecordType>(resource, params));
+      return run(() => GetOne<RecordType>(resource, params, client));
     },
     getMany<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.GetManyParams
     ): Promise<ra.GetManyResult<RecordType>> {
-      return runCommand(() => fb.apiGetMany<RecordType>(resource, params));
+      return run(() => GetMany<RecordType>(resource, params, client));
     },
     getManyReference<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.GetManyReferenceParams
     ): Promise<ra.GetManyReferenceResult<RecordType>> {
-      return runCommand(() =>
-        fb.apiGetManyReference<RecordType>(resource, params)
+      return run(() =>
+        GetManyReference<RecordType>(resource, params, client)
       );
     },
     update<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.UpdateParams
     ): Promise<ra.UpdateResult<RecordType>> {
-      return runCommand(() => fb.apiUpdate<RecordType>(resource, params));
+      return run(() => Update<RecordType>(resource, params, client));
     },
     updateMany(
       resource: string,
       params: ra.UpdateManyParams
     ): Promise<ra.UpdateManyResult> {
-      return runCommand(() => fb.apiUpdateMany(resource, params));
+      return run(() => UpdateMany(resource, params, client));
     },
     create<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.CreateParams
     ): Promise<ra.CreateResult<RecordType>> {
-      return runCommand(() => fb.apiCreate<RecordType>(resource, params));
+      return run(() => Create<RecordType>(resource, params, client));
     },
     delete<RecordType extends ra.Record = ra.Record>(
       resource: string,
       params: ra.DeleteParams
     ): Promise<ra.DeleteResult<RecordType>> {
-      if (options.softDelete)
-        return runCommand(() => fb.apiSoftDelete(resource, params));
-      else return runCommand(() => fb.apiDelete(resource, params));
+      return run(() => Delete(resource, params, client));
     },
     deleteMany(
       resource: string,
       params: ra.DeleteManyParams
     ): Promise<ra.DeleteManyResult> {
-      if (options.softDelete)
-        return runCommand(() => fb.apiSoftDeleteMany(resource, params));
-      else return runCommand(() => fb.apiDeleteMany(resource, params));
+      return run(() => DeleteMany(resource, params, client));
     },
   };
 
@@ -124,7 +122,7 @@ function VerifyDataProviderArgs(
       "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
     );
   }
-  if (options.rootRef) {
+  if (options && options.rootRef) {
     // Will throw error if rootRef doesn't point to a document
     getAbsolutePath(options.rootRef, "test");
   }
