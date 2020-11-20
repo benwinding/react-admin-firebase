@@ -17,12 +17,15 @@ describe("api methods", () => {
     );
 
     const client = new FirebaseClient(fire, {});
-    const result = await client.apiGetOne(collName, {
-      id: "test22222",
-    });
+    const result = await client.apiGetOne<{ title: string; id: string }>(
+      collName,
+      {
+        id: "test22222",
+      }
+    );
     expect(result.data).toBeTruthy();
-    expect(result.data["title"]).toBe("ee");
-    expect(result.data["id"]).toBe("test22222");
+    expect(result.data.title).toBe("ee");
+    expect(result.data.id).toBe("test22222");
   }, 100000);
 
   test("FirebaseClient apiGetOne, with nested Dates", async () => {

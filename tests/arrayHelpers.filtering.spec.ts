@@ -8,7 +8,7 @@ import {
 describe("array filter", () => {
   test("filter array, filter empty", () => {
     const input = [{ name: "Apple" }, { name: "Pear" }, { name: "Banana" }];
-    const result = filterArray(input, null);
+    const result = filterArray(input);
     const expected = [{ name: "Apple" }, { name: "Pear" }, { name: "Banana" }];
     expect(result).toEqual(expected);
   });

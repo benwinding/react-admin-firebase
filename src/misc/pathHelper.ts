@@ -2,10 +2,10 @@ import path from "path-browserify";
 
 export function getAbsolutePath(
   rootRef: undefined | string | (() => string),
-  relativePath: string
+  relativePath: string | null
 ): string {
   if (!rootRef) {
-    return relativePath;
+    return relativePath+'';
   }
   if (!relativePath) {
     throw new Error(

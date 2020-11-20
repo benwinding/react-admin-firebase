@@ -41,9 +41,9 @@ function basicSort(aValue: any, bValue: any, isAsc: boolean) {
 
 export function filterArray(
   data: Array<{}>,
-  searchFields: { [field: string]: string | number | boolean }
+  searchFields?: { [field: string]: string | number | boolean | null }
 ): Array<{}> {
-  if (isEmpty(searchFields)) {
+  if (!searchFields || isEmpty(searchFields)) {
     return data;
   }
   const searchObjs: SearchObj[] = [];

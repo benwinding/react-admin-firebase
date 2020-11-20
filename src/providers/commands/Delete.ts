@@ -7,7 +7,7 @@ export async function Delete<T extends ra.Record>(
   params: ra.DeleteParams,
   client: FireClient
 ): Promise<ra.DeleteResult<T>> {
-  const { rm } = client;
+  const { rm, options } = client;
   const r = await rm.TryGetResource(resourceName);
   log("apiDelete", { resourceName, resource: r, params });
   try {

@@ -15,7 +15,7 @@ describe("api methods", () => {
     const id = "test123";
     const collName = "t2";
     const docRef = fire.db().collection(collName).doc(id);
-    const docObj = { id, name: "Jim" }
+    const docObj = { id, name: "Jim" };
     await docRef.set(docObj);
 
     const client = new FirebaseClient(fire, fire.options);
