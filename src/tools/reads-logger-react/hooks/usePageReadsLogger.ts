@@ -9,9 +9,9 @@ export const usePageReadsLogger = () => {
   const history = useHistory();
 
   useEffect(() => {
-    let pageSubscription: Subscription = null,
-      lastPageSubscription: Subscription = null,
-      historyUnsubscribe = null;
+    let pageSubscription: Subscription = null as any,
+      lastPageSubscription: Subscription = null as any,
+      historyUnsubscribe = null as any;
 
     effectUtils.init(
       'page',

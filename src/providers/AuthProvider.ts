@@ -1,9 +1,14 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import { FirebaseAuth } from '@firebase/auth-types';
-import { log, checkLogging, retrieveStatusTxt, messageTypes } from '../misc';
-import { RAFirebaseOptions } from './options';
-import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
+import { messageTypes } from "./../misc/messageTypes";
+import firebase from "firebase/app";
+import "firebase/auth";
+import { FirebaseAuth, User } from "@firebase/auth-types";
+import { log, retrieveStatusTxt, logWarn, CheckLogging } from "../misc";
+import { RAFirebaseOptions } from "./options";
+import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import {
+  AuthProvider as RaAuthProvider,
+  UserIdentity,
+} from "../misc/react-admin-models";
 
 class AuthClient {
   private auth: FirebaseAuth;
@@ -14,7 +19,7 @@ class AuthClient {
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
     this.auth = fireWrapper.auth();
-    this.setPersistence(options.persistence);
+    options.persistence && this.setPersistence(options.persistence);
   }
 
   setPersistence(persistenceInput: 'session' | 'local' | 'none') {
@@ -34,10 +39,10 @@ class AuthClient {
     log('setPersistence', { persistenceInput, persistenceResolved });
     this.auth
       .setPersistence(persistenceResolved)
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }
 
-  public async HandleAuthLogin(params) {
+  public async HandleAuthLogin(params: { username: string; password: string }) {
     const { username, password } = params;
 
     if (username && password) {
@@ -65,22 +70,22 @@ class AuthClient {
     log('HandleAuthLogin: invalid credentials', { errorHttp });
     const status = !!errorHttp && errorHttp.status;
     const statusTxt = retrieveStatusTxt(status);
-    if (statusTxt === 'ok') {
-      return Promise.resolve('API is authenticated');
+    if (statusTxt === "ok") {
+      log("API is actually authenticated");
+      return Promise.resolve();
     }
-    return Promise.reject('Recieved authentication error from API');
+    logWarn("Recieved authentication error from API");
+    return Promise.reject();
   }
 
-
-
-  public HandleAuthCheck() {
-    return this.getUserLogin();
+  public async HandleAuthCheck(): Promise<void> {
+    return this.getUserLogin() as any; // Prevents breaking change
   }
 
-  public getUserLogin() {
+  public getUserLogin(): Promise<User> {
     return new Promise((resolve, reject) => {
       if (this.auth.currentUser) return resolve(this.auth.currentUser);
-      const unsubscribe = this.auth.onAuthStateChanged(user => {
+      const unsubscribe = this.auth.onAuthStateChanged((user) => {
         unsubscribe();
         if (user) {
           resolve(user);
@@ -99,10 +104,27 @@ class AuthClient {
 
       return token.claims;
     } catch (e) {
-      log('HandleGetPermission: no user is logged in or tokenResult error', {
-        e
+      log("HandleGetPermission: no user is logged in or tokenResult error", {
+        e,
       });
       return null;
+    }
+  }
+
+  public async HandleGetIdentity(): Promise<UserIdentity> {
+    try {
+      const { uid, displayName, photoURL } = await this.getUserLogin();
+      const identity: UserIdentity = {
+        id: uid,
+        fullName: displayName+'',
+        avatar: photoURL+'',
+      };
+      return identity;
+    } catch (e) {
+      log("HandleGetIdentity: no user is logged in", {
+        e,
+      });
+      return null as any;
     }
   }
 
@@ -114,8 +136,8 @@ class AuthClient {
 
       return token.authTime;
     } catch (e) {
-      log('HandleGetJWTAuthTime: no user is logged in or tokenResult error', {
-        e
+      log("HandleGetJWTAuthTime: no user is logged in or tokenResult error", {
+        e,
       });
       return null;
     }
@@ -129,14 +151,17 @@ class AuthClient {
 
       return token.expirationTime;
     } catch (e) {
-      log('HandleGetJWTExpirationTime: no user is logged in or tokenResult error', {
-        e
-      });
+      log(
+        "HandleGetJWTExpirationTime: no user is logged in or tokenResult error",
+        {
+          e,
+        }
+      );
       return null;
     }
   }
 
-    public async HandleGetJWTSignInProvider() {
+  public async HandleGetJWTSignInProvider() {
     try {
       const user = await this.getUserLogin();
       // @ts-ignore
@@ -144,14 +169,17 @@ class AuthClient {
 
       return token.signInProvider;
     } catch (e) {
-      log('HandleGetJWTSignInProvider: no user is logged in or tokenResult error', {
-        e
-      });
+      log(
+        "HandleGetJWTSignInProvider: no user is logged in or tokenResult error",
+        {
+          e,
+        }
+      );
       return null;
     }
   }
 
-     public async HandleGetJWTIssuedAtTime() {
+  public async HandleGetJWTIssuedAtTime() {
     try {
       const user = await this.getUserLogin();
       // @ts-ignore
@@ -160,15 +188,16 @@ class AuthClient {
       return token.issuedAtTime;
     } catch (e) {
       log(
-        `HandleGetJWTIssuedAtTime: no user is logged in
-        or tokenResult error`,
-        { e }
+        "HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error",
+        {
+          e,
+        }
       );
       return null;
     }
   }
 
-      public async HandleGetJWTToken() {
+  public async HandleGetJWTToken() {
     try {
       const user = await this.getUserLogin();
       // @ts-ignore
@@ -177,32 +206,41 @@ class AuthClient {
       return token.token;
     } catch (e) {
       log(
-        `HandleGetJWTIssuedAtTime: no user is logged in
-        or tokenResult error`,
-        { e }
+        "HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error",
+        {
+          e,
+        }
       );
       return null;
     }
   }
 }
 
-export function AuthProvider(firebaseConfig: {}, options: RAFirebaseOptions) {
+export function AuthProvider(
+  firebaseConfig: {},
+  options: RAFirebaseOptions
+): RaAuthProvider {
   VerifyAuthProviderArgs(firebaseConfig, options);
   const auth = new AuthClient(firebaseConfig, options);
-  checkLogging(firebaseConfig, options);
+  CheckLogging(firebaseConfig, options);
 
-  return {
-    login: params => auth.HandleAuthLogin(params),
+  const provider: RaAuthProvider = {
+    // React Admin Interface
+    login: (params) => auth.HandleAuthLogin(params),
     logout: () => auth.HandleAuthLogout(),
     checkAuth: () => auth.HandleAuthCheck(),
-    checkError: error => auth.HandleAuthError(error),
+    checkError: (error) => auth.HandleAuthError(error),
     getPermissions: () => auth.HandleGetPermissions(),
+    getIdentity: () => auth.HandleGetIdentity(),
+    // Custom Functions
+    getAuthUser: () => auth.getUserLogin(),
     getJWTAuthTime: () => auth.HandleGetJWTAuthTime(),
     getJWTExpirationTime: () => auth.HandleGetJWTExpirationTime(),
     getJWTSignInProvider: () => auth.HandleGetJWTSignInProvider(),
     getJWTClaims: () => auth.HandleGetPermissions(),
-    getJWTToken: () => auth.HandleGetJWTToken()
+    getJWTToken: () => auth.HandleGetJWTToken(),
   };
+  return provider;
 }
 
 function VerifyAuthProviderArgs(

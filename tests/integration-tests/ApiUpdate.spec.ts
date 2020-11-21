@@ -1,28 +1,26 @@
-import { IFirebaseWrapper } from "../../src/providers/database/firebase/IFirebaseWrapper";
-import { initFireWrapper, clearDb } from "./utils/test-helpers";
-import { FirebaseClient } from "../../src/providers/database/FirebaseClient";
+import { MakeMockClient } from "./utils/test-helpers";
+import { Update } from "../../src/providers/commands";
 
 describe("api methods", () => {
-  let fire: IFirebaseWrapper;
-  const testId = "testupdate1";
-  beforeEach(() => (fire = initFireWrapper(testId, { disableMeta: true })));
-  afterEach(async () => clearDb(testId));
-
-  test("FirebaseClient update doc", async () => {
-    const id = "test123";
+  test("FireClient update doc", async () => {
+    const client = MakeMockClient({ disableMeta: true });
+    const id = "testsss123";
     const collName = "t2";
-    const docRef = fire.db().collection(collName).doc(id);
+    const docRef = client.db().collection(collName).doc(id);
     await docRef.set({ name: "Jim" });
 
-    const client = new FirebaseClient(fire, fire.options);
-    await client.apiUpdate(collName, {
-      id: id,
-      data: { id: id, title: 'asd' } as any,
-      previousData: { name: "Jim" },
-    });
+    await Update(
+      collName,
+      {
+        id: id,
+        data: { id: id, title: "asd" },
+        previousData: { id: id, name: "Jim" },
+      },
+      client
+    );
 
     const res = await docRef.get();
     expect(res.exists).toBeTruthy();
-    expect(res.get('title')).toBe('asd');
+    expect(res.get("title")).toBe("asd");
   }, 100000);
 });

@@ -25,9 +25,9 @@ const setReadsSubscriptions = async (
   setLastReads: Dispatch<SetStateAction<number>>
 ) => {
   const [currentCounterKey, lastCounterKey] = getCounterKeys(counterType);
-  const currentCounterSubscription = logger.counters$[currentCounterKey]
+  const currentCounterSubscription = (logger.counters$ as any)[currentCounterKey]
     .subscribe(setCurrentReads);
-  const lastCounterSubscription = logger.counters$[lastCounterKey]
+  const lastCounterSubscription = (logger.counters$ as any)[lastCounterKey]
     .subscribe(setLastReads);
 
   return [currentCounterSubscription, lastCounterSubscription];
@@ -37,7 +37,7 @@ export const initFirebaseReadsLoggerSubscriptions = async (
   counterType: CounterType,
   setCurrentReads: Dispatch<SetStateAction<number>>,
   setLastReads: Dispatch<SetStateAction<number>>,
-  callback: InitLoggerCallbackFn = null
+  callback: InitLoggerCallbackFn = null as any
 ) => {
   const firebaseReadsLogger: loggerTypes.ReadsLogger | false =
     await getFirebaseReadsLogger();

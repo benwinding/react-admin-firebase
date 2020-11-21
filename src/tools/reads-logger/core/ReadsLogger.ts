@@ -102,15 +102,15 @@ export default class ReadsLogger implements loggerTypes.ReadsLogger {
     readsKeys: loggerTypes.CounterEmitOptions
   ) => {
     Object.keys(readsKeys)
-      .filter(key => Boolean(readsKeys[key]))
+      .filter(key => Boolean((readsKeys as any)[key]))
       .forEach(key => {
-        this.subjects[key].next(this[key]);
+        (this.subjects as any)[key].next((readsKeys as any)[key]);
       });
   };
   private unsubscribeAllStreams = () => {
     Object.keys(loggerConstants.EMIT_OPTIONS_ALL)
       .forEach(key => {
-        this.subjects[key].unsubscribe();
+        (this.subjects as any)[key].unsubscribe();
       });
   };
 
@@ -135,9 +135,9 @@ export default class ReadsLogger implements loggerTypes.ReadsLogger {
    *
    * ReadsLogger.getLogger() - get ReadsLogger singleton instance
    */
-  private static __instance: ReadsLogger = null;
+  private static __instance: ReadsLogger = null as any;
   private static __isInitialized: boolean = false;
-  private static __options: RAFirebaseOptions = null;
+  private static __options: RAFirebaseOptions = null as any;
   private static get __hasInstance(): boolean {
     return Boolean(ReadsLogger.__instance);
   }
@@ -192,7 +192,7 @@ export default class ReadsLogger implements loggerTypes.ReadsLogger {
       message: `Because of FirebaseReadsLogger initialization error, created,
           but not initiated instance will be removed`
     });
-    ReadsLogger.__instance = null;
+    ReadsLogger.__instance = null as any;
     ReadsLogger.__isInitialized = false;
   };
 
@@ -205,12 +205,10 @@ export default class ReadsLogger implements loggerTypes.ReadsLogger {
   ): Promise<loggerTypes.ReadsLogger | false> {
     options = options || ReadsLogger.__options;
     const {
-      getLoggerAsyncOptions: {
-        retryLimit,
-        retryTimeout
-      } = loggerConstants.DEFAULT_GET_LOGGER_ASYNC_OPTIONS
+      getLoggerAsyncOptions = loggerConstants.DEFAULT_GET_LOGGER_ASYNC_OPTIONS
     } = getFiReLoggerOptions(options);
-
+    const retryLimit = getLoggerAsyncOptions.retryLimit as number;
+    const retryTimeout = getLoggerAsyncOptions.retryTimeout as number;
     const getLogger: loggerTypes.GetLoggerAsyncFn = async retryCount =>
       new Promise((resolve, reject) => {
         if (ReadsLogger.__hasRunningInstance) {
@@ -241,9 +239,9 @@ export default class ReadsLogger implements loggerTypes.ReadsLogger {
 
   public static destroyLogger(): void {
     ReadsLogger.__instance.storage.clean();
-    ReadsLogger.__instance.storage = null;
+    ReadsLogger.__instance.storage = null as any;
     ReadsLogger.__instance.unsubscribeAllStreams();
-    ReadsLogger.__instance = null;
+    ReadsLogger.__instance = null as any;
     ReadsLogger.__isInitialized = false;
   }
 }

@@ -1,22 +1,10 @@
 // Firebase types
-import { CollectionReference } from '@firebase/firestore-types';
+import { CollectionReference } from "@firebase/firestore-types";
+import { GetListParams } from "./react-admin-models";
 
 // PARAMETERS
 export namespace messageTypes {
-  export interface IParamsGetList {
-    pagination: {
-      page: number;
-      perPage: number;
-    };
-    sort?: {
-      field: string;
-      order: string;
-    };
-    filter?: {
-      collectionQuery?: CollectionQueryType;
-      [fieldName: string]: any;
-    };
-  }
+  export type IParamsGetList = GetListParams;
 
   export type CollectionQueryType = (
     arg0: CollectionReference

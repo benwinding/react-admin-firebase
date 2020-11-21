@@ -1,32 +1,36 @@
-import { IFirebaseWrapper } from "../../src/providers/database/firebase/IFirebaseWrapper";
-import { initFireWrapper, clearDb } from "./utils/test-helpers";
-import { FirebaseClient } from "../../src/providers/database/FirebaseClient";
+import { MakeMockClient } from "./utils/test-helpers";
+import { GetList } from "../../src/providers/queries";
 
 describe("api methods", () => {
-  let fire: IFirebaseWrapper;
-  const testId = "test-getlist";
-  beforeEach(() => (fire = initFireWrapper(testId)));
-  afterEach(async () => clearDb(testId));
-
-  test("FirebaseClient list docs", async () => {
+  test("FireClient list docs", async () => {
+    const client = MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "list-mes";
-    const collection = fire.db().collection(collName);
+    const collection = client.db().collection(collName);
     await Promise.all(
       docIds.map((id) => collection.doc(id).set({ title: "ee" }))
     );
 
-    const client = new FirebaseClient(fire, {});
-    const result = await client.apiGetList(collName, {
-      pagination: {
-        page: 1,
-        perPage: 10,
+    const result = await GetList(
+      collName,
+      {
+        sort: {
+          field: "title",
+          order: "asc",
+        },
+        filter: {},
+        pagination: {
+          page: 1,
+          perPage: 10,
+        },
       },
-    });
+      client
+    );
     expect(result.data.length).toBe(3);
   }, 100000);
 
-  test("FirebaseClient list docs with boolean filter", async () => {
+  test("FireClient list docs with boolean filter", async () => {
+    const client = MakeMockClient();
     const testDocs = [
       {
         title: "A",
@@ -42,19 +46,114 @@ describe("api methods", () => {
       },
     ];
     const collName = "list-filtered";
-    const collection = fire.db().collection(collName);
+    const collection = client.db().collection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
-    const client = new FirebaseClient(fire, {});
-    const result = await client.apiGetList(collName, {
-      pagination: {
-        page: 1,
-        perPage: 10,
+    const result = await GetList(
+      collName,
+      {
+        sort: {
+          field: "title",
+          order: "asc",
+        },
+        pagination: {
+          page: 1,
+          perPage: 10,
+        },
+        filter: {
+          isEnabled: false,
+        },
       },
-      filter: {
-        isEnabled: false
-      } as any
-    });
+      client
+    );
     expect(result.data.length).toBe(2);
+  }, 100000);
+
+  test("FireClient list docs with dotpath sort", async () => {
+    const client = MakeMockClient();
+    const testDocs = [
+      {
+        obj: {
+          title: "A",
+        },
+        isEnabled: false,
+      },
+      {
+        obj: {
+          title: "C",
+        },
+        isEnabled: false,
+      },
+      {
+        obj: {
+          title: "B",
+        },
+        isEnabled: true,
+      },
+    ];
+    const collName = "list-filtered";
+    const collection = client.db().collection(collName);
+    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+
+    const result = await GetList(
+      collName,
+      {
+        filter: {},
+        pagination: {
+          page: 1,
+          perPage: 10,
+        },
+        sort: {
+          field: "obj.title",
+          order: "ASC",
+        },
+      },
+      client
+    );
+    const second = result.data[1] as any;
+    expect(second).toBeTruthy();
+    expect(second.obj.title).toBe("B");
+  }, 100000);
+
+  test("FireClient with filter gte", async () => {
+    const client = MakeMockClient();
+    const testDocs = [
+      {
+        title: "A",
+        obj: { volume: 100 },
+      },
+      {
+        title: "B",
+        obj: { volume: 101 },
+      },
+      {
+        title: "C",
+        obj: { volume: 99 },
+      },
+    ];
+    const collName = "list-filtered";
+    const collection = client.db().collection(collName);
+    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+
+    const result = await GetList(
+      collName,
+      {
+        filter: {
+          collectionQuery: (c: firebase.firestore.CollectionReference) =>
+            c.where("obj.volume", ">=", 100),
+        },
+        pagination: {
+          page: 1,
+          perPage: 10,
+        },
+        sort: {
+          field: "obj.volume",
+          order: "ASC",
+        },
+      },
+      client
+    );
+    const third = result.data.length as any;
+    expect(third).toBe(2);
   }, 100000);
 });

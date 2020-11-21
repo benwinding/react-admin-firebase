@@ -1,12 +1,21 @@
 import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
 import { RAFirebaseOptions } from '../../../src/providers/options';
-import { firestore } from 'firebase';
-import * as firebase from '@firebase/testing';
+import { firestore, User } from 'firebase';
+import * as firebase from "@firebase/testing";
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
-  private firestore: firestore.Firestore;
-  private app: any;
-  options: RAFirebaseOptions;
+  private firestore: firestore.Firestore = null as any;
+  private app = null as any;
+  options: RAFirebaseOptions = null as any;
+  GetApp() {
+    return this.app;
+  }
+
+  constructor() {}
+
+  async GetUserLogin(): Promise<User> {
+    return { uid: "alice", email: 'alice@test.com' } as any;
+  }
 
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
     this.options = options;
@@ -24,5 +33,8 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   }
   public serverTimestamp() {
     return firebase.firestore.FieldValue.serverTimestamp();
+  }
+  public OnUserLogout(callBack: (u: User) => any) {
+    
   }
 }

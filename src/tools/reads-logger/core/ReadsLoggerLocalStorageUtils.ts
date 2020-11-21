@@ -23,16 +23,16 @@ export default class ReadsLoggerLocalStorageUtils {
   /*
    * PRIVATE FIELDS
    */
-  private storageKeys: FiReLoggerStorageKeys = null;
+  private storageKeys: FiReLoggerStorageKeys = null as any;
   private get hasKeys(): boolean {
     return Boolean(this.storageKeys);
   }
   private readonly loggerOptions: FiReLoggerOptions;
   private readonly DEFAULT_PREFIX: string = 'ra-firebase-reads';
   private isInitialized: boolean = false;
-  private currentUserId: string = null;
-  private emitSessionReadsStreams: () => void = null;
-  private authStateUnsubscribe: firebase.Unsubscribe;
+  private currentUserId: string = null as any;
+  private emitSessionReadsStreams: () => void = null as any;
+  private authStateUnsubscribe: firebase.Unsubscribe = null as any;
   /*
    * PUBLIC LOCAL STORAGE UTILS INTERFACE
    */
@@ -105,16 +105,16 @@ export default class ReadsLoggerLocalStorageUtils {
       !snapshot && this.currentUserId !== null && this.hasKeys;
 
     const userChanged: CheckUserStateFn = snapshot =>
-      snapshot && snapshot.uid && this.currentUserId !== snapshot.uid;
+      !!snapshot && !!snapshot.uid && this.currentUserId !== snapshot.uid;
 
     return new Promise((resolve, reject) => {
       const firebaseAuth = this.options.app.auth() || firebase.app().auth();
       this.authStateUnsubscribe = firebaseAuth.onAuthStateChanged(
-        userSnapshot => {
+        (userSnapshot: any): any => {
           if (isLoggedOut(userSnapshot)) {
             this.resetSessionReads();
-            this.currentUserId = null;
-            this.storageKeys = null;
+            this.currentUserId = null as any;
+            this.storageKeys = null as any;
           } else if (userChanged(userSnapshot)) {
             this.currentUserId = userSnapshot.uid;
             this.storageKeys = this.getLocalStorageKeys();

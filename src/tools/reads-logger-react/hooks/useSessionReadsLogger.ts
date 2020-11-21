@@ -7,8 +7,8 @@ export const useSessionReadsLogger = () => {
   const [lastSessionReads, setLastSessionReads] = useState(0);
 
   useEffect(() => {
-    let sessionSubscription: Subscription = null,
-      lastSessionSubscription: Subscription = null;
+    let sessionSubscription: Subscription = null as any,
+      lastSessionSubscription: Subscription = null as any;
     effectUtils.init(
       'session',
       setSessionReads,

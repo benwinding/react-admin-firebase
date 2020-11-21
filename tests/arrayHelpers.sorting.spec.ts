@@ -8,6 +8,13 @@ describe("array sort", () => {
     expect(input).toEqual(expected);
   });
 
+  test("returns an ascending array - nested", () => {
+    const input = [{ obj: {a: 2} }, { obj: {a: 1} }];
+    const expected = [{ obj: {a: 1} }, { obj: {a: 2} }];
+    sortArray(input, "obj.a", "asc");
+    expect(input).toEqual(expected);
+  });
+
   test("returns an descending array", () => {
     const input = [{ a: 1 }, { a: 2 }];
     const expected = [{ a: 2 }, { a: 1 }];

@@ -7,9 +7,9 @@ export function sortArray(
   dir: 'asc' | 'desc'
 ): void {
   data.sort((a: {}, b: {}) => {
-    const rawA = a[field];
-    const rawB = b[field];
-    const isAsc = dir === 'asc';
+    const rawA = get(a, field);
+    const rawB = get(b, field);
+    const isAsc = dir === "asc";
 
     const isNumberField = Number.isFinite(rawA) && Number.isFinite(rawB);
     if (isNumberField) {
@@ -41,9 +41,9 @@ function basicSort(aValue: any, bValue: any, isAsc: boolean) {
 
 export function filterArray(
   data: Array<{}>,
-  searchFields: { [field: string]: string | number | boolean }
+  searchFields?: { [field: string]: string | number | boolean | null }
 ): Array<{}> {
-  if (isEmpty(searchFields)) {
+  if (!searchFields || isEmpty(searchFields)) {
     return data;
   }
   const searchObjs: SearchObj[] = [];
@@ -52,13 +52,13 @@ export function filterArray(
     const getSubObjects = getFieldReferences(fieldName, fieldValue);
     searchObjs.push(...getSubObjects);
   });
-  return data.filter((row) =>
-    searchObjs.reduce(
-      (prev, curr) =>
-        doesRowMatch(row, curr.searchField, curr.searchValue) && prev,
-      true
-    )
+  const filtered = data.filter((row) =>
+    searchObjs.reduce((acc, cur) => {
+      const res = doesRowMatch(row, cur.searchField, cur.searchValue);
+      return res && acc;
+    }, true as boolean)
   );
+  return filtered;
 }
 
 export function doesRowMatch(
@@ -66,11 +66,7 @@ export function doesRowMatch(
   searchField: string,
   searchValue: any
 ): boolean {
-  let searchThis = row[searchField];
-  const isDeepField = searchField.includes('.');
-  if (isDeepField) {
-    searchThis = get(row, searchField);
-  }
+  const searchThis = get(row, searchField);
   const bothAreFalsey = !searchThis && !searchValue;
   if (bothAreFalsey) {
     return true;

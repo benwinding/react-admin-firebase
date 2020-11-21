@@ -1,29 +1,31 @@
-import { FirebaseClient } from "../../src/providers/database/FirebaseClient";
-import { IFirebaseWrapper } from "../../src/providers/database/firebase/IFirebaseWrapper";
-import {
-  getDocsFromCollection,
-  initFireWrapper,
-  clearDb,
-} from "./utils/test-helpers";
+import { getDocsFromCollection, MakeMockClient } from "./utils/test-helpers";
+import { Create } from "../../src/providers/commands";
 
 describe("ApiCreate", () => {
-  let fire: IFirebaseWrapper;
-  const testId = "test1";
-  beforeAll(() => (fire = initFireWrapper(testId)));
-  afterAll(async () => clearDb(testId));
-
-  test("FirebaseClient create doc", async () => {
-    const client = new FirebaseClient(fire, {
+  test("FireClient create doc", async () => {
+    const client = MakeMockClient({
       logging: true,
       disableMeta: true,
     });
-    await client.apiCreate("t1", {
-      data: { name: "John" },
-    });
-    const users = await getDocsFromCollection(fire.db(), "t1");
+    await Create("t1", { data: { name: "John" } }, client);
+    const users = await getDocsFromCollection(client.db(), "t1");
     expect(users.length).toBe(1);
     const first = users[0] as any;
     expect(first).toBeTruthy();
     expect(first.name).toBe("John");
+  }, 100000);
+  test("FireClient create doc with custom meta", async () => {
+    const client = MakeMockClient({
+      logging: true,
+      renameMetaFields: {
+        updated_by: 'MY_CREATED_BY',
+      },
+    });
+    await Create("t1", { data: { name: "John" } }, client);
+    const users = await getDocsFromCollection(client.db(), "t1");
+    expect(users.length).toBe(1);
+    const first = users[0] as {};
+
+    expect(first.hasOwnProperty('MY_CREATED_BY')).toBeTruthy();
   }, 100000);
 });

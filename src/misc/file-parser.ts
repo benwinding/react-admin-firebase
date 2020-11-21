@@ -7,12 +7,12 @@ interface ParsedUpload {
   rawFile: File | any;
 }
 
-export function parseDocGetAllUploads(obj: {}): ParsedUpload[] {
-  const isObject = !!obj && typeof obj === 'object';
+export function parseDocGetAllUploads(obj: any): ParsedUpload[] {
+  const isObject = !!obj && typeof obj === "object";
   if (!isObject) {
     return [];
   }
-  const uploads = [];
+  const uploads: ParsedUpload[] = [];
   Object.keys(obj).map((key) => {
     const value = obj[key];
     recusivelyParseObjectValue(value, key, uploads);
@@ -24,7 +24,7 @@ export function recusivelyParseObjectValue(
   input: any,
   fieldPath: string,
   uploads: ParsedUpload[]
-) {
+): any {
   const isFalsey = !input;
   if (isFalsey) {
     return input;

@@ -8,8 +8,8 @@ export const useCustomReadsLogger = () => {
   const [lastCustomReads, setLastCustomReads] = useState(0);
 
   useEffect(() => {
-    let customSubscription: Subscription = null,
-      lastCustomSubscription: Subscription = null;
+    let customSubscription: Subscription = null as any,
+      lastCustomSubscription: Subscription = null as any;
     effectUtils.init(
       'custom',
       setCustomReads,
