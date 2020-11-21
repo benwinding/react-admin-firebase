@@ -8,12 +8,15 @@ export async function GetOne<T extends ra.Record>(
   client: FireClient
 ): Promise<ra.GetOneResult<T>> {
   log("GetOne", { resourceName, params });
-  const { rm, fireWrapper } = client;
+  const { rm, fireWrapper, options } = client;
   try {
     const id = params.id + "";
     const dataSingle = await rm.GetSingleDoc(resourceName, id);
-    const data = await recursivelyMapStorageUrls(fireWrapper, dataSingle);
-    return { data: data };
+    if (options.relativeFilePaths) {
+      const data = await recursivelyMapStorageUrls(fireWrapper, dataSingle);
+      return { data: data };
+    }
+    return { data: dataSingle as any };
   } catch (error) {
     throw new Error(
       "Error getting id: " + params.id + " from collection: " + resourceName

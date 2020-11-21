@@ -6,14 +6,13 @@ import {
 } from "@firebase/firestore-types";
 import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
-import { User } from "@firebase/auth-types";
 import {
   log,
   getAbsolutePath,
   messageTypes,
-  logError,
-  parseAllDatesDoc,
+  translateDocFromFirestore,
   logWarn,
+  applyRefDocs,
 } from "../../misc";
 
 export interface IResource {
@@ -36,7 +35,7 @@ export class ResourceManager {
   ) {
     this.db = fireWrapper.db();
 
-    this.fireWrapper.OnUserLogout((user) => {
+    this.fireWrapper.OnUserLogout(() => {
       this.resources = {};
     });
   }
@@ -70,7 +69,7 @@ export class ResourceManager {
       relativePath,
       collectionQuery,
     });
-    await this.initPath(relativePath, collectionQuery);
+    await this.initPath(relativePath);
 
     const resource: IResource = this.resources[relativePath];
     if (!resource) {
@@ -86,7 +85,7 @@ export class ResourceManager {
     collectionQuery: messageTypes.CollectionQueryType | undefined
   ) {
     log("resourceManager.RefreshResource", { relativePath, collectionQuery });
-    await this.initPath(relativePath, collectionQuery);
+    await this.initPath(relativePath);
     const resource = this.resources[relativePath];
 
     const collection = resource.collection;
@@ -120,9 +119,7 @@ export class ResourceManager {
   }
 
   private async initPath(
-    relativePath: string,
-    collectionQuery?: messageTypes.CollectionQueryType
-  ): Promise<void> {
+    relativePath: string  ): Promise<void> {
     const rootRef = this.options && this.options.rootRef;
     const absolutePath = getAbsolutePath(rootRef, relativePath);
     const hasBeenInited = !!this.resources[relativePath];
@@ -157,10 +154,12 @@ export class ResourceManager {
       return {};
     }
     const data = doc.data();
-    parseAllDatesDoc(data);
+    const result = translateDocFromFirestore(data);
+    const dataWithRefs = applyRefDocs(result.parsedDoc, result.refdocs);
     // React Admin requires an id field on every document,
     // So we can just using the firestore document id
-    return { id: doc.id, ...data };
+    const returnDoc = { id: doc.id, ...dataWithRefs };
+    return returnDoc;
   }
 
   public async getUserIdentifier(): Promise<string> {
@@ -185,10 +184,6 @@ export class ResourceManager {
     } else {
       return "annonymous user";
     }
-  }
-
-  private removeResource(resourceName: string) {
-    delete this.resources[resourceName];
   }
 
   private applyQuery(

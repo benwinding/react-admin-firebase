@@ -9,8 +9,8 @@ export async function GetMany<T extends ra.Record>(
 ): Promise<ra.GetManyResult<T>> {
   const { rm, options, fireWrapper } = client;
   const r = await rm.TryGetResource(resourceName);
-  log("GetMany", { resourceName, resource: r, params });
   const ids = params.ids;
+  log("GetMany", { resourceName, resource: r, params, ids });
   const matchDocSnaps = await Promise.all(
     ids.map((id) => r.collection.doc(id + "").get())
   );

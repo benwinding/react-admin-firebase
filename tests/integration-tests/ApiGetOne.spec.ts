@@ -46,4 +46,23 @@ describe("api methods", () => {
     expect(data.b.b1).toBeInstanceOf(Date);
     expect(data.b.c.c1).toBeInstanceOf(Date);
   }, 100000);
+
+  test("FireClient apiGetOne, with refdocument", async () => {
+    const client = MakeMockClient();
+    const collName = "get-one";
+    const docId = "12345";
+    const collection = client.db().collection(collName);
+    const refId = '22222';
+    const refFullPath = 'ascasc/' + refId;
+    const testData = {
+      myrefdoc: client.db().doc(refFullPath),
+    };
+    await collection.doc(docId).set(testData);
+
+    const result = await GetOne(collName, { id: docId }, client);
+    const data = result.data as any;
+    expect(data).toBeTruthy();
+    expect(data['myrefdoc']).toBe(refId);
+    expect(data['___REF_FULLPATH_myrefdoc']).toBe(refFullPath);
+  }, 100000);
 });

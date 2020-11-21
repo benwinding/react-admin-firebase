@@ -1,5 +1,6 @@
 // in src/posts.js
 import * as React from "react";
+// import { cloneDeep, hildren, cloneElement } from "react";
 // tslint:disable-next-line:no-var-requires
 import {
   Datagrid,
@@ -29,11 +30,11 @@ import {
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
-const PostFilter = (props) => (
-  <Filter {...props}>
-    <TextInput label="Search" source="title" alwaysOn />
-  </Filter>
-);
+// const PostFilter = (props) => (
+//   <Filter {...props}>
+//     <TextInput label="Search" source="title" alwaysOn />
+//   </Filter>
+// );
 
 const ReferenceFilter = (props) => (
   <Filter {...props}>
@@ -61,15 +62,56 @@ export const PostList = (props) => (
       <TextField source="updatedby" />
       <TextField source="createdby" />
       <RichTextField source="body" />
-      <ReferenceField label="User" source="user_id" reference="users">
+      <ReferenceField label="User Ref" source="user_ref" reference="users">
         <TextField source="name" />
       </ReferenceField>
+
       <ShowButton label="" />
       <EditButton label="" />
       <DeleteButton label="" redirect={false} />
     </Datagrid>
   </List>
 );
+
+// const ConditionalEmailField = ({}) =>
+//   record && record.hasEmail ? (
+//     <EmailField source="email" record={record} {...rest} />
+//   ) : null;
+
+export const FirebaseReferenceField = (props) => {
+  const {
+    label,
+    source,
+    reference,
+    children,
+    translateChoice,
+    ...rest
+  } = props;
+  const refDocId = source.____refid;
+  const refCollection = reference;
+  const sourceString = JSON.stringify({
+    ___reference: refCollection,
+    ___id: refDocId,
+  });
+  console.log("FirebaseReferenceField", {
+    sourceString,
+    refDocId,
+    refCollection,
+    props,
+  });
+  return (
+    <ReferenceField
+      label={label}
+      reference={reference}
+      source={sourceString}
+      {...rest}
+    >
+      {children}
+    </ReferenceField>
+  );
+};
+
+FirebaseReferenceField.defaultProps = { addLabel: true };
 
 export const PostShow = (props) => (
   <Show {...props}>
@@ -79,9 +121,19 @@ export const PostShow = (props) => (
       <TextField source="lastupdate" />
       <TextField source="title" />
       <RichTextField source="body" />
-      <ReferenceField label="User" source="user_id" reference="users">
+
+      {/* <ReferenceField label="User Id" source="user_id" reference="users">
         <TextField source="name" />
-      </ReferenceField>
+      </ReferenceField> */}
+
+      <FirebaseReferenceField
+        label="User Ref"
+        source="user_ref"
+        reference="users"
+      >
+        <TextField source="name" />
+      </FirebaseReferenceField>
+
       <FileField
         source="files_multiple.src"
         title="files_multiple.title"
@@ -98,12 +150,19 @@ export const PostCreate = (props) => (
       <TextInput source="title" />
       <RichTextInput source="body" />
       <ReferenceInput
-        label="User"
+        label="User Id"
         source="user_id"
         reference="users"
         // filter={{ isAdmin: true }}
       >
-        <SelectInput label="User" optionText="name" />
+        <SelectInput label="User Id" optionText="name" />
+      </ReferenceInput>
+      <ReferenceInput
+        label="User Ref"
+        source="user_ref.___refid"
+        reference="users"
+      >
+        <SelectInput label="User Ref" optionText="name" />
       </ReferenceInput>
       <FileInput source="files_multiple" multiple label="Files with (multiple)">
         <FileField source="src" title="title" />
@@ -136,12 +195,19 @@ export const PostEdit = (props) => (
       <TextInput source="title" />
       <RichTextInput source="body" />
       <ReferenceInput
-        label="User"
+        label="User Id"
         source="user_id"
         reference="users"
         // filter={{ isAdmin: true }}
       >
-        <SelectInput label="User" optionText="name" />
+        <SelectInput label="User Id" optionText="name" />
+      </ReferenceInput>
+      <ReferenceInput
+        label="User Ref"
+        source="user_ref.___refid"
+        reference="users"
+      >
+        <SelectInput label="User Ref" optionText="name" />
       </ReferenceInput>
       <FileInput source="files_multiple" multiple label="Files with (multiple)">
         <FileField source="src" title="title" />

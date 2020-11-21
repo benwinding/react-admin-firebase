@@ -1,6 +1,4 @@
-import * as React from "react";
-import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
-import { UserList, UserShow, UserCreate, UserEdit } from "./users";
+import React from "react";
 import { Admin, Resource } from "react-admin";
 import {
   FirebaseDataProvider,
@@ -8,6 +6,11 @@ import {
 } from "react-admin-firebase";
 import firebase from 'firebase';
 import UserIcon from '@material-ui/icons/People';
+import CommentIcon from '@material-ui/icons/Comment';
+
+import * as Posts from "./posts";
+import * as Users from "./users";
+import * as Comments from "./comments";
 
 import { firebaseConfig } from './FIREBASE_CONFIG';
 import CustomLoginPage from './CustomLoginPage';
@@ -38,18 +41,26 @@ class App extends React.Component {
       >
         <Resource
           name="posts"
-          list={PostList}
-          show={PostShow}
-          create={PostCreate}
-          edit={PostEdit}
+          list={Posts.PostList}
+          show={Posts.PostShow}
+          create={Posts.PostCreate}
+          edit={Posts.PostEdit}
         />
         <Resource
           name="users"
           icon={UserIcon}
-          list={UserList}
-          show={UserShow}
-          create={UserCreate}
-          edit={UserEdit}
+          list={Users.UserList}
+          show={Users.UserShow}
+          create={Users.UserCreate}
+          edit={Users.UserEdit}
+        />
+        <Resource
+          name="comments"
+          icon={CommentIcon}
+          list={Comments.CommentsList}
+          show={Comments.CommentShow}
+          create={Comments.CommentCreate}
+          edit={Comments.CommentEdit}
         />
       </Admin>
     );
