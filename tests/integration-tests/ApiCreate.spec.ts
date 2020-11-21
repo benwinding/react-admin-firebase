@@ -14,4 +14,18 @@ describe("ApiCreate", () => {
     expect(first).toBeTruthy();
     expect(first.name).toBe("John");
   }, 100000);
+  test("FireClient create doc with custom meta", async () => {
+    const client = MakeMockClient({
+      logging: true,
+      renameMetaFields: {
+        updated_by: 'MY_CREATED_BY',
+      },
+    });
+    await Create("t1", { data: { name: "John" } }, client);
+    const users = await getDocsFromCollection(client.db(), "t1");
+    expect(users.length).toBe(1);
+    const first = users[0] as {};
+
+    expect(first.hasOwnProperty('MY_CREATED_BY')).toBeTruthy();
+  }, 100000);
 });

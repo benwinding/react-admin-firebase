@@ -2,18 +2,25 @@
 import {
   CollectionReference,
   QueryDocumentSnapshot,
-  FirebaseFirestore
+  FirebaseFirestore,
 } from "@firebase/firestore-types";
 import { RAFirebaseOptions } from "../RAFirebaseOptions";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { User } from "@firebase/auth-types";
-import { log, getAbsolutePath, messageTypes, logError, parseAllDatesDoc, logWarn } from "../../misc";
+import {
+  log,
+  getAbsolutePath,
+  messageTypes,
+  logError,
+  parseAllDatesDoc,
+  logWarn,
+} from "../../misc";
 
 export interface IResource {
   path: string;
   pathAbsolute: string;
   collection: CollectionReference;
-  list: Array<{} & {deleted?: boolean}>;
+  list: Array<{} & { deleted?: boolean }>;
 }
 
 export class ResourceManager {
@@ -29,7 +36,7 @@ export class ResourceManager {
   ) {
     this.db = fireWrapper.db();
 
-    this.fireWrapper.OnUserLogout(user => {
+    this.fireWrapper.OnUserLogout((user) => {
       this.resources = {};
     });
   }
@@ -61,7 +68,7 @@ export class ResourceManager {
   ): Promise<IResource> {
     log("resourceManager.TryGetResourcePromise", {
       relativePath,
-      collectionQuery
+      collectionQuery,
     });
     await this.initPath(relativePath, collectionQuery);
 
@@ -86,11 +93,11 @@ export class ResourceManager {
     const query = this.applyQuery(collection, collectionQuery);
     const newDocs = await query.get();
 
-    resource.list = newDocs.docs.map(doc => this.parseFireStoreDocument(doc));
+    resource.list = newDocs.docs.map((doc) => this.parseFireStoreDocument(doc));
     log("resourceManager.RefreshResource", {
       newDocs,
       resource,
-      collectionPath: collection.path
+      collectionPath: collection.path,
     });
   }
 
@@ -107,7 +114,7 @@ export class ResourceManager {
       resource,
       docId,
       docSnap,
-      result
+      result,
     });
     return result;
   }
@@ -121,7 +128,7 @@ export class ResourceManager {
     const hasBeenInited = !!this.resources[relativePath];
     log("resourceManager.initPath()", {
       absolutePath,
-      hasBeenInited
+      hasBeenInited,
     });
     if (hasBeenInited) {
       log("resourceManager.initPath() has been initialized already...");
@@ -133,20 +140,20 @@ export class ResourceManager {
       collection: collection,
       list: list,
       path: relativePath,
-      pathAbsolute: absolutePath
+      pathAbsolute: absolutePath,
     };
     this.resources[relativePath] = resource;
     log("resourceManager.initPath() setting resource...", {
       resource,
       allResources: this.resources,
       collection: collection,
-      collectionPath: collection.path
+      collectionPath: collection.path,
     });
   }
 
   private parseFireStoreDocument(doc: QueryDocumentSnapshot | undefined): {} {
     if (!doc) {
-      logWarn('parseFireStoreDocument: no doc', {doc});
+      logWarn("parseFireStoreDocument: no doc", { doc });
       return {};
     }
     const data = doc.data();
@@ -156,16 +163,28 @@ export class ResourceManager {
     return { id: doc.id, ...data };
   }
 
-  public async getUserLogin(): Promise<User> {
-    return new Promise((resolve, reject) => {
-      this.fireWrapper.auth().onAuthStateChanged(user => {
-        if (user) {
-          resolve(user);
-        } else {
-          reject('getUserLogin() no user logged in');
-        }
-      });
-    });
+  public async getUserIdentifier(): Promise<string> {
+    const identifier = this.options.associateUsersById
+      ? await this.getCurrentUserId()
+      : await this.getCurrentUserEmail();
+    return identifier;
+  }
+
+  private async getCurrentUserEmail() {
+    const user = await this.fireWrapper.GetUserLogin();
+    if (user) {
+      return user.email as string;
+    } else {
+      return "annonymous user";
+    }
+  }
+  private async getCurrentUserId() {
+    const user = await this.fireWrapper.GetUserLogin();
+    if (user) {
+      return user.uid;
+    } else {
+      return "annonymous user";
+    }
   }
 
   private removeResource(resourceName: string) {
@@ -185,7 +204,7 @@ export class ResourceManager {
     log("resourceManager.applyQuery() ...", {
       collection,
       collectionQuery: (collectionQuery || "-").toString(),
-      collref
+      collref,
     });
     return collref;
   }

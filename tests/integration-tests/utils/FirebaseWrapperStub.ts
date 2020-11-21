@@ -5,13 +5,17 @@ import * as firebase from "@firebase/testing";
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   private firestore: firestore.Firestore = null as any;
-  private app: any = null as any;
+  private app = null as any;
   options: RAFirebaseOptions = null as any;
   GetApp() {
     return this.app;
   }
 
   constructor() {}
+
+  async GetUserLogin(): Promise<User> {
+    return { uid: "alice", email: 'alice@test.com' } as any;
+  }
 
   public init(firebaseConfig: {}, options: RAFirebaseOptions): void {
     this.options = options;

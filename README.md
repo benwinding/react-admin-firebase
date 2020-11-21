@@ -82,6 +82,13 @@ const options = {
   persistence: 'session',
   // Disable the metadata; 'createdate', 'lastupdate', 'createdby', 'updatedby'
   disableMeta: false,
+  // Have custom metadata field names instead of: 'createdate', 'lastupdate', 'createdby', 'updatedby'
+  renameMetaFields: {
+    created_at: 'my_created_at', // default: 'createdate'
+    created_by: 'my_created_by', // default: 'createdby'
+    updated_at: 'my_updated_at', // default: 'lastupdate'
+    updated_by: 'my_updated_by', // default: 'updatedby'
+  },
   // Prevents document from getting the ID field added as a property
   dontAddIdFieldToDoc: false,
   // Adds 'deleted' meta field for non-destructive deleting functionality
