@@ -1,6 +1,7 @@
 import { FireClient } from "providers/database/FireClient";
 import { log } from "../../misc";
 import * as ra from "../../misc/react-admin-models";
+import { DeleteSoft } from "./Delete.Soft";
 
 export async function Delete<T extends ra.Record>(
   resourceName: string,
@@ -8,6 +9,9 @@ export async function Delete<T extends ra.Record>(
   client: FireClient
 ): Promise<ra.DeleteResult<T>> {
   const { rm, options } = client;
+  if (options.softDelete) {
+    return DeleteSoft(resourceName, params, client);
+  }
   const r = await rm.TryGetResource(resourceName);
   log("apiDelete", { resourceName, resource: r, params });
   try {

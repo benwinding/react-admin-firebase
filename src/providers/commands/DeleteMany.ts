@@ -1,7 +1,7 @@
-import { DocumentReference } from "@firebase/firestore-types";
 import { FireClient } from "providers/database/FireClient";
 import { log } from "../../misc";
 import * as ra from "../../misc/react-admin-models";
+import { DeleteManySoft } from "./DeleteMany.Soft";
 
 type DocumentRef = firebase.firestore.DocumentReference<any>;
 
@@ -10,7 +10,10 @@ export async function DeleteMany(
   params: ra.DeleteManyParams,
   client: FireClient
 ): Promise<ra.DeleteManyResult> {
-  const { rm, fireWrapper } = client;
+  const { options, rm, fireWrapper } = client;
+  if (options.softDelete) {
+    return DeleteManySoft(resourceName, params, client);
+  }
   const r = await rm.TryGetResource(resourceName);
   log("DeleteMany", { resourceName, resource: r, params });
   const returnData: ra.Identifier[] = [];
