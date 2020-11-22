@@ -2,14 +2,20 @@ import {
   log,
   messageTypes,
   parseFireStoreDocument,
-  recursivelyMapStorageUrls
+  recursivelyMapStorageUrls,
 } from '../../../misc';
-import { CollectionReference, DocumentSnapshot, OrderByDirection, Query } from '@firebase/firestore-types';
+import {
+  CollectionReference,
+  DocumentSnapshot,
+  OrderByDirection,
+  Query,
+} from '@firebase/firestore-types';
 import { IResource, ResourceManager } from '../../database/ResourceManager';
 import { RAFirebaseOptions } from '../../options';
 import { loggerTypes } from '../../../tools/reads-logger/utils/logger-helpers';
 import { isReadsLoggerEnabled } from '../../../misc/options-utils';
 import { IFirebaseWrapper } from '../../database/firebase/IFirebaseWrapper';
+import * as ra from "../../../misc/react-admin-models";
 
 interface ParamsToQueryOptions {
   filters?: boolean;
@@ -20,11 +26,10 @@ interface ParamsToQueryOptions {
 const defaultParamsToQueryOptions = {
   filters: true,
   sort: true,
-  pagination: true
+  pagination: true,
 };
 
 export class FirebaseLazyLoadingClient {
-
   constructor(
     private readonly options: RAFirebaseOptions,
     private readonly rm: ResourceManager,
@@ -36,34 +41,29 @@ export class FirebaseLazyLoadingClient {
     this.readsLogger = readsLogger;
   }
 
-  public async apiGetList(
+  public async apiGetList<T extends ra.Record>(
     resourceName: string,
-    reactAdminParams: messageTypes.IParamsGetList
-  ): Promise<messageTypes.IResponseGetList> {
+    reactAdminParams: ra.GetListParams
+  ): Promise<ra.GetListResult<T>> {
     const r = await this.tryGetResource(resourceName);
     const params = this.getFullParamsForQuery(reactAdminParams);
 
     log('apiGetListLazy', { resourceName, params });
 
-    const query = await this.paramsToQuery(
-      r.collection,
-      params,
-      resourceName
-    );
+    const query = await this.paramsToQuery(r.collection, params, resourceName);
 
     const snapshots = await query.get();
 
     if (snapshots.docs.length === 0) {
-      log(
-        'apiGetListLazy',
-        { message: 'There are not records for given query' }
-      );
+      log('apiGetListLazy', {
+        message: 'There are not records for given query',
+      });
       return { data: [], total: 0 };
     }
 
     this.incrementFirebaseReadsCounter(snapshots.docs.length);
 
-    const data = snapshots.docs.map(parseFireStoreDocument);
+    const data = snapshots.docs.map(parseFireStoreDocument) as T[];
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
     // After fetching documents save queryCursor for next page
     this.setQueryCursor(
@@ -85,13 +85,13 @@ export class FirebaseLazyLoadingClient {
 
     if (isOnLastPage) {
       const { page, perPage } = params.pagination;
-      total = ((page - 1) * perPage) + data.length;
-      log('apiGetListLazy', { message: 'It\'s last page of collection.' });
+      total = (page - 1) * perPage + data.length;
+      log('apiGetListLazy', { message: "It's last page of collection." });
     }
 
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(
-        data.map(async doc => {
+        data.map(async (doc: any) => {
           for (let fieldName in doc) {
             doc[fieldName] = await recursivelyMapStorageUrls(
               this.fireWrapper,
@@ -105,19 +105,19 @@ export class FirebaseLazyLoadingClient {
       log('apiGetListLazy result', {
         docs: parsedData,
         resource: r,
-        collectionPath: r.collection.path
+        collectionPath: r.collection.path,
       });
 
       return {
         data: parsedData,
-        total
+        total,
       };
     }
 
     log('apiGetListLazy result', {
       docs: data,
       resource: r,
-      collectionPath: r.collection.path
+      collectionPath: r.collection.path,
     });
 
     return { data, total };
@@ -131,29 +131,25 @@ export class FirebaseLazyLoadingClient {
     log('apiGetManyReferenceLazy', {
       resourceName,
       resource: r,
-      reactAdminParams
+      reactAdminParams,
     });
     const filterWithTarget = {
       ...reactAdminParams.filter,
-      [reactAdminParams.target]: reactAdminParams.id
+      [reactAdminParams.target]: reactAdminParams.id,
     };
     const params = this.getFullParamsForQuery({
       ...reactAdminParams,
-      filter: filterWithTarget
+      filter: filterWithTarget,
     });
 
-    const query = await this.paramsToQuery(
-      r.collection,
-      params,
-      resourceName
-    );
+    const query = await this.paramsToQuery(r.collection, params, resourceName);
 
     const snapshots = await query.get();
     this.incrementFirebaseReadsCounter(snapshots.docs.length);
     const data = snapshots.docs.map(parseFireStoreDocument);
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(
-        data.map(async doc => {
+        data.map(async (doc: any) => {
           for (let fieldName in doc) {
             doc[fieldName] = await recursivelyMapStorageUrls(
               this.fireWrapper,
@@ -167,19 +163,19 @@ export class FirebaseLazyLoadingClient {
       log('apiGetManyReferenceLazy result', {
         docs: parsedData,
         resource: r,
-        collectionPath: r.collection.path
+        collectionPath: r.collection.path,
       });
 
       return {
         data: parsedData,
-        total: data.length
+        total: data.length,
       };
     }
 
     log('apiGetManyReferenceLazy result', {
       docs: data,
       resource: r,
-      collectionPath: r.collection.path
+      collectionPath: r.collection.path,
     });
     return { data, total: data.length };
   }
@@ -190,27 +186,24 @@ export class FirebaseLazyLoadingClient {
     resourceName: string,
     options: ParamsToQueryOptions = defaultParamsToQueryOptions
   ): Promise<Query> {
+    const filtersStepQuery = options.filters
+      ? this.filtersToQuery(collection, params.filter)
+      : collection;
 
-    const filtersStepQuery = options.filters ?
-      this.filtersToQuery(collection, params.filter) : collection;
+    const sortStepQuery = options.sort
+      ? this.sortToQuery(filtersStepQuery, params.sort)
+      : filtersStepQuery;
 
-    const sortStepQuery = options.sort ?
-      this.sortToQuery(filtersStepQuery, params.sort) : filtersStepQuery;
-
-    return options.pagination ?
-      this.paginationToQuery(
-        sortStepQuery,
-        params,
-        collection,
-        resourceName
-      ) : sortStepQuery;
+    return options.pagination
+      ? this.paginationToQuery(sortStepQuery, params, collection, resourceName)
+      : sortStepQuery;
   }
 
   private filtersToQuery(
     query: Query,
     filters: { [fieldName: string]: any }
   ): Query {
-    Object.keys(filters).forEach(fieldName => {
+    Object.keys(filters).forEach((fieldName) => {
       query = query.where(fieldName, '==', filters[fieldName]);
     });
     return query;
@@ -218,7 +211,7 @@ export class FirebaseLazyLoadingClient {
 
   private sortToQuery(
     query: Query,
-    sort: { field: string, order: string }
+    sort: { field: string; order: string }
   ): Query {
     if (sort != null && sort.field !== 'id') {
       const { field, order } = sort;
@@ -262,10 +255,12 @@ export class FirebaseLazyLoadingClient {
   ): TParams {
     return {
       ...reactAdminParams,
-      filter: this.options.softDelete ? {
-        deleted: false,
-        ...reactAdminParams.filter
-      } : reactAdminParams.filter
+      filter: this.options.softDelete
+        ? {
+            deleted: false,
+            ...reactAdminParams.filter,
+          }
+        : reactAdminParams.filter,
     };
   }
 
@@ -276,8 +271,8 @@ export class FirebaseLazyLoadingClient {
       ...params,
       pagination: {
         ...params.pagination,
-        page: params.pagination.page + 1
-      }
+        page: params.pagination.page + 1,
+      },
     };
   }
 
@@ -287,12 +282,10 @@ export class FirebaseLazyLoadingClient {
     resourceName: string,
     nextPageCursor: DocumentSnapshot
   ): Promise<boolean> {
-    const query = await this.paramsToQuery(
-      collection,
-      params,
-      resourceName,
-      { filters: true, sort: true }
-    );
+    const query = await this.paramsToQuery(collection, params, resourceName, {
+      filters: true,
+      sort: true,
+    });
     const nextElementSnapshot = await query
       .startAfter(nextPageCursor)
       .limit(1)
@@ -348,7 +341,7 @@ export class FirebaseLazyLoadingClient {
     const localCursorKeys = localStorage.getItem(allCursorsKey);
     if (localCursorKeys) {
       const cursors: string[] = JSON.parse(localCursorKeys);
-      cursors.forEach(cursor => localStorage.removeItem(cursor));
+      cursors.forEach((cursor) => localStorage.removeItem(cursor));
       localStorage.removeItem(allCursorsKey);
     }
   }
@@ -364,13 +357,13 @@ export class FirebaseLazyLoadingClient {
     let lastQueryCursor = null;
     let currentPage = page - 1;
 
-    while(!lastQueryCursor && currentPage > 1) {
+    while (!lastQueryCursor && currentPage > 1) {
       const currentPageParams = {
         ...params,
         pagination: {
           ...params.pagination,
-          page: currentPage
-        }
+          page: currentPage,
+        },
       };
 
       const currentPageQueryCursor = await this.getQueryCursor(
@@ -385,8 +378,10 @@ export class FirebaseLazyLoadingClient {
       }
     }
     const limit = (page - currentPage) * perPage;
-    const newQuery = currentPage === 1 ?
-      query.limit(limit) : query.startAfter(lastQueryCursor).limit(limit);
+    const newQuery =
+      currentPage === 1
+        ? query.limit(limit)
+        : query.startAfter(lastQueryCursor).limit(limit);
 
     const snapshots = await newQuery.get();
     this.incrementFirebaseReadsCounter(snapshots.docs.length);

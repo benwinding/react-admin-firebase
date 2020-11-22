@@ -14,7 +14,8 @@ import CustomLoginPage from './CustomLoginPage';
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
-const options = {
+const authProvider = FirebaseAuthProvider(firebaseConfig);
+const dataProvider = FirebaseDataProvider(firebaseConfig, {
   logging: true,
   // rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
   app: firebaseApp,
@@ -22,11 +23,11 @@ const options = {
   // dontwatch: ['comments'];
   persistence: 'local',
   // disableMeta: true
-  dontAddIdFieldToDoc: true
-}
-
-const authProvider = FirebaseAuthProvider(firebaseConfig, options);
-const dataProvider = FirebaseDataProvider(firebaseConfig, options);
+  dontAddIdFieldToDoc: true,
+  lazyLoading: {
+    enabled: true
+  }
+});
 
 class App extends React.Component {
   render() {
