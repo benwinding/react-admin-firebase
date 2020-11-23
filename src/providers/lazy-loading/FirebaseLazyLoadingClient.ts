@@ -47,14 +47,14 @@ export class FirebaseLazyLoadingClient {
 
     const snapshots = await query.get();
 
-    if (snapshots.docs.length === 0) {
+    const resultsCount = snapshots.docs.length;
+    if (!resultsCount) {
       log('apiGetListLazy', {
         message: 'There are not records for given query',
       });
       return { data: [], total: 0 };
     }
-
-    // this.incrementFirebaseReadsCounter(snapshots.docs.length);
+    this.client.flogger.logDocument(resultsCount)();
 
     const data = snapshots.docs.map(parseFireStoreDocument) as T[];
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
@@ -142,7 +142,8 @@ export class FirebaseLazyLoadingClient {
     );
 
     const snapshots = await query.get();
-    // this.incrementFirebaseReadsCounter(snapshots.docs.length);
+    const resultsCount = snapshots.docs.length;
+    this.client.flogger.logDocument(resultsCount)();
     const data = snapshots.docs.map(parseFireStoreDocument);
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(

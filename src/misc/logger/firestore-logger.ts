@@ -34,7 +34,7 @@ export function MakeFirestoreLogger(
         return LogNoOp;
       }
       const count = incrementRead(docCount);
-      const suffix = `+1 (session total=${count})`;
+      const suffix = `+${docCount} (session total=${count} documents read)`;
       const boundLogFn: (...args: any) => void = logger.log.bind(
         console,
         suffix
