@@ -184,6 +184,9 @@ export class FirebaseLazyLoadingClient {
       filters: true,
       sort: true,
     });
+    if (!nextPageCursor) {
+      throw new Error('Page cursor was empty...')
+    }
     const nextElementSnapshot = await query
       .startAfter(nextPageCursor)
       .limit(1)

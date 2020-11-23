@@ -1,5 +1,6 @@
 import {
   CollectionReference,
+  DocumentReference,
   DocumentSnapshot,
   OrderByDirection,
   Query,
@@ -29,7 +30,7 @@ export async function getQueryCursor(
   collection: CollectionReference,
   params: messageTypes.IParamsGetList,
   resourceName: string
-): Promise<DocumentSnapshot | boolean> {
+): Promise<DocumentSnapshot | false> {
   const key = btoa(JSON.stringify({ ...params, resourceName }));
   const docId = localStorage.getItem(key);
   if (!docId) {
@@ -56,42 +57,47 @@ export function clearQueryCursors(resourceName: string) {
 
 export async function findLastQueryCursor(
   collection: CollectionReference,
-  query: Query,
+  queryBase: Query,
   params: messageTypes.IParamsGetList,
   resourceName: string
 ) {
   const { page, perPage } = params.pagination;
 
-  let lastQueryCursor = null;
+  let lastQueryCursor: DocumentSnapshot | false = false;
   let currentPage = page - 1;
 
+  const currentPageParams = {
+    ...params,
+    pagination: {
+      ...params.pagination,
+    },
+  };
   while (!lastQueryCursor && currentPage > 1) {
-    const currentPageParams = {
-      ...params,
-      pagination: {
-        ...params.pagination,
-        page: currentPage,
-      },
-    };
-
-    const currentPageQueryCursor = await getQueryCursor(
+    currentPage--;
+    currentPageParams.pagination.page = currentPage;
+    console.log('getting query cursor currentPage=', currentPage);
+    lastQueryCursor = await getQueryCursor(
       collection,
       currentPageParams,
       resourceName
     );
-    if (currentPageQueryCursor) {
-      lastQueryCursor = currentPageQueryCursor;
-    } else {
-      currentPage--;
-    }
   }
   const limit = (page - currentPage) * perPage;
-  const newQuery =
-    currentPage === 1
-      ? query.limit(limit)
-      : query.startAfter(lastQueryCursor).limit(limit);
+  const isFirst = currentPage === 1;
+  // console.log('query cursor', {currentPage, lastQueryCursor, limit, isFirst});
 
+  function getQuery() {
+    if (isFirst) {
+      return queryBase.limit(limit);
+    } else {
+      return queryBase.startAt(lastQueryCursor).limit(limit);
+    }
+  }
+  const newQuery = getQuery();
   const snapshots = await newQuery.get();
   // this.incrementFirebaseReadsCounter(snapshots.docs.length);
-  return snapshots.docs[snapshots.docs.length - 1];
+  const lastDocIndex = snapshots.docs.length - 1;
+  const lastDocRef = snapshots.docs[lastDocIndex];
+  // console.log('findLastQueryCursor', { limit, isFirst, lastDocRef });
+  return lastDocRef;
 }
