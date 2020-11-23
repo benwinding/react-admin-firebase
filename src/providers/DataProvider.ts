@@ -1,9 +1,10 @@
 import {
   getAbsolutePath,
   log,
-  CheckLogging,
+  logger,
   retrieveStatusCode,
   logError,
+  MakeFirestoreLogger,
 } from "../misc";
 import * as ra from "../misc/react-admin-models";
 import { RAFirebaseOptions } from "./options";
@@ -23,8 +24,10 @@ export function DataProvider(
 ): IDataProvider {
   const options = optionsInput || {};
   verifyDataProviderArgs(firebaseConfig, options);
-  CheckLogging(firebaseConfig, options);
 
+  const flogger = MakeFirestoreLogger(options);
+  logger.SetEnabled(!!options?.logging);
+  flogger.SetEnabled(!!options?.firestoreCostsLogger?.enabled);
   log('Creating FirebaseDataProvider', {
     firebaseConfig,
     options
@@ -46,7 +49,7 @@ export function DataProvider(
       throw errorObj;
     }
   }
-  const client = new FireClient(fireWrapper, options);
+  const client = new FireClient(fireWrapper, options, flogger);
 
   const newProviderApi: IDataProvider = {
     app: fireWrapper.GetApp(),

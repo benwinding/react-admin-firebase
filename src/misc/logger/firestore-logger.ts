@@ -1,0 +1,45 @@
+import { RAFirebaseOptions } from 'providers/options';
+import { LogNoOp, LoggerBase } from './logger-base';
+
+const LOGGER_ENABLEDKEY = 'LOGGING_FIRESTORE_COSTS_ENABLED';
+const logger = new LoggerBase('💸firestore-costs:', LOGGER_ENABLEDKEY);
+
+const KEY_SINGLE = 'firecosts-single-reads';
+
+export interface IFirestoreLogger {
+  logDocument: (count: number) => Function;
+  SetEnabled: (isEnabled: boolean) => void;
+}
+
+export function MakeFirestoreLogger(
+  options: RAFirebaseOptions
+): IFirestoreLogger {
+  function notEnabled() {
+    return !options?.lazyLoading?.enabled;
+  }
+
+  function incrementRead(incrementBy = 1) {
+    const currentCountRaw = localStorage.getItem(KEY_SINGLE) || '';
+    const currentCount = parseInt(currentCountRaw) || 0;
+    const incremented = currentCount + incrementBy;
+    localStorage.setItem(KEY_SINGLE, incremented + '');
+    return incremented;
+  }
+  return {
+    SetEnabled(isEnabled: boolean) {
+      logger.SetEnabled(isEnabled);
+    },
+    logDocument(docCount: number) {
+      if (notEnabled()) {
+        return LogNoOp;
+      }
+      const count = incrementRead(docCount);
+      const suffix = `+1 (session total=${count})`;
+      const boundLogFn: (...args: any) => void = logger.log.bind(
+        console,
+        suffix
+      );
+      return boundLogFn;
+    },
+  };
+}

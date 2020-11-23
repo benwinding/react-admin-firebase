@@ -1,11 +1,11 @@
-import { FireApp, IFirebaseWrapper } from "./IFirebaseWrapper";
+import { FireApp, IFirebaseWrapper } from './IFirebaseWrapper';
 
-import firebase, { User } from "firebase/app";
-import "firebase/firestore";
-import "firebase/auth";
-import "firebase/storage";
-import { log } from "misc";
-import { RAFirebaseOptions } from "providers/options";
+import firebase, { User } from 'firebase/app';
+import 'firebase/firestore';
+import 'firebase/auth';
+import 'firebase/storage';
+import { log } from 'misc';
+import { RAFirebaseOptions } from 'providers/options';
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: firebase.firestore.Firestore = null as any;
@@ -16,7 +16,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     return this.app;
   }
 
-  constructor() { }
+  constructor() {}
 
   public init(firebaseConfig: {}, options?: RAFirebaseOptions): void {
     const optionsSafe = options || {};
@@ -44,15 +44,15 @@ export class FirebaseWrapper implements IFirebaseWrapper {
         if (user) {
           resolve(user);
         } else {
-          reject("getUserLogin() no user logged in");
+          reject('getUserLogin() no user logged in');
         }
       });
     });
   }
   public OnUserLogout(callBack: (u: firebase.User | null) => any) {
-    this.app.auth().onAuthStateChanged(user => {
+    this.app.auth().onAuthStateChanged((user) => {
       const isLoggedOut = !user;
-      log('FirebaseWrapper.OnUserLogout', {user, isLoggedOut});
+      log('FirebaseWrapper.OnUserLogout', { user, isLoggedOut });
       if (isLoggedOut) {
         callBack(user);
       }

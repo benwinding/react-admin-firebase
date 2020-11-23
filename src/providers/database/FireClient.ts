@@ -2,6 +2,7 @@ import { set } from "lodash";
 import {
   AddCreatedByFields,
   AddUpdatedByFields,
+  IFirestoreLogger,
   joinPaths,
   log,
   logError,
@@ -19,9 +20,10 @@ export class FireClient {
 
   constructor(
     public fireWrapper: IFirebaseWrapper,
-    public options: RAFirebaseOptions
+    public options: RAFirebaseOptions,
+    public flogger: IFirestoreLogger
   ) {
-    this.rm = new ResourceManager(this.fireWrapper, this.options);
+    this.rm = new ResourceManager(this.fireWrapper, this.options, this.flogger);
   }
 
   public checkRemoveIdField(obj: any) {

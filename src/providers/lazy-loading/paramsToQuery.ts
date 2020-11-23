@@ -3,7 +3,7 @@ import {
   OrderByDirection,
   Query,
 } from '@firebase/firestore-types';
-import { messageTypes } from '../../misc';
+import { IFirestoreLogger, messageTypes } from '../../misc';
 import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
 interface ParamsToQueryOptions {
@@ -24,6 +24,7 @@ export async function paramsToQuery<
   collection: CollectionReference,
   params: TParams,
   resourceName: string,
+  flogger: IFirestoreLogger,
   options: ParamsToQueryOptions = defaultParamsToQueryOptions
 ): Promise<Query> {
   const filtersStepQuery = options.filters
@@ -35,7 +36,13 @@ export async function paramsToQuery<
     : filtersStepQuery;
 
   return options.pagination
-    ? paginationToQuery(sortStepQuery, params, collection, resourceName)
+    ? paginationToQuery(
+        sortStepQuery,
+        params,
+        collection,
+        resourceName,
+        flogger
+      )
     : sortStepQuery;
 }
 
@@ -65,19 +72,26 @@ async function paginationToQuery<TParams extends messageTypes.IParamsGetList>(
   query: Query,
   params: TParams,
   collection: CollectionReference,
-  resourceName: string
+  resourceName: string,
+  flogger: IFirestoreLogger
 ): Promise<Query> {
   const { page, perPage } = params.pagination;
   if (page === 1) {
     query = query.limit(perPage);
   } else {
-    let queryCursor = await getQueryCursor(collection, params, resourceName);
+    let queryCursor = await getQueryCursor(
+      collection,
+      params,
+      resourceName,
+      flogger
+    );
     if (!queryCursor) {
       queryCursor = await findLastQueryCursor(
         collection,
         query,
         params,
-        resourceName
+        resourceName,
+        flogger
       );
     }
     query = query.startAfter(queryCursor).limit(perPage);

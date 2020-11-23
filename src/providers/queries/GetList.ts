@@ -16,12 +16,11 @@ export async function GetList<T extends ra.Record>(
   log('GetList', { resourceName, params });
   const { rm, fireWrapper, options } = client;
 
-  if (options.lazyLoading && options.lazyLoading.enabled) {
+  if (options?.lazyLoading?.enabled) {
     const lazyClient = new FirebaseLazyLoadingClient(
       options,
       rm,
-      false,
-      fireWrapper
+      client
     );
     return lazyClient.apiGetList<T>(resourceName, params);
   }

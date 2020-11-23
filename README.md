@@ -129,7 +129,7 @@ const options = {
     enabled: false
   },
   // Logging of all reads performed by app (additional feature, for lazy-loading testing)
-  firebaseReadsLogger: {
+  firestoreCostsLogger: {
     enabled: false,
     localStoragePrefix // optional
   }

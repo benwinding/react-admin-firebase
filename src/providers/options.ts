@@ -22,7 +22,7 @@ export interface RAFirebaseOptions {
   lazyLoading?: {
     enabled: boolean
   };
-  firebaseReadsLogger?: {
+  firestoreCostsLogger?: {
     enabled: boolean
   };
 }

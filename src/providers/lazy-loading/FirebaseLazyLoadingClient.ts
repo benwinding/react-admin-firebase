@@ -10,7 +10,6 @@ import {
 } from '@firebase/firestore-types';
 import { IResource, ResourceManager } from '../database/ResourceManager';
 import { RAFirebaseOptions } from '../options';
-import { IFirebaseWrapper } from '../database/firebase/IFirebaseWrapper';
 import * as ra from '../../misc/react-admin-models';
 import {
   getFullParamsForQuery,
@@ -18,12 +17,13 @@ import {
   paramsToQuery,
 } from './paramsToQuery';
 import { clearQueryCursors, setQueryCursor } from './queryCursors';
+import { FireClient } from 'providers/database';
 
 export class FirebaseLazyLoadingClient {
   constructor(
     private readonly options: RAFirebaseOptions,
     private readonly rm: ResourceManager,
-    private fireWrapper: IFirebaseWrapper
+    private client: FireClient
   ) {}
 
   public async apiGetList<T extends ra.Record>(
@@ -38,7 +38,12 @@ export class FirebaseLazyLoadingClient {
 
     log('apiGetListLazy', { resourceName, params });
 
-    const query = await paramsToQuery(r.collection, params, resourceName);
+    const query = await paramsToQuery(
+      r.collection,
+      params,
+      resourceName,
+      this.client.flogger
+    );
 
     const snapshots = await query.get();
 
@@ -78,7 +83,7 @@ export class FirebaseLazyLoadingClient {
         data.map(async (doc: any) => {
           for (let fieldName in doc) {
             doc[fieldName] = await recursivelyMapStorageUrls(
-              this.fireWrapper,
+              this.client.fireWrapper,
               doc[fieldName]
             );
           }
@@ -129,7 +134,12 @@ export class FirebaseLazyLoadingClient {
       !!this.options.softDelete
     );
 
-    const query = await paramsToQuery(r.collection, params, resourceName);
+    const query = await paramsToQuery(
+      r.collection,
+      params,
+      resourceName,
+      this.client.flogger
+    );
 
     const snapshots = await query.get();
     // this.incrementFirebaseReadsCounter(snapshots.docs.length);
@@ -139,7 +149,7 @@ export class FirebaseLazyLoadingClient {
         data.map(async (doc: any) => {
           for (let fieldName in doc) {
             doc[fieldName] = await recursivelyMapStorageUrls(
-              this.fireWrapper,
+              this.client.fireWrapper,
               doc[fieldName]
             );
           }
@@ -173,12 +183,18 @@ export class FirebaseLazyLoadingClient {
     resourceName: string,
     nextPageCursor: DocumentSnapshot
   ): Promise<boolean> {
-    const query = await paramsToQuery(collection, params, resourceName, {
-      filters: true,
-      sort: true,
-    });
+    const query = await paramsToQuery(
+      collection,
+      params,
+      resourceName,
+      this.client.flogger,
+      {
+        filters: true,
+        sort: true,
+      }
+    );
     if (!nextPageCursor) {
-      throw new Error('Page cursor was empty...')
+      throw new Error('Page cursor was empty...');
     }
     const nextElementSnapshot = await query
       .startAfter(nextPageCursor)

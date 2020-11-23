@@ -35,10 +35,10 @@
     "gulp": "^3.9.1",
     "gulp-sequence": "^1.0.0",
     "jest": "^23.6.0",
-    "microbundle": "^0.11.0",
+    "microbundle": "^0.12.4",
     "ts-jest": "^25",
     "tslint": "^5.16.0",
-    "typescript": "^3.0.3"
+    "typescript": "^4.1.x"
   },
   "homepage": "https://github.com/adamf92/react-admin-firebase",
   "email": "hello@benwinding.com",

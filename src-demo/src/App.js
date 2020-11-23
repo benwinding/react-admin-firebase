@@ -1,11 +1,11 @@
-import * as React from "react";
-import { PostList, PostShow, PostCreate, PostEdit } from "./posts";
-import { UserList, UserShow, UserCreate, UserEdit } from "./users";
-import { Admin, Resource } from "react-admin";
+import * as React from 'react';
+import { PostList, PostShow, PostCreate, PostEdit } from './posts';
+import { UserList, UserShow, UserCreate, UserEdit } from './users';
+import { Admin, Resource } from 'react-admin';
 import {
   FirebaseDataProvider,
-  FirebaseAuthProvider
-} from "react-admin-firebase";
+  FirebaseAuthProvider,
+} from 'react-admin-firebase';
 import firebase from 'firebase';
 import UserIcon from '@material-ui/icons/People';
 
@@ -25,8 +25,11 @@ const dataProvider = FirebaseDataProvider(firebaseConfig, {
   // disableMeta: true
   dontAddIdFieldToDoc: true,
   lazyLoading: {
-    enabled: true
-  }
+    enabled: true,
+  },
+  firestoreCostsLogger: {
+    enabled: true,
+  },
 });
 
 class App extends React.Component {

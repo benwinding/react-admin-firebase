@@ -3,7 +3,7 @@ import {
   DocumentSnapshot,
   Query,
 } from '@firebase/firestore-types';
-import { messageTypes } from '../../misc';
+import { IFirestoreLogger, messageTypes } from '../../misc';
 
 export function setQueryCursor(
   doc: DocumentSnapshot,
@@ -27,7 +27,8 @@ export function setQueryCursor(
 export async function getQueryCursor(
   collection: CollectionReference,
   params: messageTypes.IParamsGetList,
-  resourceName: string
+  resourceName: string,
+  flogger: IFirestoreLogger
 ): Promise<DocumentSnapshot | false> {
   const key = btoa(JSON.stringify({ ...params, resourceName }));
   const docId = localStorage.getItem(key);
@@ -36,6 +37,7 @@ export async function getQueryCursor(
   }
 
   const doc = await collection.doc(docId).get();
+  flogger.logDocument(1)();
   if (doc.exists) {
     // incrementFirebaseReadsCounter(1);
     return doc;
@@ -57,7 +59,8 @@ export async function findLastQueryCursor(
   collection: CollectionReference,
   queryBase: Query,
   params: messageTypes.IParamsGetList,
-  resourceName: string
+  resourceName: string,
+  flogger: IFirestoreLogger
 ) {
   const { page, perPage } = params.pagination;
 
@@ -77,12 +80,12 @@ export async function findLastQueryCursor(
     lastQueryCursor = await getQueryCursor(
       collection,
       currentPageParams,
-      resourceName
+      resourceName,
+      flogger
     );
   }
   const limit = (page - currentPage) * perPage;
   const isFirst = currentPage === 1;
-  // console.log('query cursor', {currentPage, lastQueryCursor, limit, isFirst});
 
   function getQuery() {
     if (isFirst) {
@@ -91,11 +94,12 @@ export async function findLastQueryCursor(
       return queryBase.startAt(lastQueryCursor).limit(limit);
     }
   }
+
   const newQuery = getQuery();
   const snapshots = await newQuery.get();
-  // this.incrementFirebaseReadsCounter(snapshots.docs.length);
-  const lastDocIndex = snapshots.docs.length - 1;
+  const docsLength = snapshots.docs.length;
+  flogger.logDocument(docsLength)();
+  const lastDocIndex = docsLength - 1;
   const lastDocRef = snapshots.docs[lastDocIndex];
-  // console.log('findLastQueryCursor', { limit, isFirst, lastDocRef });
   return lastDocRef;
 }

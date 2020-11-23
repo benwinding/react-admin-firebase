@@ -1,14 +1,14 @@
-import { messageTypes } from "./../misc/messageTypes";
-import firebase from "firebase/app";
-import "firebase/auth";
-import { FirebaseAuth, User } from "@firebase/auth-types";
-import { log, retrieveStatusTxt, logWarn, CheckLogging } from "../misc";
-import { RAFirebaseOptions } from "./options";
-import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import { messageTypes } from './../misc/messageTypes';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import { FirebaseAuth, User } from '@firebase/auth-types';
+import { log, retrieveStatusTxt, logWarn, logger } from '../misc';
+import { RAFirebaseOptions } from './options';
+import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
 import {
   AuthProvider as RaAuthProvider,
   UserIdentity,
-} from "../misc/react-admin-models";
+} from '../misc/react-admin-models';
 
 class AuthClient {
   private auth: FirebaseAuth;
@@ -70,11 +70,11 @@ class AuthClient {
     log('HandleAuthLogin: invalid credentials', { errorHttp });
     const status = !!errorHttp && errorHttp.status;
     const statusTxt = retrieveStatusTxt(status);
-    if (statusTxt === "ok") {
-      log("API is actually authenticated");
+    if (statusTxt === 'ok') {
+      log('API is actually authenticated');
       return Promise.resolve();
     }
-    logWarn("Recieved authentication error from API");
+    logWarn('Recieved authentication error from API');
     return Promise.reject();
   }
 
@@ -104,7 +104,7 @@ class AuthClient {
 
       return token.claims;
     } catch (e) {
-      log("HandleGetPermission: no user is logged in or tokenResult error", {
+      log('HandleGetPermission: no user is logged in or tokenResult error', {
         e,
       });
       return null;
@@ -116,12 +116,12 @@ class AuthClient {
       const { uid, displayName, photoURL } = await this.getUserLogin();
       const identity: UserIdentity = {
         id: uid,
-        fullName: displayName+'',
-        avatar: photoURL+'',
+        fullName: displayName + '',
+        avatar: photoURL + '',
       };
       return identity;
     } catch (e) {
-      log("HandleGetIdentity: no user is logged in", {
+      log('HandleGetIdentity: no user is logged in', {
         e,
       });
       return null as any;
@@ -136,7 +136,7 @@ class AuthClient {
 
       return token.authTime;
     } catch (e) {
-      log("HandleGetJWTAuthTime: no user is logged in or tokenResult error", {
+      log('HandleGetJWTAuthTime: no user is logged in or tokenResult error', {
         e,
       });
       return null;
@@ -152,7 +152,7 @@ class AuthClient {
       return token.expirationTime;
     } catch (e) {
       log(
-        "HandleGetJWTExpirationTime: no user is logged in or tokenResult error",
+        'HandleGetJWTExpirationTime: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -170,7 +170,7 @@ class AuthClient {
       return token.signInProvider;
     } catch (e) {
       log(
-        "HandleGetJWTSignInProvider: no user is logged in or tokenResult error",
+        'HandleGetJWTSignInProvider: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -188,7 +188,7 @@ class AuthClient {
       return token.issuedAtTime;
     } catch (e) {
       log(
-        "HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error",
+        'HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -206,7 +206,7 @@ class AuthClient {
       return token.token;
     } catch (e) {
       log(
-        "HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error",
+        'HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -221,8 +221,8 @@ export function AuthProvider(
   options: RAFirebaseOptions
 ): RaAuthProvider {
   VerifyAuthProviderArgs(firebaseConfig, options);
+  logger.SetEnabled(!!options?.logging);
   const auth = new AuthClient(firebaseConfig, options);
-  CheckLogging(firebaseConfig, options);
 
   const provider: RaAuthProvider = {
     // React Admin Interface
