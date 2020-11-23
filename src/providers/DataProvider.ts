@@ -28,6 +28,7 @@ export function DataProvider(
   const flogger = MakeFirestoreLogger(options);
   logger.SetEnabled(!!options?.logging);
   flogger.SetEnabled(!!options?.firestoreCostsLogger?.enabled);
+  flogger.ResetCount(!options?.firestoreCostsLogger?.persistCount);
   log('Creating FirebaseDataProvider', {
     firebaseConfig,
     options

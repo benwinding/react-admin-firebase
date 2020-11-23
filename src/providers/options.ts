@@ -23,6 +23,7 @@ export interface RAFirebaseOptions {
     enabled: boolean
   };
   firestoreCostsLogger?: {
-    enabled: boolean
+    enabled: boolean;
+    persistCount?: boolean;
   };
 }

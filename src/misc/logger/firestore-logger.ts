@@ -9,6 +9,7 @@ const KEY_SINGLE = 'firecosts-single-reads';
 export interface IFirestoreLogger {
   logDocument: (count: number) => Function;
   SetEnabled: (isEnabled: boolean) => void;
+  ResetCount: (shouldReset: boolean) => void;
 }
 
 export function MakeFirestoreLogger(
@@ -25,9 +26,15 @@ export function MakeFirestoreLogger(
     localStorage.setItem(KEY_SINGLE, incremented + '');
     return incremented;
   }
+  function clearCache() {
+    localStorage.removeItem(KEY_SINGLE);
+  }
   return {
     SetEnabled(isEnabled: boolean) {
       logger.SetEnabled(isEnabled);
+    },
+    ResetCount(shouldReset: boolean) {
+      shouldReset && clearCache()
     },
     logDocument(docCount: number) {
       if (notEnabled()) {
