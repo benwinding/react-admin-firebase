@@ -1,4 +1,4 @@
-import { FireClient } from "providers/database/FireClient";
+import { FireClient } from "../database/FireClient";
 import { filterArray, log, recursivelyMapStorageUrls, sortArray } from "../../misc";
 import * as ra from "../../misc/react-admin-models";
 

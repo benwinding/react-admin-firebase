@@ -1,5 +1,5 @@
-import { FireClient } from 'providers/database/FireClient';
-import { FirebaseLazyLoadingClient } from 'providers/_lazy-loading/database/FirebaseLazyLoadingClient';
+import { FireClient } from '../database/FireClient';
+import { FirebaseLazyLoadingClient } from '../lazy-loading/FirebaseLazyLoadingClient';
 import {
   filterArray,
   log,

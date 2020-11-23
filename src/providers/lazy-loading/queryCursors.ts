@@ -1,11 +1,9 @@
 import {
   CollectionReference,
-  DocumentReference,
   DocumentSnapshot,
-  OrderByDirection,
   Query,
 } from '@firebase/firestore-types';
-import { messageTypes } from '../../../misc';
+import { messageTypes } from '../../misc';
 
 export function setQueryCursor(
   doc: DocumentSnapshot,

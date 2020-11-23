@@ -14,7 +14,6 @@ import {
   logError,
   parseAllDatesDoc,
   logWarn,
-  isLazyLoadingEnabled,
 } from "../../misc";
 
 export interface IResource {
@@ -86,7 +85,7 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery: messageTypes.CollectionQueryType | undefined
   ) {
-    if (isLazyLoadingEnabled(this.options)) {
+    if (this.options?.lazyLoading?.enabled) {
       logWarn(
         'resourceManager.RefreshResource',
         { warn: 'RefreshResource is not available in lazy loading mode' }

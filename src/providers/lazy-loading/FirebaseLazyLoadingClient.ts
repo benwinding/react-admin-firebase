@@ -3,17 +3,15 @@ import {
   messageTypes,
   parseFireStoreDocument,
   recursivelyMapStorageUrls,
-} from '../../../misc';
+} from '../../misc';
 import {
   CollectionReference,
   DocumentSnapshot,
 } from '@firebase/firestore-types';
-import { IResource, ResourceManager } from '../../database/ResourceManager';
-import { RAFirebaseOptions } from '../../options';
-import { loggerTypes } from '../../../tools/reads-logger/utils/logger-helpers';
-import { isReadsLoggerEnabled } from '../../../misc/options-utils';
-import { IFirebaseWrapper } from '../../database/firebase/IFirebaseWrapper';
-import * as ra from '../../../misc/react-admin-models';
+import { IResource, ResourceManager } from '../database/ResourceManager';
+import { RAFirebaseOptions } from '../options';
+import { IFirebaseWrapper } from '../database/firebase/IFirebaseWrapper';
+import * as ra from '../../misc/react-admin-models';
 import {
   getFullParamsForQuery,
   getNextPageParams,
@@ -25,13 +23,8 @@ export class FirebaseLazyLoadingClient {
   constructor(
     private readonly options: RAFirebaseOptions,
     private readonly rm: ResourceManager,
-    private readsLogger: loggerTypes.ReadsLogger | false,
     private fireWrapper: IFirebaseWrapper
   ) {}
-
-  public setReadsLogger(readsLogger: loggerTypes.ReadsLogger | false) {
-    this.readsLogger = readsLogger;
-  }
 
   public async apiGetList<T extends ra.Record>(
     resourceName: string,
@@ -56,7 +49,7 @@ export class FirebaseLazyLoadingClient {
       return { data: [], total: 0 };
     }
 
-    this.incrementFirebaseReadsCounter(snapshots.docs.length);
+    // this.incrementFirebaseReadsCounter(snapshots.docs.length);
 
     const data = snapshots.docs.map(parseFireStoreDocument) as T[];
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
@@ -139,7 +132,7 @@ export class FirebaseLazyLoadingClient {
     const query = await paramsToQuery(r.collection, params, resourceName);
 
     const snapshots = await query.get();
-    this.incrementFirebaseReadsCounter(snapshots.docs.length);
+    // this.incrementFirebaseReadsCounter(snapshots.docs.length);
     const data = snapshots.docs.map(parseFireStoreDocument);
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(
@@ -193,7 +186,7 @@ export class FirebaseLazyLoadingClient {
       .get();
 
     if (!nextElementSnapshot.empty) {
-      this.incrementFirebaseReadsCounter(1);
+      // this.incrementFirebaseReadsCounter(1);
     }
 
     return nextElementSnapshot.empty;
@@ -208,11 +201,5 @@ export class FirebaseLazyLoadingClient {
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<IResource> {
     return this.rm.TryGetResourcePromise(resourceName, collectionQuery);
-  }
-
-  public incrementFirebaseReadsCounter(newReads: number) {
-    if (isReadsLoggerEnabled(this.options) && this.readsLogger) {
-      this.readsLogger.incrementAll(newReads);
-    }
   }
 }

@@ -1,11 +1,9 @@
 import {
   CollectionReference,
-  DocumentSnapshot,
   OrderByDirection,
   Query,
 } from '@firebase/firestore-types';
-import { RAFirebaseOptions } from 'providers/options';
-import { messageTypes } from '../../../misc';
+import { messageTypes } from '../../misc';
 import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
 interface ParamsToQueryOptions {
@@ -20,7 +18,9 @@ const defaultParamsToQueryOptions = {
   pagination: true,
 };
 
-export async function paramsToQuery<TParams extends messageTypes.IParamsGetList>(
+export async function paramsToQuery<
+  TParams extends messageTypes.IParamsGetList
+>(
   collection: CollectionReference,
   params: TParams,
   resourceName: string,
@@ -61,8 +61,7 @@ export function sortToQuery(
   return query;
 }
 
-
- async function paginationToQuery<TParams extends messageTypes.IParamsGetList>(
+async function paginationToQuery<TParams extends messageTypes.IParamsGetList>(
   query: Query,
   params: TParams,
   collection: CollectionReference,
@@ -72,11 +71,7 @@ export function sortToQuery(
   if (page === 1) {
     query = query.limit(perPage);
   } else {
-    let queryCursor = await getQueryCursor(
-      collection,
-      params,
-      resourceName
-    );
+    let queryCursor = await getQueryCursor(collection, params, resourceName);
     if (!queryCursor) {
       queryCursor = await findLastQueryCursor(
         collection,
@@ -91,11 +86,9 @@ export function sortToQuery(
   return query;
 }
 
-
-export function getFullParamsForQuery<TParams extends messageTypes.IParamsGetList>(
-  reactAdminParams: TParams,
-  softdeleteEnabled: boolean
-): TParams {
+export function getFullParamsForQuery<
+  TParams extends messageTypes.IParamsGetList
+>(reactAdminParams: TParams, softdeleteEnabled: boolean): TParams {
   return {
     ...reactAdminParams,
     filter: softdeleteEnabled
