@@ -5,15 +5,22 @@ import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFire
 import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
 import { RAFirebaseOptions } from "../../../src/providers/options";
 import { FireClient } from "../../../src/providers/database/FireClient";
+import { IFirestoreLogger } from '../../../src/misc';
 
 function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();
 }
 
+export class BlankLogger  implements IFirestoreLogger {
+  logDocument = (count: number) => () => null;
+  SetEnabled = (isEnabled: boolean) => null;
+  ResetCount = (shouldReset: boolean) => null;
+}
+
 export function MakeMockClient(options: RAFirebaseOptions = {}) {
   const randomProjectId = Math.random().toString(32).slice(2,10);
   const fire = initFireWrapper(randomProjectId, options);
-  return new FireClient(fire, options);
+  return new FireClient(fire, options, new BlankLogger);
 }
 
 export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
