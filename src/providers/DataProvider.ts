@@ -1,12 +1,13 @@
-import { logError } from "./../misc/logger";
 import {
   getAbsolutePath,
   log,
-  CheckLogging,
+  logger,
   retrieveStatusCode,
+  logError,
+  MakeFirestoreLogger,
 } from "../misc";
 import * as ra from "../misc/react-admin-models";
-import { RAFirebaseOptions } from "./RAFirebaseOptions";
+import { RAFirebaseOptions } from "./options";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
 import { FireApp } from "./database/firebase/IFirebaseWrapper";
 import { FireClient } from "./database/FireClient";
@@ -22,12 +23,15 @@ export function DataProvider(
   optionsInput?: RAFirebaseOptions
 ): IDataProvider {
   const options = optionsInput || {};
-  VerifyDataProviderArgs(firebaseConfig, options);
-  CheckLogging(firebaseConfig, options);
+  verifyDataProviderArgs(firebaseConfig, options);
 
-  log("react-admin-firebase:: Creating FirebaseDataProvider", {
+  const flogger = MakeFirestoreLogger(options);
+  logger.SetEnabled(!!options?.logging);
+  flogger.SetEnabled(!!options?.firestoreCostsLogger?.enabled);
+  flogger.ResetCount(!options?.firestoreCostsLogger?.persistCount);
+  log('Creating FirebaseDataProvider', {
     firebaseConfig,
-    options,
+    options
   });
 
   const fireWrapper = new FirebaseWrapper();
@@ -46,7 +50,7 @@ export function DataProvider(
       throw errorObj;
     }
   }
-  const client = new FireClient(fireWrapper, options);
+  const client = new FireClient(fireWrapper, options, flogger);
 
   const newProviderApi: IDataProvider = {
     app: fireWrapper.GetApp(),
@@ -111,7 +115,7 @@ export function DataProvider(
   return newProviderApi;
 }
 
-function VerifyDataProviderArgs(
+function verifyDataProviderArgs(
   firebaseConfig: {},
   options?: RAFirebaseOptions
 ) {
@@ -119,11 +123,11 @@ function VerifyDataProviderArgs(
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {
     throw new Error(
-      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
+      'Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider'
     );
   }
   if (options && options.rootRef) {
     // Will throw error if rootRef doesn't point to a document
-    getAbsolutePath(options.rootRef, "test");
+    getAbsolutePath(options.rootRef, 'test');
   }
 }

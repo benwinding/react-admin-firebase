@@ -1,10 +1,10 @@
-import { isEmpty, get } from "lodash";
-import { SearchObj, getFieldReferences } from "./objectFlatten";
+import { get, isEmpty } from 'lodash';
+import { getFieldReferences, SearchObj } from './objectFlatten';
 
 export function sortArray(
   data: Array<{}>,
   field: string,
-  dir: "asc" | "desc"
+  dir: 'asc' | 'desc'
 ): void {
   data.sort((a: {}, b: {}) => {
     const rawA = get(a, field);
@@ -15,7 +15,7 @@ export function sortArray(
     if (isNumberField) {
       return basicSort(rawA, rawB, isAsc);
     }
-    const isStringField = typeof rawA == "string" && typeof rawB == "string";
+    const isStringField = typeof rawA === 'string' && typeof rawB === 'string';
     if (isStringField) {
       const aParsed = rawA.toLowerCase();
       const bParsed = rawB.toLowerCase();
@@ -75,7 +75,7 @@ export function doesRowMatch(
   if (nothingToSearch) {
     return false;
   }
-  const isStringSearch = typeof searchValue === "string";
+  const isStringSearch = typeof searchValue === 'string';
   if (isStringSearch) {
     return searchThis
       .toString()
@@ -83,7 +83,7 @@ export function doesRowMatch(
       .includes(searchValue.toLowerCase());
   }
   const isBooleanOrNumber =
-    typeof searchValue === "boolean" || typeof searchValue === "number";
+    typeof searchValue === 'boolean' || typeof searchValue === 'number';
   if (isBooleanOrNumber) {
     return searchThis === searchValue;
   }

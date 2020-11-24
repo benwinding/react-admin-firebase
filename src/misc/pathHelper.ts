@@ -16,11 +16,11 @@ export function getAbsolutePath(
   const withSlashes = path.join("/", rootRefValue, "/", relativePath, "/");
   const slashCount = withSlashes.split("/").length - 1;
   if (slashCount % 2) {
-    throw new Error(`The rootRef path must point to a "document" not a "collection"
-e.g. /collection/document/ or /collection/document/collection/document/`);
+    throw new Error(`The rootRef path must point to a "document"
+    not a "collection"e.g. /collection/document/ or
+    /collection/document/collection/document/`);
   }
-  const withOutSlashes = withSlashes.slice(1, -1);
-  return withOutSlashes;
+  return withSlashes.slice(1, -1);
 }
 
 export function joinPaths(...args: string[]) {

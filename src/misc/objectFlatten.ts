@@ -6,11 +6,12 @@ export function getFieldReferences(
   fieldName: string,
   value: {} | number | string | boolean | null
 ): SearchObj[] {
-  const isFalsey = !value;
-  const isSimple = isFalsey;
-  typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean";
+  const isFalsy = !value;
+  const isSimple = isFalsy ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean';
+
   if (isSimple) {
     return [
       {
@@ -33,7 +34,7 @@ export function objectFlatten(tree: {}): SearchObj[] {
         const objVal = obj && obj[key];
         const currentPath = !!path ? path + "." + key : key;
         const isWalkable =
-          typeof objVal === "object" || objVal instanceof Array;
+          typeof objVal === 'object' || objVal instanceof Array;
         if (isWalkable) {
           recursivelyWalk(objVal, currentPath);
         } else {

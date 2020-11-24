@@ -1,6 +1,6 @@
-import { FireClient } from "providers/database/FireClient";
-import { log, recursivelyMapStorageUrls } from "../../misc";
-import * as ra from "../../misc/react-admin-models";
+import { FireClient } from '../database/FireClient';
+import { log, recursivelyMapStorageUrls } from '../../misc';
+import * as ra from '../../misc/react-admin-models';
 
 export async function GetMany<T extends ra.Record>(
   resourceName: string,
@@ -9,16 +9,17 @@ export async function GetMany<T extends ra.Record>(
 ): Promise<ra.GetManyResult<T>> {
   const { rm, options, fireWrapper } = client;
   const r = await rm.TryGetResource(resourceName);
-  log("GetMany", { resourceName, resource: r, params });
+  log('GetMany', { resourceName, resource: r, params });
   const ids = params.ids;
   const matchDocSnaps = await Promise.all(
-    ids.map((id) => r.collection.doc(id + "").get())
+    ids.map((id) => r.collection.doc(id + '').get())
   );
+  client.flogger.logDocument(ids.length)();
   const matches = matchDocSnaps.map((snap) => {
     return { ...snap.data(), id: snap.id } as T;
   });
   const permittedData = options.softDelete
-    ? matches.filter((row) => !row["deleted"])
+    ? matches.filter((row) => !row['deleted'])
     : matches;
   if (options.relativeFilePaths) {
     const data = await Promise.all(

@@ -19,4 +19,11 @@ export interface RAFirebaseOptions {
   metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
   relativeFilePaths?: boolean;
   useFileNamesInStorage?: boolean;
+  lazyLoading?: {
+    enabled: boolean
+  };
+  firestoreCostsLogger?: {
+    enabled: boolean;
+    persistCount?: boolean;
+  };
 }

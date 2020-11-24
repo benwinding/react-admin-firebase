@@ -1,4 +1,4 @@
-import { RAFirebaseOptions } from "providers/RAFirebaseOptions";
+import { RAFirebaseOptions } from "../../options";
 import { FirebaseAuth } from "@firebase/auth-types";
 import { User } from "firebase/app";
 

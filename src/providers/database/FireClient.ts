@@ -2,12 +2,13 @@ import { set } from "lodash";
 import {
   AddCreatedByFields,
   AddUpdatedByFields,
+  IFirestoreLogger,
   joinPaths,
   log,
   logError,
   parseDocGetAllUploads,
 } from "../../misc";
-import { RAFirebaseOptions } from "../RAFirebaseOptions";
+import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IResource, ResourceManager } from "./ResourceManager";
 
@@ -19,9 +20,10 @@ export class FireClient {
 
   constructor(
     public fireWrapper: IFirebaseWrapper,
-    public options: RAFirebaseOptions
+    public options: RAFirebaseOptions,
+    public flogger: IFirestoreLogger
   ) {
-    this.rm = new ResourceManager(this.fireWrapper, this.options);
+    this.rm = new ResourceManager(this.fireWrapper, this.options, this.flogger);
   }
 
   public checkRemoveIdField(obj: any) {

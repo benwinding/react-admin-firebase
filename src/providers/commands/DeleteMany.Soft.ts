@@ -1,4 +1,4 @@
-import { FireClient } from "providers/database/FireClient";
+import { FireClient } from "../database/FireClient";
 import { log, logError } from "../../misc";
 import * as ra from "../../misc/react-admin-models";
 
@@ -7,7 +7,7 @@ export async function DeleteManySoft(
   params: ra.DeleteManyParams,
   client: FireClient
 ): Promise<ra.DeleteManyResult> {
-  const { rm, fireWrapper } = client;
+  const { rm } = client;
   const r = await rm.TryGetResource(resourceName);
   log("DeleteManySoft", { resourceName, resource: r, params });
   const ids = params.ids;

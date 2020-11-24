@@ -1,42 +1,42 @@
-import { messageTypes } from "./../misc/messageTypes";
-import firebase from "firebase/app";
-import "firebase/auth";
-import { FirebaseAuth, User } from "@firebase/auth-types";
-import { log, CheckLogging, retrieveStatusTxt, logWarn } from "../misc";
-import { RAFirebaseOptions } from "./RAFirebaseOptions";
-import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
+import { messageTypes } from './../misc/messageTypes';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import { FirebaseAuth, User } from '@firebase/auth-types';
+import { log, retrieveStatusTxt, logWarn, logger } from '../misc';
+import { RAFirebaseOptions } from './options';
+import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
 import {
   AuthProvider as RaAuthProvider,
   UserIdentity,
-} from "../misc/react-admin-models";
+} from '../misc/react-admin-models';
 
 class AuthClient {
   private auth: FirebaseAuth;
 
   constructor(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
     const options = optionsInput || {};
-    log("Auth Client: initializing...", { firebaseConfig, options });
+    log('Auth Client: initializing...', { firebaseConfig, options });
     const fireWrapper = new FirebaseWrapper();
     fireWrapper.init(firebaseConfig, options);
     this.auth = fireWrapper.auth();
     options.persistence && this.setPersistence(options.persistence);
   }
 
-  setPersistence(persistenceInput: "session" | "local" | "none") {
+  setPersistence(persistenceInput: 'session' | 'local' | 'none') {
     let persistenceResolved: string;
     switch (persistenceInput) {
-      case "local":
+      case 'local':
         persistenceResolved = firebase.auth.Auth.Persistence.LOCAL;
         break;
-      case "none":
+      case 'none':
         persistenceResolved = firebase.auth.Auth.Persistence.NONE;
         break;
-      case "session":
+      case 'session':
       default:
         persistenceResolved = firebase.auth.Auth.Persistence.SESSION;
         break;
     }
-    log("setPersistence", { persistenceInput, persistenceResolved });
+    log('setPersistence', { persistenceInput, persistenceResolved });
     this.auth
       .setPersistence(persistenceResolved)
       .catch((error) => console.error(error));
@@ -51,11 +51,11 @@ class AuthClient {
           username,
           password
         );
-        log("HandleAuthLogin: user sucessfully logged in", { user });
+        log('HandleAuthLogin: user sucessfully logged in', { user });
         return user;
       } catch (e) {
-        log("HandleAuthLogin: invalid credentials", { params });
-        throw new Error("Login error: invalid credentials");
+        log('HandleAuthLogin: invalid credentials', { params });
+        throw new Error('Login error: invalid credentials');
       }
     } else {
       return this.getUserLogin();
@@ -67,14 +67,14 @@ class AuthClient {
   }
 
   public HandleAuthError(errorHttp: messageTypes.HttpErrorType) {
-    log("HandleAuthLogin: invalid credentials", { errorHttp });
+    log('HandleAuthLogin: invalid credentials', { errorHttp });
     const status = !!errorHttp && errorHttp.status;
     const statusTxt = retrieveStatusTxt(status);
-    if (statusTxt === "ok") {
-      log("API is actually authenticated");
+    if (statusTxt === 'ok') {
+      log('API is actually authenticated');
       return Promise.resolve();
     }
-    logWarn("Recieved authentication error from API");
+    logWarn('Recieved authentication error from API');
     return Promise.reject();
   }
 
@@ -104,7 +104,7 @@ class AuthClient {
 
       return token.claims;
     } catch (e) {
-      log("HandleGetPermission: no user is logged in or tokenResult error", {
+      log('HandleGetPermission: no user is logged in or tokenResult error', {
         e,
       });
       return null;
@@ -116,12 +116,12 @@ class AuthClient {
       const { uid, displayName, photoURL } = await this.getUserLogin();
       const identity: UserIdentity = {
         id: uid,
-        fullName: displayName+'',
-        avatar: photoURL+'',
+        fullName: displayName + '',
+        avatar: photoURL + '',
       };
       return identity;
     } catch (e) {
-      log("HandleGetIdentity: no user is logged in", {
+      log('HandleGetIdentity: no user is logged in', {
         e,
       });
       return null as any;
@@ -136,7 +136,7 @@ class AuthClient {
 
       return token.authTime;
     } catch (e) {
-      log("HandleGetJWTAuthTime: no user is logged in or tokenResult error", {
+      log('HandleGetJWTAuthTime: no user is logged in or tokenResult error', {
         e,
       });
       return null;
@@ -152,7 +152,7 @@ class AuthClient {
       return token.expirationTime;
     } catch (e) {
       log(
-        "HandleGetJWTExpirationTime: no user is logged in or tokenResult error",
+        'HandleGetJWTExpirationTime: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -170,7 +170,7 @@ class AuthClient {
       return token.signInProvider;
     } catch (e) {
       log(
-        "HandleGetJWTSignInProvider: no user is logged in or tokenResult error",
+        'HandleGetJWTSignInProvider: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -188,7 +188,7 @@ class AuthClient {
       return token.issuedAtTime;
     } catch (e) {
       log(
-        "HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error",
+        'HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -206,7 +206,7 @@ class AuthClient {
       return token.token;
     } catch (e) {
       log(
-        "HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error",
+        'HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error',
         {
           e,
         }
@@ -221,8 +221,8 @@ export function AuthProvider(
   options: RAFirebaseOptions
 ): RaAuthProvider {
   VerifyAuthProviderArgs(firebaseConfig, options);
+  logger.SetEnabled(!!options?.logging);
   const auth = new AuthClient(firebaseConfig, options);
-  CheckLogging(firebaseConfig, options);
 
   const provider: RaAuthProvider = {
     // React Admin Interface
@@ -251,7 +251,7 @@ function VerifyAuthProviderArgs(
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {
     throw new Error(
-      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
+      'Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider'
     );
   }
 }
