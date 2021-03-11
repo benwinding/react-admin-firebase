@@ -7,4 +7,6 @@ module.exports = {
   testPathIgnorePatterns: ["/dist/", "/node_modules/", "/src-demo/"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   collectCoverage: false,
+  setupFiles: ["jest-localstorage-mock"],
+  testEnvironment: "node",
 };

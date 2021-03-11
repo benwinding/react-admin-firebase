@@ -1,5 +1,6 @@
 import { MakeMockClient } from "./utils/test-helpers";
 import { GetList } from "../../src/providers/queries";
+import firebase from 'firebase';
 
 describe("api methods", () => {
   test("FireClient list docs", async () => {

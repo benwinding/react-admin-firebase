@@ -1,5 +1,5 @@
-import { FirebaseFirestore } from '@firebase/firestore-types';
-import * as firebase from '@firebase/testing';
+import * as firebaseTesting from '@firebase/rules-unit-testing';
+import firebase from 'firebase';
 
 import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
 import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
@@ -27,7 +27,8 @@ export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions
   const safeId = makeSafeId(projectId);
   const testOptions = { projectId: safeId };
   const fire: IFirebaseWrapper = new FirebaseWrapperStub();
-  const app = firebase.initializeTestApp(testOptions);
+  const app =firebaseTesting.initializeTestApp(testOptions);
+  firebase.firestore(app).useEmulator('localhost', 8080);
   fire.init({}, { app: app, ...rafOptions });
   return fire;
 }
@@ -37,11 +38,11 @@ export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 export async function clearDb(projectId: string) {
   const safeId = makeSafeId(projectId);
   const testOptions = { projectId: safeId };
-  return firebase.clearFirestoreData(testOptions);
+  return firebaseTesting.clearFirestoreData(testOptions);
 }
 
 export async function createDoc(
-  db: FirebaseFirestore,
+  db: firebase.firestore.Firestore,
   collectionName: string,
   docName: string,
   obj: {}
@@ -50,7 +51,7 @@ export async function createDoc(
 }
 
 export async function getDocsFromCollection(
-  db: FirebaseFirestore,
+  db: firebase.firestore.Firestore,
   collectionName: string
 ): Promise<any[]> {
   const allDocs = await db.collection(collectionName).get();

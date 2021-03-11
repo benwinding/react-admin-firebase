@@ -11,6 +11,7 @@ import {
 import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import { IResource, ResourceManager } from "./ResourceManager";
+import firebase from "firebase";
 
 export class FireClient {
   public rm: ResourceManager;
