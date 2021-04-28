@@ -26,9 +26,9 @@ export class FireClient {
     this.rm = new ResourceManager(this.fireWrapper, this.options, this.flogger);
   }
 
-  public checkRemoveIdField(obj: any) {
-    if (this.options.dontAddIdFieldToDoc) {
-      delete obj.id;
+  public checkRemoveIdField(obj: any, docId: string) {
+    if (!this.options.dontAddIdFieldToDoc) {
+      obj.id = docId;
     }
   }
 

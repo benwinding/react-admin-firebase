@@ -25,7 +25,7 @@ export async function Create<T extends ra.Record>(
       throw new Error("id must be a valid string");
     }
     const docObj = { ...data };
-    client.checkRemoveIdField(docObj);
+    client.checkRemoveIdField(docObj, overridenId);
     await client.addCreatedByFields(docObj);
     await client.addUpdatedByFields(docObj);
     log("Create", { docObj });
@@ -40,7 +40,7 @@ export async function Create<T extends ra.Record>(
   const newId = fireWrapper.db().collection("collections").doc().id;
   const data = await client.parseDataAndUpload(r, newId, params.data);
   const docObj = { ...data };
-  client.checkRemoveIdField(docObj);
+  client.checkRemoveIdField(docObj, newId);
   await client.addCreatedByFields(docObj);
   await client.addUpdatedByFields(docObj);
   await r.collection.doc(newId).set(docObj, { merge: false });

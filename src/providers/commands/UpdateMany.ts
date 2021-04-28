@@ -18,7 +18,7 @@ export async function UpdateMany(
       const idStr = id+'';
       const data = await client.parseDataAndUpload(r, idStr, params.data);
       const docObj = { ...data };
-      client.checkRemoveIdField(docObj);
+      client.checkRemoveIdField(docObj, idStr);
       await client.addUpdatedByFields(docObj);
       await r.collection
         .doc(idStr)
