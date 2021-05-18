@@ -116,8 +116,8 @@ class AuthClient {
       const { uid, displayName, photoURL } = await this.getUserLogin();
       const identity: UserIdentity = {
         id: uid,
-        fullName: displayName + '',
-        avatar: photoURL + '',
+        fullName: `${displayName ?? ''}`,
+        avatar: `${photoURL ?? ''}`,
       };
       return identity;
     } catch (e) {
