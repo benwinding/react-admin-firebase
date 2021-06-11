@@ -112,7 +112,9 @@ const options = {
   firestoreCostsLogger: {
     enabled: false,
     localStoragePrefix // optional
-  }
+  },
+  // Function to transform documents before they are written to Firestore
+  transformToDb: (resourceName, document, documentId) => document
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
