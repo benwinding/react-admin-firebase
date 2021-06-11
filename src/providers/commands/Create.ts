@@ -28,11 +28,12 @@ export async function Create<T extends ra.Record>(
     client.checkRemoveIdField(docObj, overridenId);
     await client.addCreatedByFields(docObj);
     await client.addUpdatedByFields(docObj);
+    const docObjTransformed = client.transformToDb(resourceName, docObj, overridenId);
     log("Create", { docObj });
-    await r.collection.doc(overridenId).set(docObj, { merge: false });
+    await r.collection.doc(overridenId).set(docObjTransformed, { merge: false });
     return {
       data: {
-        ...data,
+        ...docObjTransformed,
         id: overridenId,
       },
     };
@@ -43,10 +44,11 @@ export async function Create<T extends ra.Record>(
   client.checkRemoveIdField(docObj, newId);
   await client.addCreatedByFields(docObj);
   await client.addUpdatedByFields(docObj);
-  await r.collection.doc(newId).set(docObj, { merge: false });
+  const docObjTransformed = client.transformToDb(resourceName, docObj, newId);
+  await r.collection.doc(newId).set(docObjTransformed, { merge: false });
   return {
     data: {
-      ...data,
+      ...docObjTransformed,
       id: newId,
     },
   };

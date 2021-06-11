@@ -23,4 +23,49 @@ describe("api methods", () => {
     expect(res.exists).toBeTruthy();
     expect(res.get("title")).toBe("asd");
   }, 100000);
+
+  test("FireClient update doc with transformToDb function provided", async () => {
+    const client = MakeMockClient({
+      transformToDb: (resourceName, document, id) => {
+        if (resourceName === "users") {
+          return {
+            ...document,
+            firstName: document.firstName.toUpperCase(),
+          };
+        }
+        return document;
+      }
+    });
+
+    const id = "user123";
+    const docRef = client.db().collection("users").doc(id);
+    await docRef.set({ name: "Jim" });
+
+    const previousUser = {
+      id,
+      firstName: "Bob",
+      lastName: "Last",
+    };
+    const user = {
+      ...previousUser,
+      firstName: "John",
+    };
+
+    await Update(
+      "users",
+      {
+        id: id,
+        data: user,
+        previousData: previousUser,
+      },
+      client
+    );
+
+    const res = await docRef.get();
+    expect(res.exists).toBeTruthy();
+    expect(res.data()).toMatchObject({
+      firstName: "JOHN",
+      lastName: "Last",
+    });
+  }, 100000);
 });

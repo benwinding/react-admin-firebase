@@ -28,4 +28,40 @@ describe("ApiCreate", () => {
 
     expect(first.hasOwnProperty('MY_CREATED_BY')).toBeTruthy();
   }, 100000);
+  test("FireClient create doc with transformToDb function provided", async () => {
+    const client = MakeMockClient({
+      logging: true,
+      transformToDb: (resourceName, document, id) => {
+        if (resourceName === "users") {
+          return {
+            ...document,
+            firstName: document.firstName.toUpperCase(),
+            picture: document.picture.src || document.picture,
+          };
+        }
+        return document;
+      }
+    });
+
+    const newUser = { 
+      firstName: "John",
+      lastName: "Last",
+      age: 20,
+      picture: {
+        src: "http://example.com/pic.png"
+      },
+    };
+
+    await Create("users", { data: newUser }, client);
+    const users = await getDocsFromCollection(client.db(), "users");
+
+    expect(users.length).toBe(1);
+    expect(users[0]).toMatchObject({
+      firstName: "JOHN",
+      lastName: "Last",
+      age: 20,
+      picture: "http://example.com/pic.png",
+    });
+
+  }, 100000);
 });
