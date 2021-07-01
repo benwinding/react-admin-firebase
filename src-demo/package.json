@@ -20,8 +20,8 @@
     "gh-pages": "^2.0.1"
   },
   "scripts": {
-    "start": "NODE_ENV=development BROWSER=none PORT=3333 react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_FIREBASE_CONFIG=`cat ./FIREBASE_CONFIG.json` NODE_ENV=development BROWSER=none PORT=3333 react-scripts start",
+    "build": "REACT_APP_FIREBASE_CONFIG=`cat ./FIREBASE_CONFIG.json` react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build",

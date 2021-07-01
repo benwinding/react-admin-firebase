@@ -1,7 +1,7 @@
 An example project for the [react-admin-firebase](https://github.com/benwinding/react-admin-firebase) package.
 
 # Demo
-Try the [demo here!](https://react-admin-firebase-1.web.app)
+Try the [demo here!](https://benwinding.github.io/react-admin-firebase)
 
 ```
 username: test@example.com
