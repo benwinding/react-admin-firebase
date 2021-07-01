@@ -72,15 +72,23 @@ export const recursivelyMapStorageUrls = async (
   const isObject = !isArray && typeof fieldValue === "object";
   const isFileField = isObject && !!fieldValue && fieldValue.hasOwnProperty("src");
   if (isFileField) {
+    const isAlreadyUploaded = fieldValue.src.startsWith('https://');
+    if (isAlreadyUploaded) {
+      return fieldValue;
+    }
+    let ref: firebase.storage.Reference = null as any;
     try {
-      const src = await fireWrapper.storage().ref(fieldValue.src).getDownloadURL();
+      ref = fireWrapper.storage().ref(fieldValue.src);
+      const src = await ref.getDownloadURL();
       return {
         ...fieldValue,
         src
       };
     } catch (error) {
       logError(`Error when getting download URL`, {
-        error
+        error,
+        fieldValue,
+        ref
       });
       return fieldValue;
     }
