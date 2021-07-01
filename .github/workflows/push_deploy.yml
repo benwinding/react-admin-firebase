@@ -32,4 +32,4 @@ jobs:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       - name: Deploy demo! 🚀 (if master branch)
         if: github.ref == 'refs/heads/master'
-        run: cd src-demo && yarn && REACT_APP_FIREBASE_CONFIG=${{ secrets.FIREBASE_JSON }} npm run-script build && npm run-script deploy
+        run: cd src-demo && yarn && REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" npm run-script build && npm run-script deploy
