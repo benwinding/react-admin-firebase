@@ -30,3 +30,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Deploy demo! 🚀 (if master branch)
+        if: github.ref == 'refs/heads/master'
+        run: cd src-demo && yarn && npm run-script build && npm run-script deploy
