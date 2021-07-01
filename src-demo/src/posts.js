@@ -51,8 +51,8 @@ const ReferenceFilter = (props) => (
 export const PostList = (props) => (
   <List
     {...props}
-    filters={<ReferenceFilter />}
-    filter={{ updatedby: "test@example.com" }}
+    // filters={<ReferenceFilter />}
+    // filter={{ updatedby: "test@example.com" }}
   >
     <Datagrid>
       <TextField source="id" />
