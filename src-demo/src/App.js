@@ -11,7 +11,6 @@ import UserIcon from '@material-ui/icons/People';
 
 import CustomLoginPage from './CustomLoginPage';
 
-console.log({env: process.env})
 const firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG);
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
