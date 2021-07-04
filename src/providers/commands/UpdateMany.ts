@@ -20,9 +20,10 @@ export async function UpdateMany(
       const docObj = { ...data };
       client.checkRemoveIdField(docObj, idStr);
       await client.addUpdatedByFields(docObj);
+      const docObjTransformed = client.transformToDb(resourceName, docObj, idStr);
       await r.collection
         .doc(idStr)
-        .update(docObj);
+        .update(docObjTransformed);
       return {
         ...data,
         id: idStr

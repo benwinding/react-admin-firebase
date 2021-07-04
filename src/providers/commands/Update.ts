@@ -17,7 +17,8 @@ export async function Update<T extends ra.Record>(
   const docObj = { ...data };
   client.checkRemoveIdField(docObj, id);
   await client.addUpdatedByFields(docObj);
-  await r.collection.doc(id).update(docObj);
+  const docObjTransformed = client.transformToDb(resourceName, docObj, id);
+  await r.collection.doc(id).update(docObjTransformed);
   return {
     data: {
       ...data,
