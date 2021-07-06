@@ -1,6 +1,5 @@
 const del = require("del");
 const gulp = require("gulp");
-const gulpSequence = require("gulp-sequence");
 const exec = require("child_process").exec;
 
 const execCmd = (cmd, directory) => {
@@ -49,8 +48,8 @@ gulp.task("copy-to-demo", function() {
 gulp.task("watch-and-copy-to-demo", function() {
   // Execute commands in series
   execCmd("yarn watch", '.');
-  gulp.watch(conf.output.dir, ["copy-to-demo"]);
+  gulp.watch(conf.output.dir, gulp.series("copy-to-demo"));
   execCmd("sleep 10 && yarn start", 'src-demo');
 });
 
-gulp.task("start-demo", gulpSequence("prepare-demo", "watch-and-copy-to-demo"));
+gulp.task("start-demo", gulp.series("prepare-demo", "watch-and-copy-to-demo"));

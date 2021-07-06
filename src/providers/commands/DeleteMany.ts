@@ -2,6 +2,7 @@ import { FireClient } from "../database/FireClient";
 import { log } from "../../misc";
 import * as ra from "../../misc/react-admin-models";
 import { DeleteManySoft } from "./DeleteMany.Soft";
+import firebase from 'firebase/app';
 
 type DocumentRef = firebase.firestore.DocumentReference<any>;
 
@@ -27,7 +28,7 @@ export async function DeleteMany(
   try {
     await batch.commit();
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
   return { data: returnData };
 }

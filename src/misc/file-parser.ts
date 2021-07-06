@@ -1,5 +1,6 @@
 import { logError } from './logger';
 import { IFirebaseWrapper } from '../providers/database/firebase/IFirebaseWrapper';
+import firebase from 'firebase';
 
 interface ParsedUpload {
   fieldDotsPath: string;

@@ -1,6 +1,6 @@
 import { RAFirebaseOptions } from "../../options";
 import { FirebaseAuth } from "@firebase/auth-types";
-import { User } from "firebase/app";
+import firebase from "firebase";
 
 export type FireApp = firebase.app.App;
 
@@ -13,5 +13,5 @@ export interface IFirebaseWrapper {
   auth(): FirebaseAuth;
   serverTimestamp(): any;
   GetApp(): FireApp;
-  GetUserLogin(): Promise<User>;
+  GetUserLogin(): Promise<firebase.User>;
 }

@@ -1,23 +1,24 @@
 export interface SearchObj {
   searchField: string;
-  searchValue: number | string | boolean | null;
+  searchValue: number | string | boolean | Array<any> | null;
 }
 export function getFieldReferences(
   fieldName: string,
-  value: {} | number | string | boolean | null
+  value: {} | number | string | boolean | Array<any> | null
 ): SearchObj[] {
   const isFalsy = !value;
   const isSimple = isFalsy ||
     typeof value === 'string' ||
     typeof value === 'number' ||
-    typeof value === 'boolean';
+    typeof value === 'boolean' ||
+    Array.isArray(value);
 
   if (isSimple) {
     return [
       {
         searchField: fieldName,
-        searchValue: value as number | string | boolean | null,
-      },
+        searchValue: value as number | string | boolean | Array<any> | null
+      }
     ];
   }
   const tree = {} as any;

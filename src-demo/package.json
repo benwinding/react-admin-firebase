@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "firebase": "^7.9.1",
-    "ra-input-rich-text": "^3.3.1",
+    "firebase": "^8.3.0",
+    "ra-input-rich-text": "^3.12.0",
     "react": "^17.0.2",
-    "react-admin": "3.3.3",
+    "react-admin": "^3.13.2",
     "react-admin-firebase": "3",
     "react-dom": "^17.0.2",
     "react-firebaseui": "^4.1.0",
-    "react-scripts": "1.1.5",
-    "source-map-loader": "^0.2.4"
+    "react-scripts": "^4.0.3",
+    "source-map-loader": "^2.0.1"
   },
   "homepage": "https://benwinding.github.io/react-admin-firebase/",
   "devDependencies": {

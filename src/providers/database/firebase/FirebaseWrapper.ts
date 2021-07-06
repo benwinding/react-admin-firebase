@@ -1,6 +1,6 @@
 import { FireApp, IFirebaseWrapper } from './IFirebaseWrapper';
 
-import firebase, { User } from 'firebase/app';
+import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import 'firebase/storage';
@@ -38,7 +38,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   public storage() {
     return this.app.storage();
   }
-  public async GetUserLogin(): Promise<User> {
+  public async GetUserLogin(): Promise<firebase.User> {
     return new Promise((resolve, reject) => {
       this.app.auth().onAuthStateChanged((user) => {
         if (user) {

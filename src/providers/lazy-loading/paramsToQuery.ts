@@ -50,9 +50,12 @@ export function filtersToQuery(
   query: Query,
   filters: { [fieldName: string]: any }
 ): Query {
-  Object.keys(filters).forEach((fieldName) => {
-    query = query.where(fieldName, '==', filters[fieldName]);
-  });
+  if (filters){
+    Object.entries(filters).forEach(([fieldName, fieldValue]) => {
+      const opStr = fieldValue && Array.isArray(fieldValue) ? 'in' : '==';
+      query = query.where(fieldName, opStr, fieldValue);
+    });
+  }
   return query;
 }
 
@@ -62,7 +65,7 @@ export function sortToQuery(
 ): Query {
   if (sort != null && sort.field !== 'id') {
     const { field, order } = sort;
-    const parsedOrder = order.toLocaleLowerCase() as OrderByDirection;
+    const parsedOrder = order?.toLocaleLowerCase() as OrderByDirection || 'desc';
     query = query.orderBy(field, parsedOrder);
   }
   return query;
