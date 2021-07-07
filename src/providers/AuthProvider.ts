@@ -206,7 +206,7 @@ class AuthClient {
       return token.token;
     } catch (e) {
       log(
-        'HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error',
+        'HandleGetJWTToken: no user is logged in or tokenResult error',
         {
           e,
         }
