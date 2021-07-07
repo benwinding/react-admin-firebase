@@ -103,7 +103,7 @@ const options = {
   // always point to project own storage
   relativeFilePaths: false, 
   // Add file name to storage path, when set to true the file name is included in the path
-  useFileNamesInStorage: false 
+  useFileNamesInStorage: false,
   // Use firebase sdk queries for pagination, filtering and sorting
   lazyLoading: {
     enabled: false
