@@ -3,7 +3,7 @@ import { log } from "../../misc";
 import * as ra from "../../misc/react-admin-models";
 import { DeleteManySoft } from "./DeleteMany.Soft";
 
-type DocumentRef = firebase.firestore.DocumentReference<any>;
+type DocumentRef = firebase.default.firestore.DocumentReference<any>;
 
 export async function DeleteMany(
   resourceName: string,

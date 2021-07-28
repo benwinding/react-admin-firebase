@@ -80,7 +80,7 @@ export class FireClient {
     log("saveFile() saving file...", { storagePath, rawFile });
     const task = this.fireWrapper.storage().ref(storagePath).put(rawFile);
     try {
-      const taskResult: firebase.storage.UploadTaskSnapshot = await new Promise(
+      const taskResult: firebase.default.storage.UploadTaskSnapshot = await new Promise(
         (res, rej) => task.then(res).catch(rej)
       );
       const getDownloadURL = await taskResult.ref.getDownloadURL();

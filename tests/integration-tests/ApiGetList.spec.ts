@@ -1,5 +1,6 @@
 import { MakeMockClient } from "./utils/test-helpers";
 import { GetList } from "../../src/providers/queries";
+import * as firebaseTesting from '@firebase/testing';
 
 describe("api methods", () => {
   test("FireClient list docs", async () => {
@@ -139,7 +140,7 @@ describe("api methods", () => {
       collName,
       {
         filter: {
-          collectionQuery: (c: firebase.firestore.CollectionReference) =>
+          collectionQuery: (c: firebaseTesting.firestore.CollectionReference) =>
             c.where("obj.volume", ">=", 100),
         },
         pagination: {

@@ -1,17 +1,16 @@
 import { RAFirebaseOptions } from "../../options";
 import { FirebaseAuth } from "@firebase/auth-types";
-import { User } from "firebase/app";
 
-export type FireApp = firebase.app.App;
+export type FireApp = firebase.default.app.App;
 
 export interface IFirebaseWrapper {
-  OnUserLogout(arg0: (user: firebase.User | null) => void): void;
+  OnUserLogout(arg0: (user: firebase.default.User | null) => void): void;
   init(firebaseConfig: {}, options: RAFirebaseOptions): void;
   options: RAFirebaseOptions;
-  db(): firebase.firestore.Firestore;
-  storage(): firebase.storage.Storage;
+  db(): firebase.default.firestore.Firestore;
+  storage(): firebase.default.storage.Storage;
   auth(): FirebaseAuth;
   serverTimestamp(): any;
   GetApp(): FireApp;
-  GetUserLogin(): Promise<User>;
+  GetUserLogin(): Promise<firebase.default.User>;
 }

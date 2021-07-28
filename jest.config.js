@@ -7,4 +7,5 @@ module.exports = {
   testPathIgnorePatterns: ["/dist/", "/node_modules/", "/src-demo/"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
   collectCoverage: false,
+  setupFilesAfterEnv: ["./tests/integration-tests/utils/localStorage.ts"]
 };

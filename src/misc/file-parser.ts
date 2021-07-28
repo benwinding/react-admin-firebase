@@ -76,7 +76,7 @@ export const recursivelyMapStorageUrls = async (
     if (isAlreadyUploaded) {
       return fieldValue;
     }
-    let ref: firebase.storage.Reference = null as any;
+    let ref: firebase.default.storage.Reference = null as any;
     try {
       ref = fireWrapper.storage().ref(fieldValue.src);
       const src = await ref.getDownloadURL();
