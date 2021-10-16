@@ -1,4 +1,5 @@
 import { logError } from './logger';
+import firebase from 'firebase';
 import { IFirebaseWrapper } from '../providers/database/firebase/IFirebaseWrapper';
 
 interface ParsedUpload {

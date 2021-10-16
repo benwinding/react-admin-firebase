@@ -1,4 +1,5 @@
 import { set } from "lodash";
+import firebase from 'firebase';
 import {
   AddCreatedByFields,
   AddUpdatedByFields,

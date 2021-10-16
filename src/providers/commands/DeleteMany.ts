@@ -1,3 +1,4 @@
+import firebase from 'firebase';
 import { FireClient } from "../database/FireClient";
 import { log } from "../../misc";
 import * as ra from "../../misc/react-admin-models";

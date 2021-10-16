@@ -1,9 +1,6 @@
 import { FireApp, IFirebaseWrapper } from './IFirebaseWrapper';
 
-import firebase, { User } from 'firebase/app';
-import 'firebase/firestore';
-import 'firebase/auth';
-import 'firebase/storage';
+import firebase from 'firebase';
 import { log } from 'misc';
 import { RAFirebaseOptions } from 'providers/options';
 
@@ -38,9 +35,9 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   public storage() {
     return this.app.storage();
   }
-  public async GetUserLogin(): Promise<User> {
+  public async GetUserLogin(): Promise<firebase.User> {
     return new Promise((resolve, reject) => {
-      this.app.auth().onAuthStateChanged((user) => {
+      this.app.auth().onAuthStateChanged((user: firebase.User) => {
         if (user) {
           resolve(user);
         } else {
@@ -50,7 +47,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     });
   }
   public OnUserLogout(callBack: (u: firebase.User | null) => any) {
-    this.app.auth().onAuthStateChanged((user) => {
+    this.app.auth().onAuthStateChanged((user: firebase.User) => {
       const isLoggedOut = !user;
       log('FirebaseWrapper.OnUserLogout', { user, isLoggedOut });
       if (isLoggedOut) {
