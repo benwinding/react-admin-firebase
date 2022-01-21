@@ -95,7 +95,7 @@ export class FireClient {
           break;
         case storage.TaskState.RUNNING:
           log('Upload is running');
-          dispatch('FILE_UPLOAD_START', name);
+          dispatch('FILE_UPLOAD_RUNNING', name);
           break;
         case storage.TaskState.CANCELED:
           log('Upload has been canceled');

@@ -12,8 +12,8 @@ const EventMonitor = () => {
 			// use a react "toast" module (such as react-toastify) to display notifications
 		};
 
-		const uploadStartEventHandler = ({ detail: { fileName } }) => {
-			console.log(`upload '${fileName}' start`);
+		const uploadRunningEventHandler = ({ detail: { fileName } }) => {
+			console.log(`upload '${fileName}' running`);
 			// use a react "toast" module (such as react-toastify) to display notifications
 		};
 
@@ -38,7 +38,7 @@ const EventMonitor = () => {
 		// @ts-ignore
 		eventMonitor.addEventListener('FILE_UPLOAD_WILL_START', uploadWillStartEventHandler);
 		// @ts-ignore
-		eventMonitor.addEventListener('FILE_UPLOAD_START', uploadStartEventHandler);
+		eventMonitor.addEventListener('FILE_UPLOAD_RUNNING', uploadRunningEventHandler);
 		// @ts-ignore
 		eventMonitor.addEventListener('FILE_UPLOAD_PROGRESS', uploadProgressEventHandler);
 		// @ts-ignore
@@ -57,7 +57,7 @@ const EventMonitor = () => {
 			// @ts-ignore
 			eventMonitor.removeEventListener('FILE_UPLOAD_WILL_START', uploadWillStartEventHandler);
 			// @ts-ignore
-			eventMonitor.removeEventListener('FILE_UPLOAD_START', uploadStartEventHandler);
+			eventMonitor.removeEventListener('FILE_UPLOAD_RUNNING', uploadRunningEventHandler);
 			// @ts-ignore
 			eventMonitor.removeEventListener('FILE_UPLOAD_PROGRESS', uploadProgressEventHandler);
 			// @ts-ignore
