@@ -213,6 +213,23 @@ const firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
 ...
 ```
 
+## Upload Progress
+
+Monitor file upload data using custom React component which listen for following events (`CustomEvent`):
+
+- `FILE_UPLOAD_WILL_START`
+- `FILE_UPLOAD_START`
+- `FILE_UPLOAD_PROGRESS`
+- `FILE_UPLOAD_PAUSED`
+- `FILE_UPLOAD_CANCELD`
+- `FILE_UPLOAD_COMPLETE`
+- `FILE_SAVED`
+
+All events have data passed in `details` key:
+
+- `fileName`: the file anme
+- `data`: percentage for `FILE_UPLOAD_PROGRESS`
+
 # Help Develop `react-admin-firebase`?
 
 1. `git clone https://github.com/benwinding/react-admin-firebase`
