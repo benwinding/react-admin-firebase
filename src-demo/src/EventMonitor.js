@@ -1,9 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 
-// Lispatcher listens and dispatch
-const Lispatcher = () => {
+const EventMonitor = () => {
 
-	const lispatcherRef = useRef<HTMLDivElement>(null);
+	const eventMonitorRef = useRef<HTMLDivElement>(null);
 
 	// subscribe for file upload events on mount
 	useEffect(() => {
@@ -33,46 +32,46 @@ const Lispatcher = () => {
 			// use a react "toast" module (such as react-toastify) to display notifications
 		};
 
-		const lispatcher = lispatcherRef.current;
-		if (!lispatcher) return; // never too cautious
+		const eventMonitor = eventMonitorRef.current;
+		if (!eventMonitor) return; // never too cautious
 
 		// @ts-ignore
-		lispatcher.addEventListener('FILE_UPLOAD_WILL_START', uploadWillStartEventHandler);
+		eventMonitor.addEventListener('FILE_UPLOAD_WILL_START', uploadWillStartEventHandler);
 		// @ts-ignore
-		lispatcher.addEventListener('FILE_UPLOAD_START', uploadStartEventHandler);
+		eventMonitor.addEventListener('FILE_UPLOAD_START', uploadStartEventHandler);
 		// @ts-ignore
-		lispatcher.addEventListener('FILE_UPLOAD_PROGRESS', uploadProgressEventHandler);
+		eventMonitor.addEventListener('FILE_UPLOAD_PROGRESS', uploadProgressEventHandler);
 		// @ts-ignore
-		// lispatcher.addEventListener('FILE_UPLOAD_PAUSED', ___);
+		// eventMonitor.addEventListener('FILE_UPLOAD_PAUSED', ___);
 		// @ts-ignore
-		// lispatcher.addEventListener('FILE_UPLOAD_CANCELD', ___);
+		// eventMonitor.addEventListener('FILE_UPLOAD_CANCELD', ___);
 		// @ts-ignore
-		lispatcher.addEventListener('FILE_UPLOAD_COMPLETE', uploadCompleteEventHandler);
+		eventMonitor.addEventListener('FILE_UPLOAD_COMPLETE', uploadCompleteEventHandler);
 		// @ts-ignore
-		lispatcher.addEventListener('FILE_SAVED', fileReadyEventHandler);
+		eventMonitor.addEventListener('FILE_SAVED', fileReadyEventHandler);
 
 		// unsubscribe on unmount
 		return () => {
-			if (!lispatcher) return; // never too cautious
+			if (!eventMonitor) return; // never too cautious
 
 			// @ts-ignore
-			lispatcher.removeEventListener('FILE_UPLOAD_WILL_START', uploadWillStartEventHandler);
+			eventMonitor.removeEventListener('FILE_UPLOAD_WILL_START', uploadWillStartEventHandler);
 			// @ts-ignore
-			lispatcher.removeEventListener('FILE_UPLOAD_START', uploadStartEventHandler);
+			eventMonitor.removeEventListener('FILE_UPLOAD_START', uploadStartEventHandler);
 			// @ts-ignore
-			lispatcher.removeEventListener('FILE_UPLOAD_PROGRESS', uploadProgressEventHandler);
+			eventMonitor.removeEventListener('FILE_UPLOAD_PROGRESS', uploadProgressEventHandler);
 			// @ts-ignore
-			// lispatcher.removeEventListener('FILE_UPLOAD_PAUSED', ___);
+			// eventMonitor.removeEventListener('FILE_UPLOAD_PAUSED', ___);
 			// @ts-ignore
-			// lispatcher.removeEventListener('FILE_UPLOAD_CANCELD', ___);
+			// eventMonitor.removeEventListener('FILE_UPLOAD_CANCELD', ___);
 			// @ts-ignore
-			lispatcher.removeEventListener('FILE_UPLOAD_COMPLETE', uploadCompleteEventHandler);
+			eventMonitor.removeEventListener('FILE_UPLOAD_COMPLETE', uploadCompleteEventHandler);
 			// @ts-ignore
-			lispatcher.removeEventListener('FILE_SAVED', fileReadyEventHandler);
+			eventMonitor.removeEventListener('FILE_SAVED', fileReadyEventHandler);
 		};
 	}, []);
 
-	return <div id="lispatcher" ref={lispatcherRef} />;
+	return <div id="eventMonitor" ref={eventMonitorRef} />;
 };
 
-export default Lispatcher;
+export default EventMonitor;

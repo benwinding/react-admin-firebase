@@ -3,12 +3,12 @@ export function dispatch(
 	fileName: string,
   data?: any,
 ): void {
-	const lispatcher = document.getElementById('lispatcher');
-	if (!lispatcher) {
-		console.log(`lispatcher not found to dispatch event ${eventName} for ${fileName}`);
+	const eventMonitor = document.getElementById('eventMonitor');
+	if (!eventMonitor) {
+		console.log(`eventMonitor not found to dispatch event ${eventName} for ${fileName}`);
 		return;
 	}
 	const eventData = { fileName, data };
 	let event = new CustomEvent(eventName, { detail: eventData });
-	lispatcher.dispatchEvent(event);
+	eventMonitor.dispatchEvent(event);
 };

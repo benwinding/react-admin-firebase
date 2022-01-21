@@ -10,7 +10,7 @@ import firebase from 'firebase';
 import UserIcon from '@material-ui/icons/People';
 
 import CustomLoginPage from './CustomLoginPage';
-import Lispatcher from './Lispatcher';
+import EventMonitor from './EventMonitor';
 
 const firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG);
 
@@ -59,7 +59,7 @@ class App extends React.Component {
             edit={UserEdit}
           />
         </Admin>
-        <Lispatcher />
+        <EventMonitor />
       </>
     );
   }

@@ -230,7 +230,7 @@ All events have data passed in `details` key:
 - `fileName`: the file anme
 - `data`: percentage for `FILE_UPLOAD_PROGRESS`
 
-Events are sent to HTML DOM element with id "lispatcher". See demo implementation for example at [src-demo/src/App.js](src-demo/src/App.js);
+Events are sent to HTML DOM element with id "eventMonitor". See demo implementation for example at [src-demo/src/App.js](src-demo/src/App.js);
 
 # Help Develop `react-admin-firebase`?
 
