@@ -10,6 +10,7 @@ import firebase from 'firebase';
 import UserIcon from '@material-ui/icons/People';
 
 import CustomLoginPage from './CustomLoginPage';
+import Lispatcher from './Lispatcher';
 
 const firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG);
 
@@ -36,27 +37,30 @@ const dataProvider = FirebaseDataProvider(firebaseConfig, {
 class App extends React.Component {
   render() {
     return (
-      <Admin
-        loginPage={CustomLoginPage}
-        dataProvider={dataProvider}
-        authProvider={authProvider}
-      >
-        <Resource
-          name="posts"
-          list={PostList}
-          show={PostShow}
-          create={PostCreate}
-          edit={PostEdit}
-        />
-        <Resource
-          name="users"
-          icon={UserIcon}
-          list={UserList}
-          show={UserShow}
-          create={UserCreate}
-          edit={UserEdit}
-        />
-      </Admin>
+      <>
+        <Admin
+          loginPage={CustomLoginPage}
+          dataProvider={dataProvider}
+          authProvider={authProvider}
+        >
+          <Resource
+            name="posts"
+            list={PostList}
+            show={PostShow}
+            create={PostCreate}
+            edit={PostEdit}
+          />
+          <Resource
+            name="users"
+            icon={UserIcon}
+            list={UserList}
+            show={UserShow}
+            create={UserCreate}
+            edit={UserEdit}
+          />
+        </Admin>
+        <Lispatcher />
+      </>
     );
   }
 }
