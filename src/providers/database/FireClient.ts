@@ -1,3 +1,4 @@
+import { storage } from "firebase/app";
 import { set } from "lodash";
 import {
   AddCreatedByFields,
@@ -7,6 +8,7 @@ import {
   log,
   logError,
   parseDocGetAllUploads,
+  dispatch,
 } from "../../misc";
 import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
@@ -78,12 +80,40 @@ export class FireClient {
     rawFile: any
   ): Promise<string | undefined> {
     log("saveFile() saving file...", { storagePath, rawFile });
+    const { name } = rawFile;
+    dispatch('FILE_UPLOAD_WILL_START', name);
     const task = this.fireWrapper.storage().ref(storagePath).put(rawFile);
+    // monitor upload status & progress
+    task.on('state_changed', (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      log('Upload is ' + progress + '% done');
+      dispatch('FILE_UPLOAD_PROGRESS', name, progress);
+      switch (snapshot.state) {
+        case storage.TaskState.PAUSED:
+          log('Upload is paused');
+          dispatch('FILE_UPLOAD_PAUSED', name);
+          break;
+        case storage.TaskState.RUNNING:
+          log('Upload is running');
+          dispatch('FILE_UPLOAD_START', name);
+          break;
+        case storage.TaskState.CANCELED:
+          log('Upload has been canceled');
+          dispatch('FILE_UPLOAD_CANCELED', name);
+          break;
+        // case storage.TaskState.ERROR:
+          // already handled by catch
+        // case storage.TaskState.SUCCESS:
+          // already handled by then
+      }
+    });
     try {
       const taskResult: firebase.storage.UploadTaskSnapshot = await new Promise(
         (res, rej) => task.then(res).catch(rej)
       );
+      dispatch('FILE_UPLOAD_COMPLETE', name);
       const getDownloadURL = await taskResult.ref.getDownloadURL();
+      dispatch('FILE_SAVED', name);
       log("saveFile() saved file", {
         storagePath,
         taskResult,
