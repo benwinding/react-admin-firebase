@@ -1,9 +1,3 @@
-// Firebase types
-import {
-  CollectionReference,
-  QueryDocumentSnapshot,
-  FirebaseFirestore,
-} from '@firebase/firestore-types';
 import { RAFirebaseOptions } from '../options';
 import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
 import {
@@ -14,28 +8,23 @@ import {
   logWarn,
   IFirestoreLogger,
 } from '../../misc';
+import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQueryDocumentSnapshot } from 'misc/firebase-models';
 
 export interface IResource {
   path: string;
   pathAbsolute: string;
-  collection: CollectionReference;
+  collection: FireStoreCollectionRef;
   list: Array<{} & { deleted?: boolean }>;
 }
 
 export class ResourceManager {
-  private resources: {
-    [resourceName: string]: IResource;
-  } = {};
-
-  private db: FirebaseFirestore;
+  private resources: Record<string, IResource> = {};
 
   constructor(
     private fireWrapper: IFirebaseWrapper,
     private options: RAFirebaseOptions,
     private flogger: IFirestoreLogger
   ) {
-    this.db = fireWrapper.db();
-
     this.fireWrapper.OnUserLogout(() => {
       this.resources = {};
     });
@@ -120,7 +109,7 @@ export class ResourceManager {
     if (!docSnap.exists) {
       throw new Error('react-admin-firebase: No id found matching: ' + docId);
     }
-    const result = this.parseFireStoreDocument(docSnap as any);
+    const result = this.parseFireStoreDocument(docSnap);
     log('resourceManager.GetSingleDoc', {
       relativePath,
       resource,
@@ -143,7 +132,7 @@ export class ResourceManager {
       log('resourceManager.initPath() has been initialized already...');
       return;
     }
-    const collection = this.db.collection(absolutePath);
+    const collection = this.fireWrapper.dbGetCollection(absolutePath);
     const list: Array<{}> = [];
     const resource: IResource = {
       collection,
@@ -160,7 +149,7 @@ export class ResourceManager {
     });
   }
 
-  private parseFireStoreDocument(doc: QueryDocumentSnapshot | undefined): {} {
+  private parseFireStoreDocument(doc: FireStoreQueryDocumentSnapshot | FireStoreDocumentSnapshot | undefined): {} {
     if (!doc) {
       logWarn('parseFireStoreDocument: no doc', { doc });
       return {};
@@ -180,7 +169,7 @@ export class ResourceManager {
   }
 
   private async getCurrentUserEmail() {
-    const user = await this.fireWrapper.GetUserLogin();
+    const user = await this.fireWrapper.authGetUserLoggedIn();
     if (user) {
       return user.email as string;
     } else {
@@ -188,7 +177,7 @@ export class ResourceManager {
     }
   }
   private async getCurrentUserId() {
-    const user = await this.fireWrapper.GetUserLogin();
+    const user = await this.fireWrapper.authGetUserLoggedIn();
     if (user) {
       return user.uid;
     } else {
@@ -197,12 +186,10 @@ export class ResourceManager {
   }
 
   private applyQuery(
-    collection: CollectionReference,
+    collection: FireStoreCollectionRef,
     collectionQuery?: messageTypes.CollectionQueryType
-  ): CollectionReference {
-    const collRef: CollectionReference = collectionQuery
-      ? collectionQuery(collection)
-      : collection;
+  ): FireStoreCollectionRef {
+    const collRef = collectionQuery ? collectionQuery(collection) : collection;
 
     log('resourceManager.applyQuery() ...', {
       collection,

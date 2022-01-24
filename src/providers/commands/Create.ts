@@ -37,7 +37,7 @@ export async function Create<T extends ra.Record>(
       },
     };
   }
-  const newId = fireWrapper.db().collection("collections").doc().id;
+  const newId = fireWrapper.dbMakeNewId();
   const data = await client.parseDataAndUpload(r, newId, params.data);
   const docObj = { ...data };
   client.checkRemoveIdField(docObj, newId);

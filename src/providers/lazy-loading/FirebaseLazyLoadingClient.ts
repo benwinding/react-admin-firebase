@@ -4,10 +4,6 @@ import {
   parseFireStoreDocument,
   recursivelyMapStorageUrls,
 } from '../../misc';
-import {
-  CollectionReference,
-  DocumentSnapshot,
-} from '@firebase/firestore-types';
 import { IResource, ResourceManager } from '../database/ResourceManager';
 import { RAFirebaseOptions } from '../options';
 import * as ra from '../../misc/react-admin-models';
@@ -18,6 +14,7 @@ import {
 } from './paramsToQuery';
 import { clearQueryCursors, setQueryCursor } from './queryCursors';
 import { FireClient } from 'providers/database';
+import { FireStoreCollectionRef, FireStoreDocumentSnapshot } from 'misc/firebase-models';
 
 export class FirebaseLazyLoadingClient {
   constructor(
@@ -56,7 +53,7 @@ export class FirebaseLazyLoadingClient {
     }
     this.client.flogger.logDocument(resultsCount)();
 
-    const data = snapshots.docs.map(parseFireStoreDocument) as T[];
+    const data = snapshots.docs.map(d => parseFireStoreDocument(d)) as T[];
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
     // After fetching documents save queryCursor for next page
     setQueryCursor(nextPageCursor, getNextPageParams(params), resourceName);
@@ -144,7 +141,7 @@ export class FirebaseLazyLoadingClient {
     const snapshots = await query.get();
     const resultsCount = snapshots.docs.length;
     this.client.flogger.logDocument(resultsCount)();
-    const data = snapshots.docs.map(parseFireStoreDocument);
+    const data = snapshots.docs.map(d => parseFireStoreDocument(d));
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(
         data.map(async (doc: any) => {
@@ -179,10 +176,10 @@ export class FirebaseLazyLoadingClient {
   }
 
   private async checkIfOnLastPage<TParams extends messageTypes.IParamsGetList>(
-    collection: CollectionReference,
+    collection: FireStoreCollectionRef,
     params: TParams,
     resourceName: string,
-    nextPageCursor: DocumentSnapshot
+    nextPageCursor: FireStoreDocumentSnapshot,
   ): Promise<boolean> {
     const query = await paramsToQuery(
       collection,

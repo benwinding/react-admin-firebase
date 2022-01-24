@@ -1,12 +1,8 @@
-import {
-  CollectionReference,
-  DocumentSnapshot,
-  Query,
-} from '@firebase/firestore-types';
+import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQuery } from 'misc/firebase-models';
 import { IFirestoreLogger, messageTypes } from '../../misc';
 
 export function setQueryCursor(
-  doc: DocumentSnapshot,
+  doc: FireStoreDocumentSnapshot,
   params: messageTypes.IParamsGetList,
   resourceName: string
 ) {
@@ -25,11 +21,11 @@ export function setQueryCursor(
 }
 
 export async function getQueryCursor(
-  collection: CollectionReference,
+  collection: FireStoreCollectionRef,
   params: messageTypes.IParamsGetList,
   resourceName: string,
   flogger: IFirestoreLogger
-): Promise<DocumentSnapshot | false> {
+): Promise<FireStoreDocumentSnapshot | false> {
   const key = btoa(JSON.stringify({ ...params, resourceName }));
   const docId = localStorage.getItem(key);
   if (!docId) {
@@ -56,15 +52,15 @@ export function clearQueryCursors(resourceName: string) {
 }
 
 export async function findLastQueryCursor(
-  collection: CollectionReference,
-  queryBase: Query,
+  collection: FireStoreCollectionRef,
+  queryBase: FireStoreQuery,
   params: messageTypes.IParamsGetList,
   resourceName: string,
   flogger: IFirestoreLogger
 ) {
   const { page, perPage } = params.pagination;
 
-  let lastQueryCursor: DocumentSnapshot | false = false;
+  let lastQueryCursor: FireStoreDocumentSnapshot | false = false;
   let currentPage = page - 1;
 
   const currentPageParams = {

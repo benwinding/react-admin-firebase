@@ -1,12 +1,13 @@
 import { MakeMockClient } from "./utils/test-helpers";
 import { GetList } from "../../src/providers/queries";
+import { FireStoreCollectionRef } from "../../src/misc/firebase-models";
 
 describe("api methods", () => {
   test("FireClient list docs", async () => {
     const client = MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "list-mes";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
       docIds.map((id) => collection.doc(id).set({ title: "ee" }))
     );
@@ -46,7 +47,7 @@ describe("api methods", () => {
       },
     ];
     const collName = "list-filtered";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
     const result = await GetList(
@@ -92,7 +93,7 @@ describe("api methods", () => {
       },
     ];
     const collName = "list-filtered";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
     const result = await GetList(
@@ -110,7 +111,7 @@ describe("api methods", () => {
       },
       client
     );
-    const second = result.data[1] as any;
+    const second = result.data[1];
     expect(second).toBeTruthy();
     expect(second.obj.title).toBe("B");
   }, 100000);
@@ -132,14 +133,14 @@ describe("api methods", () => {
       },
     ];
     const collName = "list-filtered";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
     const result = await GetList(
       collName,
       {
         filter: {
-          collectionQuery: (c: firebase.firestore.CollectionReference) =>
+          collectionQuery: (c: FireStoreCollectionRef) =>
             c.where("obj.volume", ">=", 100),
         },
         pagination: {
@@ -153,7 +154,7 @@ describe("api methods", () => {
       },
       client
     );
-    const third = result.data.length as any;
+    const third = result.data.length;
     expect(third).toBe(2);
   }, 100000);
 });

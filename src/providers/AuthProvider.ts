@@ -1,7 +1,4 @@
 import { messageTypes } from './../misc/messageTypes';
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import { FirebaseAuth, User } from '@firebase/auth-types';
 import { log, retrieveStatusTxt, logWarn, logger } from '../misc';
 import { RAFirebaseOptions } from './options';
 import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
@@ -9,37 +6,21 @@ import {
   AuthProvider as RaAuthProvider,
   UserIdentity,
 } from '../misc/react-admin-models';
+import { IFirebaseWrapper } from './database';
+import { FireUser } from 'misc/firebase-models';
 
 class AuthClient {
-  private auth: FirebaseAuth;
+  private fireWrapper: IFirebaseWrapper;
 
   constructor(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
     const options = optionsInput || {};
     log('Auth Client: initializing...', { firebaseConfig, options });
-    const fireWrapper = new FirebaseWrapper();
-    fireWrapper.init(firebaseConfig, options);
-    this.auth = fireWrapper.auth();
+    this.fireWrapper = new FirebaseWrapper(options, firebaseConfig);
     options.persistence && this.setPersistence(options.persistence);
   }
 
   setPersistence(persistenceInput: 'session' | 'local' | 'none') {
-    let persistenceResolved: string;
-    switch (persistenceInput) {
-      case 'local':
-        persistenceResolved = firebase.auth.Auth.Persistence.LOCAL;
-        break;
-      case 'none':
-        persistenceResolved = firebase.auth.Auth.Persistence.NONE;
-        break;
-      case 'session':
-      default:
-        persistenceResolved = firebase.auth.Auth.Persistence.SESSION;
-        break;
-    }
-    log('setPersistence', { persistenceInput, persistenceResolved });
-    this.auth
-      .setPersistence(persistenceResolved)
-      .catch((error) => console.error(error));
+    return this.fireWrapper.authSetPersistence(persistenceInput);
   }
 
   public async HandleAuthLogin(params: { username: string; password: string }) {
@@ -47,7 +28,7 @@ class AuthClient {
 
     if (username && password) {
       try {
-        const user = await this.auth.signInWithEmailAndPassword(
+        const user = await this.fireWrapper.authSigninEmailPassword(
           username,
           password
         );
@@ -63,7 +44,7 @@ class AuthClient {
   }
 
   public HandleAuthLogout() {
-    return this.auth.signOut();
+    return this.fireWrapper.authSignOut();
   }
 
   public HandleAuthError(errorHttp: messageTypes.HttpErrorType) {
@@ -78,22 +59,12 @@ class AuthClient {
     return Promise.reject();
   }
 
-  public async HandleAuthCheck(): Promise<void> {
-    return this.getUserLogin() as any; // Prevents breaking change
+  public async HandleAuthCheck(): Promise<any> {
+    return this.getUserLogin();
   }
 
-  public getUserLogin(): Promise<User> {
-    return new Promise((resolve, reject) => {
-      if (this.auth.currentUser) return resolve(this.auth.currentUser);
-      const unsubscribe = this.auth.onAuthStateChanged((user) => {
-        unsubscribe();
-        if (user) {
-          resolve(user);
-        } else {
-          reject();
-        }
-      });
-    });
+  public getUserLogin(): Promise<FireUser> {
+    return this.fireWrapper.authGetUserLoggedIn();
   }
 
   public async HandleGetPermissions() {

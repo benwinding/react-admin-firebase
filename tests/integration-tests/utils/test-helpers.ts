@@ -1,4 +1,3 @@
-import { FirebaseFirestore } from '@firebase/firestore-types';
 import * as firebase from '@firebase/testing';
 
 import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
@@ -6,19 +5,20 @@ import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
 import { RAFirebaseOptions } from "../../../src/providers/options";
 import { FireClient } from "../../../src/providers/database/FireClient";
 import { IFirestoreLogger } from '../../../src/misc';
+import { FireApp, FireStore } from '../../../src/misc/firebase-models';
 
 function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();
 }
 
-export class BlankLogger  implements IFirestoreLogger {
+export class BlankLogger implements IFirestoreLogger {
   logDocument = (count: number) => () => null;
   SetEnabled = (isEnabled: boolean) => null;
   ResetCount = (shouldReset: boolean) => null;
 }
 
 export function MakeMockClient(options: RAFirebaseOptions = {}) {
-  const randomProjectId = Math.random().toString(32).slice(2,10);
+  const randomProjectId = Math.random().toString(32).slice(2, 10);
   const fire = initFireWrapper(randomProjectId, options);
   return new FireClient(fire, options, new BlankLogger);
 }
@@ -26,9 +26,12 @@ export function MakeMockClient(options: RAFirebaseOptions = {}) {
 export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
   const safeId = makeSafeId(projectId);
   const testOptions = { projectId: safeId };
-  const fire: IFirebaseWrapper = new FirebaseWrapperStub();
   const app = firebase.initializeTestApp(testOptions);
-  fire.init({}, { app: app, ...rafOptions });
+  const fire: IFirebaseWrapper = new FirebaseWrapperStub(
+    app.firestore() as FireStore,
+    app as FireApp,
+    rafOptions,
+  );
   return fire;
 }
 
@@ -41,7 +44,7 @@ export async function clearDb(projectId: string) {
 }
 
 export async function createDoc(
-  db: FirebaseFirestore,
+  db: FireStore,
   collectionName: string,
   docName: string,
   obj: {}
@@ -50,16 +53,16 @@ export async function createDoc(
 }
 
 export async function getDocsFromCollection(
-  db: FirebaseFirestore,
+  db: FireStore,
   collectionName: string
 ): Promise<any[]> {
   const allDocs = await db.collection(collectionName).get();
   const docsData = await Promise.all(
     allDocs.docs.map((doc) =>
-      ({
-        ...doc.data(),
-        id: doc.id
-      }))
+    ({
+      ...doc.data(),
+      id: doc.id
+    }))
   );
   return docsData;
 }

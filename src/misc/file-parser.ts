@@ -76,10 +76,8 @@ export const recursivelyMapStorageUrls = async (
     if (isAlreadyUploaded) {
       return fieldValue;
     }
-    let ref: firebase.storage.Reference = null as any;
     try {
-      ref = fireWrapper.storage().ref(fieldValue.src);
-      const src = await ref.getDownloadURL();
+      const src = await fireWrapper.getStorageDownloadUrl(fieldValue.src);
       return {
         ...fieldValue,
         src
@@ -88,7 +86,6 @@ export const recursivelyMapStorageUrls = async (
       logError(`Error when getting download URL`, {
         error,
         fieldValue,
-        ref
       });
       return fieldValue;
     }

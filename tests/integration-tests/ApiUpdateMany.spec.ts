@@ -6,14 +6,14 @@ describe("api methods", () => {
     const client = MakeMockClient({ softDelete: true, disableMeta: true });
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "updatec";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
       docIds.map((id) => collection.doc(id).set({ title: "ee" }))
     );
 
     await UpdateMany(
       collName,
-      { ids: docIds, data: { title: "blue" } as any },
+      { ids: docIds, data: { title: "blue" } },
       client
     );
     const res = await collection.get();

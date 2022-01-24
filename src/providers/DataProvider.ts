@@ -9,7 +9,7 @@ import {
 import * as ra from "../misc/react-admin-models";
 import { RAFirebaseOptions } from "./options";
 import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
-import { FireApp } from "./database/firebase/IFirebaseWrapper";
+import { FireApp } from "../misc/firebase-models";
 import { FireClient } from "./database/FireClient";
 import { GetList, GetMany, GetManyReference, GetOne } from "./queries";
 import { Create, Delete, DeleteMany, Update, UpdateMany } from "./commands";
@@ -34,8 +34,7 @@ export function DataProvider(
     options
   });
 
-  const fireWrapper = new FirebaseWrapper();
-  fireWrapper.init(firebaseConfig, optionsInput);
+  const fireWrapper = new FirebaseWrapper(optionsInput, firebaseConfig);
 
   async function run<T>(cb: () => Promise<T>) {
     let res: any;
@@ -43,7 +42,7 @@ export function DataProvider(
       res = await cb();
       return res;
     } catch (error) {
-      const errorMsg = error.toString();
+      const errorMsg = ((error as any) || '').toString();
       const code = retrieveStatusCode(errorMsg);
       const errorObj = { status: code, message: errorMsg, json: res };
       logError("DataProvider:", error, { errorMsg, code, errorObj });

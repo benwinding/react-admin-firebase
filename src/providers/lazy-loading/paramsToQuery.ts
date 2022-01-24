@@ -1,8 +1,4 @@
-import {
-  CollectionReference,
-  OrderByDirection,
-  Query,
-} from '@firebase/firestore-types';
+import { FireStoreCollectionRef, FireStoreQuery, FireStoreQueryOrder } from 'misc/firebase-models';
 import { IFirestoreLogger, messageTypes } from '../../misc';
 import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
@@ -21,12 +17,12 @@ const defaultParamsToQueryOptions = {
 export async function paramsToQuery<
   TParams extends messageTypes.IParamsGetList
 >(
-  collection: CollectionReference,
+  collection: FireStoreCollectionRef,
   params: TParams,
   resourceName: string,
   flogger: IFirestoreLogger,
   options: ParamsToQueryOptions = defaultParamsToQueryOptions
-): Promise<Query> {
+): Promise<FireStoreQuery> {
   const filtersStepQuery = options.filters
     ? filtersToQuery(collection, params.filter)
     : collection;
@@ -47,34 +43,35 @@ export async function paramsToQuery<
 }
 
 export function filtersToQuery(
-  query: Query,
+  query: FireStoreQuery,
   filters: { [fieldName: string]: any }
-): Query {
-  Object.keys(filters).forEach((fieldName) => {
-    query = query.where(fieldName, '==', filters[fieldName]);
-  });
-  return query;
+): FireStoreQuery {
+  const res = Object.keys(filters).reduce((acc, fieldName) => {
+    acc.where(fieldName, '==', filters[fieldName]);
+    return acc;
+  }, query);
+  return res;
 }
 
 export function sortToQuery(
-  query: Query,
+  query: FireStoreQuery,
   sort: { field: string; order: string }
-): Query {
+): FireStoreQuery {
   if (sort != null && sort.field !== 'id') {
     const { field, order } = sort;
-    const parsedOrder = order.toLocaleLowerCase() as OrderByDirection;
-    query = query.orderBy(field, parsedOrder);
+    const parsedOrder = order.toLocaleLowerCase() as FireStoreQueryOrder;
+    return query.orderBy(field, parsedOrder);
   }
   return query;
 }
 
 async function paginationToQuery<TParams extends messageTypes.IParamsGetList>(
-  query: Query,
+  query: FireStoreQuery,
   params: TParams,
-  collection: CollectionReference,
+  collection: FireStoreCollectionRef,
   resourceName: string,
   flogger: IFirestoreLogger
-): Promise<Query> {
+): Promise<FireStoreQuery> {
   const { page, perPage } = params.pagination;
   if (page === 1) {
     query = query.limit(perPage);
