@@ -1,4 +1,11 @@
 {
-  "main.js": "static/js/main.66e624b5.js",
-  "main.js.map": "static/js/main.66e624b5.js.map"
+  "main.js": "/react-admin-firebase/static/js/main.6890bb68.chunk.js",
+  "main.js.map": "/react-admin-firebase/static/js/main.6890bb68.chunk.js.map",
+  "runtime~main.js": "/react-admin-firebase/static/js/runtime~main.f4f81444.js",
+  "runtime~main.js.map": "/react-admin-firebase/static/js/runtime~main.f4f81444.js.map",
+  "static/js/2.3d0235a5.chunk.js": "/react-admin-firebase/static/js/2.3d0235a5.chunk.js",
+  "static/js/2.3d0235a5.chunk.js.map": "/react-admin-firebase/static/js/2.3d0235a5.chunk.js.map",
+  "index.html": "/react-admin-firebase/index.html",
+  "precache-manifest.5332dbe4993b569f14315129ade2a4d8.js": "/react-admin-firebase/precache-manifest.5332dbe4993b569f14315129ade2a4d8.js",
+  "service-worker.js": "/react-admin-firebase/service-worker.js"
 }
