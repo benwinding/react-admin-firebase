@@ -15,11 +15,8 @@
     "rxjs": "^6.5.x"
   },
   "devDependencies": {
-    "@firebase/app-types": "^0.3.9",
-    "@firebase/auth-types": "^0.6.0",
     "@firebase/firestore-types": "1.2.0",
     "@firebase/testing": "^0.19.1",
-    "@firebase/util": "^0.2.11",
     "@types/firebase": "^3.2.1",
     "@types/jest": "^24.0.13",
     "@types/lodash": "^4.14.150",
