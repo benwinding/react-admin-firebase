@@ -19,11 +19,11 @@ jobs:
           key: ${{ runner.OS }}-push_deploy-${{ hashFiles('package.json') }}
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: yarn install --pure-lockfile
       - name: Check Build
-        run: npm run-script build
+        run: yarn build
       - name: Check Tests
-        run: npm run-script test
+        run: yarn test
       - name: Deploy to npm! 🚀 (if master branch)
         if: github.ref == 'refs/heads/master'
         uses: benwinding/merge-release@master
