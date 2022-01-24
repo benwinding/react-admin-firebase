@@ -46,10 +46,11 @@ export function filtersToQuery(
   query: FireStoreQuery,
   filters: { [fieldName: string]: any }
 ): FireStoreQuery {
-  Object.keys(filters).forEach((fieldName) => {
-    query = query.where(fieldName, '==', filters[fieldName]);
-  });
-  return query;
+  const res = Object.keys(filters).reduce((acc, fieldName) => {
+    acc.where(fieldName, '==', filters[fieldName]);
+    return acc;
+  }, query);
+  return res;
 }
 
 export function sortToQuery(
@@ -59,7 +60,7 @@ export function sortToQuery(
   if (sort != null && sort.field !== 'id') {
     const { field, order } = sort;
     const parsedOrder = order.toLocaleLowerCase() as FireStoreQueryOrder;
-    query = query.orderBy(field, parsedOrder);
+    return query.orderBy(field, parsedOrder);
   }
   return query;
 }

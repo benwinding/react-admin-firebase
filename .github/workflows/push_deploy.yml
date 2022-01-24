@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 10.17
+      - name: Use Node.js 12.22.8
         uses: actions/setup-node@v1
         with:
-          node-version: 10.17
+          node-version: 12.22.8
       - name: Cache node_modules
         id: cache-modules
         uses: actions/cache@v1
@@ -19,11 +19,11 @@ jobs:
           key: ${{ runner.OS }}-push_deploy-${{ hashFiles('package.json') }}
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: yarn install --pure-lockfile
       - name: Check Build
-        run: npm run-script build
+        run: yarn build
       - name: Check Tests
-        run: npm run-script test
+        run: yarn test
       - name: Deploy to npm! 🚀 (if master branch)
         if: github.ref == 'refs/heads/master'
         uses: benwinding/merge-release@master

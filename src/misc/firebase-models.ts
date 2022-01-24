@@ -1,10 +1,3 @@
-import { 
-  DocumentSnapshot, 
-  Query,
-  QueryDocumentSnapshot,
-  OrderByDirection
-} from '@firebase/firestore-types';
-
 export type FireUser = firebase.User;
 export type FireApp = firebase.app.App;
 
@@ -25,8 +18,9 @@ export type FireStore = firebase.firestore.Firestore;
 export type FireStoreBatch = firebase.firestore.WriteBatch;
 export type FireStoreTimeStamp = firebase.firestore.FieldValue;
 export type FireStoreDocumentRef = firebase.firestore.DocumentReference;
-export type FireStoreDocumentSnapshot = DocumentSnapshot;
+export type FireStoreDocumentSnapshot = firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>;
 export type FireStoreCollectionRef = firebase.firestore.CollectionReference;
-export type FireStoreQueryDocumentSnapshot = QueryDocumentSnapshot;
-export type FireStoreQuery = Query;
-export type FireStoreQueryOrder = OrderByDirection;
+export type FireStoreQueryDocumentSnapshot = firebase.firestore.QueryDocumentSnapshot;
+export type FireStoreQuery = firebase.firestore.Query;
+export type FireStoreQueryOrder = firebase.firestore.OrderByDirection;
+

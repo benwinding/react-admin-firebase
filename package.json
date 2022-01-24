@@ -1,9 +1,9 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "3.2.16",
+  "version": "3.9.0",
   "peerDependencies": {
-    "firebase": "^7.9.x",
+    "firebase": "^9.6.4",
     "react": "^17.x",
     "react-admin": "^3.x",
     "react-dom": "^17.x",
@@ -15,8 +15,7 @@
     "rxjs": "^6.5.x"
   },
   "devDependencies": {
-    "@firebase/firestore-types": "1.2.0",
-    "@firebase/testing": "^0.19.1",
+    "@firebase/testing": "^0.20.11",
     "@types/firebase": "^3.2.1",
     "@types/jest": "^24.0.13",
     "@types/lodash": "^4.14.150",
