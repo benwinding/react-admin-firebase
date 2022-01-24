@@ -10,7 +10,7 @@ jobs:
       - name: Use Node.js 12.22.8
         uses: actions/setup-node@v1
         with:
-          node-version: 10.17
+          node-version: 12.22.8
       - name: Cache node_modules
         id: cache-modules
         uses: actions/cache@v1
