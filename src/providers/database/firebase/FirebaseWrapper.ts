@@ -2,10 +2,10 @@ import {
   IFirebaseWrapper,
 } from './IFirebaseWrapper';
 
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import 'firebase/auth';
-import 'firebase/storage';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
 
 import { log } from 'misc';
 import { RAFirebaseOptions } from 'providers/options';
@@ -33,7 +33,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   ) { 
     const optionsSafe = inputOptions || {};
     this.options = optionsSafe;
-    this.app = ObtainFirebaseApp(firebaseConfig, optionsSafe);
+    this.app = (window as any)['_app'] = ObtainFirebaseApp(firebaseConfig, optionsSafe);
     this.firestore = this.app.firestore();
   }
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
@@ -146,7 +146,7 @@ function ObtainFirebaseApp(
   if (options.app) {
     return options.app;
   }
-  const isInitialized = !!firebase.apps.length;
+  const isInitialized = !!firebase.apps?.length;
   if (isInitialized) {
     return firebase.app();
   } else {

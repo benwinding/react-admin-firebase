@@ -10,6 +10,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "isolatedModules": false,
     "skipLibCheck": true,
     "noImplicitAny": true,
     "esModuleInterop": true,

@@ -1,3 +1,5 @@
+import firebase from 'firebase/compat/app';
+
 export type FireUser = firebase.User;
 export type FireApp = firebase.app.App;
 
