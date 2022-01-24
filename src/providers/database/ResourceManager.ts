@@ -8,7 +8,7 @@ import {
   logWarn,
   IFirestoreLogger,
 } from '../../misc';
-import { FireStoreCollectionRef, FireStoreDocumentRef, FireStoreDocumentSnapshot, FireStoreQueryDocumentSnapshot } from 'misc/firebase-models';
+import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQueryDocumentSnapshot } from 'misc/firebase-models';
 
 export interface IResource {
   path: string;
@@ -105,7 +105,7 @@ export class ResourceManager {
     await this.initPath(relativePath);
     const resource = this.GetResource(relativePath);
     this.flogger.logDocument(1)();
-    const docSnap: FireStoreDocumentSnapshot = await resource.collection.doc(docId).get();
+    const docSnap = await resource.collection.doc(docId).get();
     if (!docSnap.exists) {
       throw new Error('react-admin-firebase: No id found matching: ' + docId);
     }
