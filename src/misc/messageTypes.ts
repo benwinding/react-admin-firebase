@@ -1,5 +1,4 @@
-// Firebase types
-import { CollectionReference } from "@firebase/firestore-types";
+import { FireStoreCollectionRef } from "./firebase-models";
 import { GetListParams } from "./react-admin-models";
 
 // PARAMETERS
@@ -7,8 +6,8 @@ export namespace messageTypes {
   export type IParamsGetList = GetListParams;
 
   export type CollectionQueryType = (
-    arg0: CollectionReference
-  ) => CollectionReference;
+    arg0: FireStoreCollectionRef
+  ) => FireStoreCollectionRef;
 
   export interface IParamsGetOne {
     id: string;

@@ -1,4 +1,4 @@
-import { set } from "lodash";
+import { set, get } from "lodash";
 import {
   AddCreatedByFields,
   AddUpdatedByFields,
@@ -14,9 +14,6 @@ import { IResource, ResourceManager } from "./ResourceManager";
 
 export class FireClient {
   public rm: ResourceManager;
-  public db() {
-    return this.fireWrapper.db();
-  }
 
   constructor(
     public fireWrapper: IFirebaseWrapper,
@@ -78,12 +75,9 @@ export class FireClient {
     rawFile: any
   ): Promise<string | undefined> {
     log("saveFile() saving file...", { storagePath, rawFile });
-    const task = this.fireWrapper.storage().ref(storagePath).put(rawFile);
     try {
-      const taskResult: firebase.storage.UploadTaskSnapshot = await new Promise(
-        (res, rej) => task.then(res).catch(rej)
-      );
-      const getDownloadURL = await taskResult.ref.getDownloadURL();
+      const { taskResult, downloadUrl } = this.fireWrapper.putFile(storagePath, rawFile);
+      const getDownloadURL = await downloadUrl;
       log("saveFile() saved file", {
         storagePath,
         taskResult,
@@ -91,7 +85,7 @@ export class FireClient {
       });
       return this.options.relativeFilePaths ? storagePath : getDownloadURL;
     } catch (storageError) {
-      if (storageError.code === "storage/unknown") {
+      if (get(storageError, 'code') === "storage/unknown") {
         logError(
           'saveFile() error saving file, No bucket found! Try clicking "Get Started" in firebase -> storage',
           { storageError }

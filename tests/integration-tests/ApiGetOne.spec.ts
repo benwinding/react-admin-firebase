@@ -6,7 +6,7 @@ describe("api methods", () => {
     const client = MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "list-mes";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
       docIds.map((id) => collection.doc(id).set({ title: "ee" }))
     );
@@ -21,7 +21,7 @@ describe("api methods", () => {
     const client = MakeMockClient();
     const collName = "list-mes";
     const docId = "1234";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     const testDocNestedDates = {
       a: new Date("1999"),
       b: {
@@ -40,7 +40,7 @@ describe("api methods", () => {
       },
       client
     );
-    const data = result.data as any;
+    const data = result.data;
     expect(data).toBeTruthy();
     expect(data.a).toBeInstanceOf(Date);
     expect(data.b.b1).toBeInstanceOf(Date);

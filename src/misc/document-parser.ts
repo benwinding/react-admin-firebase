@@ -1,7 +1,7 @@
-import { QueryDocumentSnapshot } from '@firebase/firestore-types';
+import { FireStoreDocumentSnapshot, FireStoreQueryDocumentSnapshot } from './firebase-models';
 import { parseAllDatesDoc } from './timestamp-parser';
 
-export const parseFireStoreDocument = (doc: QueryDocumentSnapshot) => {
+export const parseFireStoreDocument = (doc: FireStoreQueryDocumentSnapshot) => {
   const data = doc.data();
   parseAllDatesDoc(data);
   // React Admin requires an id field on every document,

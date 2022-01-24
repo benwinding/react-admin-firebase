@@ -6,7 +6,7 @@ describe("api methods", () => {
     const client = MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "deleteables";
-    const collection = client.db().collection(collName);
+    const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
       docIds.map((id) => collection.doc(id).set({ title: "ee" }))
     );

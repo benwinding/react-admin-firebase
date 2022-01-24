@@ -6,7 +6,7 @@ describe("api methods", () => {
     const client = MakeMockClient({ disableMeta: true });
     const id = "testsss123";
     const collName = "t2";
-    const docRef = client.db().collection(collName).doc(id);
+    const docRef = client.fireWrapper.dbGetCollection(collName).doc(id);
     await docRef.set({ name: "Jim" });
 
     await Update(

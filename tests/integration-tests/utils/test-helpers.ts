@@ -1,4 +1,3 @@
-import { FirebaseFirestore } from '@firebase/firestore-types';
 import * as firebase from '@firebase/testing';
 
 import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
@@ -6,6 +5,7 @@ import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
 import { RAFirebaseOptions } from "../../../src/providers/options";
 import { FireClient } from "../../../src/providers/database/FireClient";
 import { IFirestoreLogger } from '../../../src/misc';
+import { FireStore } from '../../../src/misc/firebase-models';
 
 function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();
@@ -26,9 +26,12 @@ export function MakeMockClient(options: RAFirebaseOptions = {}) {
 export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
   const safeId = makeSafeId(projectId);
   const testOptions = { projectId: safeId };
-  const fire: IFirebaseWrapper = new FirebaseWrapperStub();
   const app = firebase.initializeTestApp(testOptions);
-  fire.init({}, { app: app, ...rafOptions });
+  const fire: IFirebaseWrapper = new FirebaseWrapperStub(
+    app.firestore(),
+    app,
+    rafOptions,
+  );
   return fire;
 }
 
@@ -41,7 +44,7 @@ export async function clearDb(projectId: string) {
 }
 
 export async function createDoc(
-  db: FirebaseFirestore,
+  db: FireStore,
   collectionName: string,
   docName: string,
   obj: {}
@@ -50,7 +53,7 @@ export async function createDoc(
 }
 
 export async function getDocsFromCollection(
-  db: FirebaseFirestore,
+  db: FireStore,
   collectionName: string
 ): Promise<any[]> {
   const allDocs = await db.collection(collectionName).get();
