@@ -22,19 +22,19 @@ console.log({firebaseConfig, firebaseApp});
 const authProvider = FirebaseAuthProvider(firebaseConfig);
 const dataProvider = FirebaseDataProvider(firebaseConfig, {
   logging: true,
-  // rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
   app: firebaseApp,
+  dontAddIdFieldToDoc: true,
+  // rootRef: 'rootrefcollection/QQG2McwjR2Bohi9OwQzP',
   // watch: ['posts'];
   // dontwatch: ['comments'];
-  persistence: 'local',
+  // persistence: 'local',
   // disableMeta: true
-  dontAddIdFieldToDoc: true,
-  lazyLoading: {
-    enabled: true,
-  },
-  firestoreCostsLogger: {
-    enabled: true,
-  },
+  // lazyLoading: {
+  //   enabled: true,
+  // },
+  // firestoreCostsLogger: {
+  //   enabled: true,
+  // },
 });
 
 class App extends React.Component {

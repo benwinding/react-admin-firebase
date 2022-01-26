@@ -29,11 +29,11 @@ import {
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
-// const PostFilter = (props) => (
-//   <Filter {...props}>
-//     <TextInput label="Search" source="title" alwaysOn />
-//   </Filter>
-// );
+const PostFilter = (props) => (
+  <Filter {...props}>
+    <TextInput label="Search" source="title" alwaysOn />
+  </Filter>
+);
 
 // const ReferenceFilter = (props) => (
 //   <Filter {...props}>
@@ -51,6 +51,7 @@ import RichTextInput from "ra-input-rich-text";
 export const PostList = (props) => (
   <List
     {...props}
+    filters={<PostFilter />}
     // filters={<ReferenceFilter />}
     // filter={{ updatedby: "test@example.com" }}
   >
