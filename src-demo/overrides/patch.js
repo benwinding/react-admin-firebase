@@ -8,19 +8,24 @@ console.log(
 );
 
 function Copy(src, dest) {
-  const destBak = dest + '.bak';
+  const destBak = `${dest}-${(new Date().toISOString())}-bakup.js`;
   fs.copyFileSync(dest,destBak);
   fs.copyFileSync(src,dest);
+  console.log(`Copying:
+  src:  ${src}
+ dest:  ${dest}
+bakup:  ${destBak}
+  `);
 }
 
 // fs.copyFileSync(
 //   path.join(__dirname, "./webpack.config.prod.js"),
 //   path.join(destDir, "./webpack.config.prod.js")
 // );
-// Copy(
-//   path.join(__dirname, "./webpack.config.dev.js"),
-//   path.join(destDir, "./webpack.config.js")
-// );
+Copy(
+  path.join(__dirname, "./webpack.config.dev.js"),
+  path.join(destDir, "./webpack.config.js")
+);
 // fs.copyFileSync(
 //   path.join(__dirname, "./webpackDevServer.config.js"),
 //   path.join(destDir, "./webpackDevServer.config.js")
