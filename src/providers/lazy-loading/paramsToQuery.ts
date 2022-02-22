@@ -46,9 +46,9 @@ export function filtersToQuery(
   query: FireStoreQuery,
   filters: { [fieldName: string]: any }
 ): FireStoreQuery {
-  const res = Object.keys(filters).reduce((acc, fieldName) => {
-    acc.where(fieldName, '==', filters[fieldName]);
-    return acc;
+  const res = Object.entries(filters).reduce((acc,[fieldName, fieldValue]) => {
+    const opStr = fieldValue && Array.isArray(fieldValue) ? 'in' : '==';
+    return acc.where(fieldName, opStr, fieldValue);
   }, query);
   return res;
 }

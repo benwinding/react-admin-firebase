@@ -1,4 +1,5 @@
-type SearchValue = {} | number | string | boolean | null;
+type SearchValues = {} | number | string | boolean | null ;
+type SearchValue = SearchValues | SearchValue[];
 
 export interface SearchObj {
   searchField: string;

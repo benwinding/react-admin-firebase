@@ -87,5 +87,9 @@ export function doesRowMatch(
   if (isBooleanOrNumber) {
     return searchThis === searchValue;
   }
+  const isArraySearch = Array.isArray(searchValue);
+  if (isArraySearch) {
+    return searchValue.includes(searchThis);
+  }
   return false;
 }
