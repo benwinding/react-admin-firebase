@@ -28,8 +28,9 @@ export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions
   const testOptions = { projectId: safeId };
   const app = firebase.initializeTestApp(testOptions);
   const fire: IFirebaseWrapper = new FirebaseWrapperStub(
-    app.firestore() as FireStore,
-    app as FireApp,
+    // Slight (inconseqential) mismatch between test API and actual API
+    app.firestore() as any as FireStore,
+    app as any as FireApp,
     rafOptions,
   );
   return fire;
