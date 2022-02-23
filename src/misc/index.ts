@@ -9,3 +9,4 @@ export * from './react-admin-models';
 export * from './pathHelper';
 export * from './metadata-parser';
 export * from './logger';
+export * from './dispatcher';
