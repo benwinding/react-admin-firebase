@@ -6,7 +6,9 @@ import {
   FirebaseDataProvider,
   FirebaseAuthProvider,
 } from 'react-admin-firebase';
-import firebase from 'firebase';
+
+import firebase from "firebase/compat/app";
+
 import UserIcon from '@material-ui/icons/People';
 
 import CustomLoginPage from './CustomLoginPage';
@@ -15,6 +17,8 @@ import EventMonitor from './EventMonitor';
 const firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG);
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+console.log({firebaseConfig, firebaseApp});
 
 const authProvider = FirebaseAuthProvider(firebaseConfig);
 const dataProvider = FirebaseDataProvider(firebaseConfig, {

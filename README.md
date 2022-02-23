@@ -15,7 +15,7 @@ A firebase data provider for the [React-Admin](https://github.com/marmelab/react
 - [x] Firebase AuthProvider (email, password)
 - [x] Login with: Google, Facebook, Github etc... [(Example Here)](https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomLoginPage.js)
 - [x] Forgot password button... [(Example Here)](https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomForgotPassword.js)
-- [x] Firebase storage upload functionality (with upload monitoring)
+- [x] Firebase storage upload functionality, with upload monitoring... [(Example Here)](https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/EventMonitor.js)
 
 _Pull requests welcome!!_
 

@@ -10,6 +10,9 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "resolveJsonModule": true,
+    "isolatedModules": false,
+    "skipLibCheck": true,
+    "noImplicitAny": true,
     "esModuleInterop": true,
     "typeRoots": ["node_modules/@types", "src/types.d.ts"]
   },

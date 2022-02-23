@@ -1,10 +1,13 @@
+type SearchValues = {} | number | string | boolean | null ;
+type SearchValue = SearchValues | SearchValue[];
+
 export interface SearchObj {
   searchField: string;
-  searchValue: number | string | boolean | null;
+  searchValue: SearchValue;
 }
 export function getFieldReferences(
   fieldName: string,
-  value: {} | number | string | boolean | null
+  value: {} | SearchValue
 ): SearchObj[] {
   const isFalsy = !value;
   const isSimple = isFalsy ||
@@ -16,11 +19,11 @@ export function getFieldReferences(
     return [
       {
         searchField: fieldName,
-        searchValue: value as number | string | boolean | null,
+        searchValue: value as SearchValue,
       },
     ];
   }
-  const tree = {} as any;
+  const tree = {} as Record<string, SearchValue>;
   tree[fieldName] = value;
   return objectFlatten(tree);
 }

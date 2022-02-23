@@ -1,13 +1,11 @@
 // in src/posts.js
 import * as React from "react";
-// tslint:disable-next-line:no-var-requires
 import {
   Datagrid,
   List,
   Show,
   Create,
   Edit,
-  Filter,
   DateField,
   ImageField,
   ImageInput,
@@ -29,24 +27,24 @@ import {
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
-const PostFilter = (props) => (
-  <Filter {...props}>
-    <TextInput label="Search" source="title" alwaysOn />
-  </Filter>
-);
+// const PostFilter = (props) => (
+//   <Filter {...props}>
+//     <TextInput label="Search" source="title" alwaysOn />
+//   </Filter>
+// );
 
-const ReferenceFilter = (props) => (
-  <Filter {...props}>
-    <ReferenceInput
-      label="Organization"
-      source="user.id"
-      reference="users"
-      allowEmpty
-    >
-      <SelectInput optionText="name" />
-    </ReferenceInput>
-  </Filter>
-);
+// const ReferenceFilter = (props) => (
+//   <Filter {...props}>
+//     <ReferenceInput
+//       label="Organization"
+//       source="user.id"
+//       reference="users"
+//       allowEmpty
+//     >
+//       <SelectInput optionText="name" />
+//     </ReferenceInput>
+//   </Filter>
+// );
 
 export const PostList = (props) => (
   <List

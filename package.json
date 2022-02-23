@@ -1,9 +1,9 @@
 {
   "name": "react-admin-firebase",
   "description": "A firebase data provider for the React Admin framework",
-  "version": "3.2.16",
+  "version": "3.2.27",
   "peerDependencies": {
-    "firebase": "^7.9.x",
+    "firebase": "^9.6.4",
     "react": "^17.x",
     "react-admin": "^3.x",
     "react-dom": "^17.x",
@@ -15,11 +15,7 @@
     "rxjs": "^6.5.x"
   },
   "devDependencies": {
-    "@firebase/app-types": "^0.3.9",
-    "@firebase/auth-types": "^0.6.0",
-    "@firebase/firestore-types": "1.2.0",
-    "@firebase/testing": "^0.19.1",
-    "@firebase/util": "^0.2.11",
+    "@firebase/testing": "^0.20.11",
     "@types/firebase": "^3.2.1",
     "@types/jest": "^24.0.13",
     "@types/lodash": "^4.14.150",
@@ -30,7 +26,7 @@
     "cpx": "^1.5.0",
     "del": "^3.0.0",
     "ra-core": "3.10.0",
-    "firebase": "^7.9.1",
+    "firebase": "^9.6.4",
     "firebase-tools": "^8.1.1",
     "gulp": "^3.9.1",
     "gulp-sequence": "^1.0.0",
@@ -38,13 +34,14 @@
     "microbundle": "^0.12.4",
     "ts-jest": "^25",
     "tslint": "^5.16.0",
-    "typescript": "^4.1.x"
+    "typescript": "4.5.5"
   },
   "homepage": "https://github.com/benwinding/react-admin-firebase",
   "email": "hello@benwinding.com",
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && microbundle",
+    "tsc-test": "tsc -p ./tsconfig.spec.json",
     "watch": "microbundle watch",
     "start-demo": "gulp start-demo",
     "start-emulator": "yarn firebase emulators:start --only firestore",

@@ -18,7 +18,7 @@ export async function Delete<T extends ra.Record>(
     const id = params.id + "";
     await r.collection.doc(id).delete();
   } catch (error) {
-    throw new Error(error);
+    throw new Error(error as any);
   }
   return {
     data: params.previousData as T,

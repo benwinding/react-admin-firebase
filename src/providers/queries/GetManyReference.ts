@@ -26,7 +26,7 @@ export async function GetManyReference<T extends ra.Record>(
     softDeleted = data.filter(doc => !doc['deleted'])
   }
   const filteredData = filterArray(softDeleted, filterSafe);
-  const targetIdFilter = {} as any;
+  const targetIdFilter: Record<string, ra.Identifier> = {};
   targetIdFilter[targetField] = targetValue;
   const permittedData = filterArray(filteredData, targetIdFilter);
   if (params.sort != null) {

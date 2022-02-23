@@ -1,8 +1,10 @@
+import { FireApp } from "misc/firebase-models";
+
 export interface RAFirebaseOptions {
   // Use a different root document to set your resource collections, by default it uses the root collections of firestore
   rootRef?: string | (() => string);
   // Your own, previously initialized firebase app instance
-  app?: any;
+  app?: FireApp;
   // Enable logging of react-admin-firebase
   logging?: boolean;
   // Resources to watch for realtime updates, will implicitly watch all resources by default, if not set.

@@ -1,17 +1,43 @@
 import { RAFirebaseOptions } from "../../options";
-import { FirebaseAuth } from "@firebase/auth-types";
-import { User } from "firebase/app";
-
-export type FireApp = firebase.app.App;
+import {
+  FireApp,
+  FireAuth,
+  FireUser,
+  FireAuthUserCredentials,
+  FireStorage,
+  FireStore,
+  FireStoreTimeStamp,
+  FireStoragePutFileResult,
+  FireStoreCollectionRef,
+  FireStoreBatch
+} from "misc/firebase-models";
 
 export interface IFirebaseWrapper {
-  OnUserLogout(arg0: (user: firebase.User | null) => void): void;
-  init(firebaseConfig: {}, options: RAFirebaseOptions): void;
   options: RAFirebaseOptions;
-  db(): firebase.firestore.Firestore;
-  storage(): firebase.storage.Storage;
-  auth(): FirebaseAuth;
-  serverTimestamp(): any;
+  putFile(storagePath: string, rawFile: any): FireStoragePutFileResult;
+  getStorageDownloadUrl(fieldSrc: string): Promise<string>;
+  
+  dbGetCollection(absolutePath: string): FireStoreCollectionRef;
+  dbCreateBatch(): FireStoreBatch;
+  dbMakeNewId(): string;
+  
+  OnUserLogout(cb: (user: FireUser | null) => void): void;
+  authSetPersistence(persistenceInput: 'session' | 'local' | 'none'): Promise<void>;
+  authGetUserLoggedIn(): Promise<FireUser>;
+  authSigninEmailPassword(email: string, password: string): Promise<FireAuthUserCredentials>;
+  authSignOut(): Promise<void>;
+  serverTimestamp(): FireStoreTimeStamp | Date;
+
+  // Deprecated methods
+
+  /** @deprecated */
+  auth(): FireAuth;
+  /** @deprecated */
+  storage(): FireStorage;
+  /** @deprecated */
+  db(): FireStore;
+  /** @deprecated */
   GetApp(): FireApp;
-  GetUserLogin(): Promise<User>;
+  /** @deprecated */
+  GetUserLogin(): Promise<FireUser>;
 }

@@ -3,14 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "firebase": "^7.9.1",
+    "firebase": "^9.6.4",
+    "react-router-dom": "^5.x",
     "ra-input-rich-text": "^3.3.1",
-    "react": "^17.0.2",
-    "react-admin": "3.3.3",
+    "react": "^17.x",
+    "react-admin": "^3.x",
+    "react-dom": "^17.x",
     "react-admin-firebase": "3",
-    "react-dom": "^17.0.2",
-    "react-firebaseui": "^4.1.0",
-    "react-scripts": "1.1.5",
+    "react-firebaseui": "^6.0.0",
+    "react-scripts": "^2.x",
     "source-map-loader": "^0.2.4"
   },
   "homepage": "https://benwinding.github.io/react-admin-firebase/",
@@ -21,10 +22,16 @@
   },
   "scripts": {
     "start": "REACT_APP_FIREBASE_CONFIG=`cat ./FIREBASE_CONFIG.json` NODE_ENV=development BROWSER=none PORT=3333 react-scripts start",
-    "build": "react-scripts build",
+    "build": "REACT_APP_FIREBASE_CONFIG=`cat ./FIREBASE_CONFIG.json` react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build",
     "postinstall": "node ./overrides/patch.js"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

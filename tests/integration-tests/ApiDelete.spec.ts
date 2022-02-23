@@ -7,7 +7,7 @@ describe("api methods", () => {
 
     const docId = "test123";
     const docObj = { id: docId, name: "Jim" };
-    await client.db().collection("t2").doc(docId).set(docObj);
+    await client.fireWrapper.dbGetCollection("t2").doc(docId).set(docObj);
 
     await Delete(
       "t2",
@@ -18,7 +18,7 @@ describe("api methods", () => {
       client
     );
 
-    const users = await getDocsFromCollection(client.db(), "t2");
+    const users = await getDocsFromCollection(client.fireWrapper.db(), "t2");
     expect(users.length).toBe(0);
   }, 100000);
 });

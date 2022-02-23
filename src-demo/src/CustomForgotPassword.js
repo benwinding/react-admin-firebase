@@ -10,7 +10,8 @@ import {
   TextField,
 } from "@material-ui/core";
 
-import firebase from "firebase";
+import firebase from "firebase/compat/app";
+import "firebase/compat/auth";
 
 export default function AlertDialog() {
   const [open, setOpen] = React.useState(false);
