@@ -1,4 +1,5 @@
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/storage';
 
 export type FireUser = firebase.User;
 export type FireApp = firebase.app.App;
@@ -26,3 +27,6 @@ export type FireStoreQueryDocumentSnapshot = firebase.firestore.QueryDocumentSna
 export type FireStoreQuery = firebase.firestore.Query;
 export type FireStoreQueryOrder = firebase.firestore.OrderByDirection;
 
+export const TASK_PAUSED = firebase.storage.TaskState.PAUSED
+export const TASK_RUNNING = firebase.storage.TaskState.RUNNING
+export const TASK_CANCELED = firebase.storage.TaskState.CANCELED

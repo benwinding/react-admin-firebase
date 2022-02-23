@@ -1,4 +1,5 @@
 import { set, get } from "lodash";
+import { TASK_CANCELED, TASK_PAUSED, TASK_RUNNING } from "../../misc/firebase-models";
 import {
   AddCreatedByFields,
   AddUpdatedByFields,
@@ -7,6 +8,7 @@ import {
   log,
   logError,
   parseDocGetAllUploads,
+  dispatch,
 } from "../../misc";
 import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
@@ -76,8 +78,39 @@ export class FireClient {
   ): Promise<string | undefined> {
     log("saveFile() saving file...", { storagePath, rawFile });
     try {
-      const { taskResult, downloadUrl } = this.fireWrapper.putFile(storagePath, rawFile);
-      const getDownloadURL = await downloadUrl;
+      const { task, taskResult, downloadUrl } = this.fireWrapper.putFile(storagePath, rawFile);
+      const { name } = rawFile;
+      // monitor upload status & progress
+      dispatch('FILE_UPLOAD_WILL_START', name);
+      task.on('state_changed', (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        log('Upload is ' + progress + '% done');
+        dispatch('FILE_UPLOAD_PROGRESS', name, progress);
+        switch (snapshot.state) {
+          case TASK_PAUSED:
+            log('Upload is paused');
+            dispatch('FILE_UPLOAD_PAUSED', name);
+            break;
+          case TASK_RUNNING:
+            log('Upload is running');
+            dispatch('FILE_UPLOAD_RUNNING', name);
+            break;
+          case TASK_CANCELED:
+            log('Upload has been canceled');
+            dispatch('FILE_UPLOAD_CANCELED', name);
+            break;
+          // case storage.TaskState.ERROR:
+            // already handled by catch
+          // case storage.TaskState.SUCCESS:
+            // already handled by then
+        }
+      });
+      const [getDownloadURL] = await Promise.all([
+        downloadUrl,
+        taskResult,
+      ]);
+      dispatch('FILE_UPLOAD_COMPLETE', name);
+      dispatch('FILE_SAVED', name);
       log("saveFile() saved file", {
         storagePath,
         taskResult,
