@@ -18,7 +18,7 @@
   "devDependencies": {
     "concurrently": "4.1.1",
     "cpx": "1.5.0",
-    "gh-pages": "^2.0.1"
+    "gh-pages": "3.2.3"
   },
   "scripts": {
     "start": "REACT_APP_FIREBASE_CONFIG=`cat ./FIREBASE_CONFIG.json` NODE_ENV=development BROWSER=none PORT=3333 react-scripts start",
