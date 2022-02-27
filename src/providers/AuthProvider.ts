@@ -7,7 +7,7 @@ import {
   UserIdentity,
 } from '../misc/react-admin-models';
 import { IFirebaseWrapper } from './database';
-import { FireUser } from 'misc/firebase-models';
+import { FireUser } from '../misc/firebase-models';
 
 class AuthClient {
   private fireWrapper: IFirebaseWrapper;
@@ -190,12 +190,12 @@ class AuthClient {
 export function AuthProvider(
   firebaseConfig: {},
   options: RAFirebaseOptions
-): RaAuthProvider {
+): ReactAdminFirebaseAuthProvider {
   VerifyAuthProviderArgs(firebaseConfig, options);
   logger.SetEnabled(!!options?.logging);
   const auth = new AuthClient(firebaseConfig, options);
 
-  const provider: RaAuthProvider = {
+  const provider: ReactAdminFirebaseAuthProvider = {
     // React Admin Interface
     login: (params) => auth.HandleAuthLogin(params),
     logout: () => auth.HandleAuthLogout(),
@@ -212,6 +212,16 @@ export function AuthProvider(
     getJWTToken: () => auth.HandleGetJWTToken(),
   };
   return provider;
+}
+
+export type ReactAdminFirebaseAuthProvider = RaAuthProvider & {
+  // Custom Functions
+  getAuthUser: () => Promise<FireUser>,
+  getJWTAuthTime: () => Promise<string | null>,
+  getJWTExpirationTime: () => Promise<string | null>,
+  getJWTSignInProvider: () => Promise<string | null>,
+  getJWTClaims: () => Promise<{ [key: string]: any; } | null>,
+  getJWTToken: () => Promise<string | null>,  
 }
 
 function VerifyAuthProviderArgs(
