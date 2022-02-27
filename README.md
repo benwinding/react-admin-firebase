@@ -113,8 +113,8 @@ const options = {
     enabled: false,
     localStoragePrefix // optional
   },
-  // Function to transform documents before they are written to Firestore
-  transformToDb: (resourceName, document, documentId) => document
+  // Function to transform documentData before they are written to Firestore
+  transformToDb: (resourceName, documentData, documentId) => documentDataTransformed
 }
 
 const dataProvider = FirebaseDataProvider(config, options);
