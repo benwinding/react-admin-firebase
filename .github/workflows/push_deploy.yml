@@ -20,9 +20,11 @@ jobs:
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: yarn install --pure-lockfile
-      - name: Check Build
+      - name: Check library builds
         run: yarn build
-      - name: Check Tests
+      - name: Check tests build
+        run: yarn tsc-test
+      - name: Check tests pass
         run: yarn test
       - name: Upload lib build artifact
         uses: actions/upload-artifact@v2
@@ -83,4 +85,4 @@ jobs:
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: src-demo/dist # The folder the action should deploy.
+        FOLDER: src-demo/build # The folder the action should deploy.
