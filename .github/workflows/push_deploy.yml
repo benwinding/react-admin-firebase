@@ -31,6 +31,7 @@ jobs:
           path: dist
 
   deploy:
+    if: "!contains(github.event.head_commit.message, 'no-deploy-lib')"
     needs: build
     name: Deploy Library
     runs-on: ubuntu-latest
@@ -73,6 +74,7 @@ jobs:
     - name: Install Dependencies
       if: steps.cache-modules.outputs.cache-hit != 'true'
       run: yarn install
+      working-directory: ./src-demo
     - run: REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" yarn build-ci
       working-directory: ./src-demo
     - name: Deploy to GH Pages 🚀
