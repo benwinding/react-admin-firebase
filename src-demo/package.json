@@ -7,12 +7,12 @@
     "react-router-dom": "^5.x",
     "ra-input-rich-text": "^3.3.1",
     "react": "^17.x",
-    "react-admin": "^3.x",
+    "react-admin": "^3.19.10",
     "react-dom": "^17.x",
     "react-admin-firebase": "3",
     "react-firebaseui": "^6.0.0",
-    "react-scripts": "^2.x",
-    "source-map-loader": "^0.2.4"
+    "react-scripts": "^5.0.0",
+    "source-map-loader": "^3"
   },
   "homepage": "https://benwinding.github.io/react-admin-firebase/",
   "devDependencies": {
@@ -27,8 +27,7 @@
     "cp-dist": "rm -rf ./node_modules/react-admin-firebase/dist && cp -r ../dist ./node_modules/react-admin-firebase/dist",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "gh-pages -d build",
-    "postinstall": "node ./overrides/patch.js"
+    "deploy": "gh-pages -d build"
   },
   "browserslist": [
     ">0.2%",

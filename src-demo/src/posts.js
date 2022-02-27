@@ -24,6 +24,7 @@ import {
   FileField,
   ArrayInput,
   SimpleFormIterator,
+  DateInput,
 } from "react-admin";
 import RichTextInput from "ra-input-rich-text";
 
@@ -95,6 +96,7 @@ export const PostCreate = (props) => (
       <TextInput source="id" />
       <TextInput source="title" />
       <RichTextInput source="body" />
+      <DateInput source="date" parse={val => new Date(val)} />
       <ReferenceInput
         label="User"
         source="user_id"
