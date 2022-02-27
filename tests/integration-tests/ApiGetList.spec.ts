@@ -4,7 +4,7 @@ import { FireStoreCollectionRef } from "../../src/misc/firebase-models";
 
 describe("api methods", () => {
   test("FireClient list docs", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "list-mes";
     const collection = client.fireWrapper.dbGetCollection(collName);
@@ -31,7 +31,7 @@ describe("api methods", () => {
   }, 100000);
 
   test("FireClient list docs with boolean filter", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const testDocs = [
       {
         title: "A",
@@ -71,7 +71,7 @@ describe("api methods", () => {
   }, 100000);
 
   test("FireClient list docs with dotpath sort", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const testDocs = [
       {
         obj: {
@@ -117,7 +117,7 @@ describe("api methods", () => {
   }, 100000);
 
   test("FireClient with filter gte", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const testDocs = [
       {
         title: "A",

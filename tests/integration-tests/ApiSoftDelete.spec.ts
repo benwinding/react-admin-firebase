@@ -3,7 +3,7 @@ import { DeleteSoft } from "../../src/providers/commands";
 
 describe("api methods", () => {
   test("FireClient delete doc", async () => {
-    const client = MakeMockClient({ softDelete: true, disableMeta: true });
+    const client = await MakeMockClient({ softDelete: true, disableMeta: true });
     const id = "test123";
     const collName = "t2";
     const docRef = client.fireWrapper.dbGetCollection(collName).doc(id);

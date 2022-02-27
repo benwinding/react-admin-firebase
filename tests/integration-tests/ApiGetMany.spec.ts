@@ -3,7 +3,7 @@ import { GetMany } from "../../src/providers/queries";
 
 describe("api methods", () => {
   test("FireClient list docs", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "list-mes";
     const collection = client.fireWrapper.dbGetCollection(collName);

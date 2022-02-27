@@ -3,7 +3,7 @@ import { GetOne } from "../../src/providers/queries";
 
 describe("api methods", () => {
   test("FireClient apiGetOne", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "list-mes";
     const collection = client.fireWrapper.dbGetCollection(collName);
@@ -18,7 +18,7 @@ describe("api methods", () => {
   }, 100000);
 
   test("FireClient apiGetOne, with nested Dates", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const collName = "list-mes";
     const docId = "1234";
     const collection = client.fireWrapper.dbGetCollection(collName);

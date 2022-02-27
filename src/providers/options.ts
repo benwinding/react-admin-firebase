@@ -47,6 +47,8 @@ export interface RAFirebaseOptions {
     enabled: boolean;
     persistCount?: boolean;
   };
+  // Function to transform documents before they are written to Firestore
+  transformToDb?: (resourceName: string, document: any, documentId: string) => any;
   /* OLD FLAGS */
   /**
    * @deprecated The method should not be used

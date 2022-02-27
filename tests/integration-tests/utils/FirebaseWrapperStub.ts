@@ -1,6 +1,5 @@
 import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
 import { RAFirebaseOptions } from '../../../src/providers/options';
-import * as firebase from "@firebase/testing";
 import {
   FireApp,
   FireAuth,
@@ -62,7 +61,7 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
     throw new Error('Method not implemented.');
   }
   serverTimestamp() {
-    return firebase.firestore.FieldValue.serverTimestamp();
+    return new Date();
   }
 
   // Deprecated methods

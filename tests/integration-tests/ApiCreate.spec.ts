@@ -3,7 +3,7 @@ import { Create } from "../../src/providers/commands";
 
 describe("ApiCreate", () => {
   test("FireClient create doc", async () => {
-    const client = MakeMockClient({
+    const client = await MakeMockClient({
       logging: true,
       disableMeta: true,
     });
@@ -15,7 +15,7 @@ describe("ApiCreate", () => {
     expect(first.name).toBe("John");
   }, 100000);
   test("FireClient create doc with custom meta", async () => {
-    const client = MakeMockClient({
+    const client = await MakeMockClient({
       logging: true,
       renameMetaFields: {
         updated_by: 'MY_CREATED_BY',
@@ -27,5 +27,41 @@ describe("ApiCreate", () => {
     const first = users[0] as {};
 
     expect(first.hasOwnProperty('MY_CREATED_BY')).toBeTruthy();
+  }, 100000);
+  test("FireClient create doc with transformToDb function provided", async () => {
+    const client = await MakeMockClient({
+      logging: true,
+      transformToDb: (resourceName, document, id) => {
+        if (resourceName === "users") {
+          return {
+            ...document,
+            firstName: document.firstName.toUpperCase(),
+            picture: document.picture.src || document.picture,
+          };
+        }
+        return document;
+      }
+    });
+
+    const newUser = { 
+      firstName: "John",
+      lastName: "Last",
+      age: 20,
+      picture: {
+        src: "http://example.com/pic.png"
+      },
+    };
+
+    await Create("users", { data: newUser }, client);
+    const users = (await client.fireWrapper.dbGetCollection("users").get()).docs;
+
+    expect(users.length).toBe(1);
+    expect(users[0].data()).toMatchObject({
+      firstName: "JOHN",
+      lastName: "Last",
+      age: 20,
+      picture: "http://example.com/pic.png",
+    });
+
   }, 100000);
 });

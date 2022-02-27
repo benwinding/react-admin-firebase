@@ -3,7 +3,7 @@ import { DeleteMany } from "../../src/providers/commands";
 
 describe("api methods", () => {
   test("FireClient delete doc", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
     const docIds = ["test123", "test22222", "asdads"];
     const collName = "deleteables";
     const collection = client.fireWrapper.dbGetCollection(collName);

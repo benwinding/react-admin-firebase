@@ -1,4 +1,4 @@
-import * as firebase from '@firebase/testing';
+import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
 
 import { IFirebaseWrapper } from "../../../src/providers/database/firebase/IFirebaseWrapper";
 import { FirebaseWrapperStub } from "./FirebaseWrapperStub";
@@ -17,32 +17,27 @@ export class BlankLogger implements IFirestoreLogger {
   ResetCount = (shouldReset: boolean) => null;
 }
 
-export function MakeMockClient(options: RAFirebaseOptions = {}) {
+export async function MakeMockClient(options: RAFirebaseOptions = {}) {
   const randomProjectId = Math.random().toString(32).slice(2, 10);
-  const fire = initFireWrapper(randomProjectId, options);
+  const fire = await initFireWrapper(randomProjectId, options);
   return new FireClient(fire, options, new BlankLogger);
 }
 
-export function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): IFirebaseWrapper {
+export async function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): Promise<IFirebaseWrapper> {
   const safeId = makeSafeId(projectId);
   const testOptions = { projectId: safeId };
-  const app = firebase.initializeTestApp(testOptions);
+  const enivornment = await initializeTestEnvironment(testOptions);
+  const context = enivornment.unauthenticatedContext();
   const fire: IFirebaseWrapper = new FirebaseWrapperStub(
     // Slight (inconseqential) mismatch between test API and actual API
-    app.firestore() as any as FireStore,
-    app as any as FireApp,
+    context.firestore() as FireStore,
+    context as FireApp,
     rafOptions,
   );
   return fire;
 }
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-export async function clearDb(projectId: string) {
-  const safeId = makeSafeId(projectId);
-  const testOptions = { projectId: safeId };
-  return firebase.clearFirestoreData(testOptions);
-}
 
 export async function createDoc(
   db: FireStore,

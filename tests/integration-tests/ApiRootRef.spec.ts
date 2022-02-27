@@ -2,7 +2,7 @@ import { MakeMockClient } from "./utils/test-helpers";
 
 describe("ApiRootRef", () => {
   test("rootref1", async () => {
-    const client = MakeMockClient({ rootRef: "root-ref1/ok" });
+    const client = await MakeMockClient({ rootRef: "root-ref1/ok" });
     const rm = client.rm;
     const docRef = await client
       .fireWrapper
@@ -15,7 +15,7 @@ describe("ApiRootRef", () => {
   }, 10000);
 
   test("rootreffunction1", async () => {
-    const client = MakeMockClient({ rootRef: "root-ref-function1/ok" });
+    const client = await MakeMockClient({ rootRef: "root-ref-function1/ok" });
     const rm = client.rm;
     const docRef = await client
       .fireWrapper

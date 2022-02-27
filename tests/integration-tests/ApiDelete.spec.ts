@@ -3,7 +3,7 @@ import { Delete } from "../../src/providers/commands";
 
 describe("api methods", () => {
   test("FireClient delete doc", async () => {
-    const client = MakeMockClient();
+    const client = await MakeMockClient();
 
     const docId = "test123";
     const docObj = { id: docId, name: "Jim" };

@@ -31,6 +31,13 @@ export class FireClient {
     }
   }
 
+  public transformToDb(resourceName: string, document: any, docId: string): any {
+    if (typeof this.options.transformToDb === 'function') {
+      return this.options.transformToDb(resourceName, document, docId);
+    }
+    return document;
+  }
+
   public async parseDataAndUpload(r: IResource, id: string, data: any) {
     if (!data) {
       return data;
