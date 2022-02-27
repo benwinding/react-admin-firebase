@@ -70,7 +70,10 @@ jobs:
       with:
         path: src-demo/node_modules
         key: ${{ runner.OS }}-demo-${{ hashFiles('src-demo/package.json') }}
-    - run: REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" yarn build
+    - name: Install Dependencies
+      if: steps.cache-modules.outputs.cache-hit != 'true'
+      run: yarn install
+    - run: REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" yarn build-ci
       working-directory: ./src-demo
     - name: Deploy to GH Pages 🚀
       if: github.ref == 'refs/heads/master'
