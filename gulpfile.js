@@ -1,6 +1,5 @@
-const del = require("del");
+const { series, watch } = require('gulp');
 const gulp = require("gulp");
-const gulpSequence = require("gulp-sequence");
 const exec = require("child_process").exec;
 
 const execCmd = (cmd, directory) => {
@@ -30,27 +29,20 @@ const conf = {
   }
 };
 
-gulp.task("clean", function() {
-  return del([conf.output.dir]);
-});
+async function prepareDemo(cb) {
+  await execCmd("yarn", './src-demo')
+  cb();
+}
 
-gulp.task("build", function() {
-  return execCmd("yarn build");
-});
+function copyToDemo() {
+  return gulp.src(conf.copyFrom, { base: "." }).pipe(gulp.dest(conf.copyTo))
+}
 
-gulp.task("prepare-demo", function() {
-  return execCmd("yarn", './src-demo');
-});
-
-gulp.task("copy-to-demo", function() {
-  return gulp.src(conf.copyFrom, { base: "." }).pipe(gulp.dest(conf.copyTo));
-});
-
-gulp.task("watch-and-copy-to-demo", function() {
-  // Execute commands in series
+function watchAndCopy(cb) {
+  // body omitted
   execCmd("yarn watch", '.');
-  gulp.watch(conf.output.dir, ["copy-to-demo"]);
+  watch(conf.output.dir, copyToDemo);
   execCmd("sleep 10 && yarn start", 'src-demo');
-});
+}
 
-gulp.task("start-demo", gulpSequence("prepare-demo", "watch-and-copy-to-demo"));
+exports['start-demo'] = series(prepareDemo, watchAndCopy);
