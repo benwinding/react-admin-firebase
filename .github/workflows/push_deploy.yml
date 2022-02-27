@@ -3,7 +3,7 @@ name: "Build, Test & Deploy 🚀"
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, 'no-ci')"
-    name: Build & Test
+    name: Build Lib
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -16,7 +16,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.OS }}-push_deploy-${{ hashFiles('package.json') }}
+          key: ${{ runner.OS }}-build-${{ hashFiles('package.json') }}
       - name: Install Dependencies
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: yarn install --pure-lockfile
@@ -24,12 +24,58 @@ jobs:
         run: yarn build
       - name: Check Tests
         run: yarn test
-      - name: Deploy to npm! 🚀 (if master branch)
-        if: github.ref == 'refs/heads/master'
-        uses: benwinding/merge-release@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-      - name: Deploy demo! 🚀 (if master branch)
-        if: github.ref == 'refs/heads/master'
-        run: cd src-demo && yarn && REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" npm run-script build && npm run-script deploy
+      - name: Upload lib build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-lib
+          path: dist
+
+  deploy:
+    needs: build
+    name: Deploy Library
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12.22.8
+    - uses: actions/cache@v1
+      id: cache-modules
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-deploy-${{ hashFiles('package.json') }}
+    - name: Download build-lib
+      uses: actions/download-artifact@v2
+      with:
+        name: build-lib
+        path: dist
+    - name: Deploy to npm! 🚀 (if master branch)
+      if: github.ref == 'refs/heads/master'
+      uses: benwinding/merge-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  demo:
+    needs: build
+    name: Deploy Demo
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12.22.8
+    - uses: actions/cache@v1
+      id: cache-modules
+      with:
+        path: src-demo/node_modules
+        key: ${{ runner.OS }}-demo-${{ hashFiles('src-demo/package.json') }}
+    - run: REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" yarn build
+      working-directory: ./src-demo
+    - name: Deploy to GH Pages 🚀
+      if: github.ref == 'refs/heads/master'
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: src-demo/dist # The folder the action should deploy.
