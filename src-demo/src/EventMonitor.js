@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 
 const EventMonitor = () => {
 
-	const eventMonitorRef = useRef<HTMLDivElement>(null);
+	const eventMonitorRef = useRef();
 
 	// subscribe for file upload events on mount
 	useEffect(() => {
