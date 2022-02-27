@@ -67,7 +67,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:
-        node-version: 12.22.8
+        node-version: 14
     - uses: actions/cache@v1
       id: cache-modules
       with:
