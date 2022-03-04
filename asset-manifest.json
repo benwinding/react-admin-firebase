@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/react-admin-firebase/static/js/main.e56c50e3.js",
+    "main.js": "/react-admin-firebase/static/js/main.7e186aaf.js",
     "index.html": "/react-admin-firebase/index.html",
-    "main.e56c50e3.js.map": "/react-admin-firebase/static/js/main.e56c50e3.js.map"
+    "main.7e186aaf.js.map": "/react-admin-firebase/static/js/main.7e186aaf.js.map"
   },
   "entrypoints": [
-    "static/js/main.e56c50e3.js"
+    "static/js/main.7e186aaf.js"
   ]
 }
