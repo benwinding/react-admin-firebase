@@ -51,8 +51,8 @@ export default function AlertDialog() {
   };
 
   return (
-    <div>
-      <Button variant="contained" onClick={handleClickOpen}>
+    <div style={{display: 'flex', justifyContent: 'center', padding: '10px', paddingTop: '0px'}}>
+      <Button variant="contained" onClick={handleClickOpen} style={{width: '100%'}}>
         Forgot Password?
       </Button>
       <Dialog

@@ -41,8 +41,8 @@ const CustomLoginForm = props => (
       <p>Password: password</p>
     </div>
     <LoginForm {...props} />
-    <ForgotPasswordButton {...props} />
     <SignInScreen />
+    <ForgotPasswordButton {...props} />
   </div>
 );
 
