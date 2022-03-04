@@ -14,7 +14,12 @@ import UserIcon from '@material-ui/icons/People';
 import CustomLoginPage from './CustomLoginPage';
 import EventMonitor from './EventMonitor';
 
-const firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG);
+let firebaseConfig;
+try {
+  firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG);
+} catch (error) {
+  console.error('Error parsing (maybe quotes aren\'t escaped?): ', {REACT_APP_FIREBASE_CONFIG: process.env.REACT_APP_FIREBASE_CONFIG}, error);
+}
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
