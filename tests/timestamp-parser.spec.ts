@@ -1,66 +1,69 @@
-import { parseAllDatesDoc, recusivelyCheckObjectValue } from "../src/misc";
+import { translateDocFromFirestore } from "../src/misc";
+
+function parseAllDatesDoc(doc: any) {
+  return translateDocFromFirestore(doc).parsedDoc;
+}
 
 describe("timestamp-parser tests", () => {
-  test("retains number", () => {
+  test("null doesn't break it", () => {
     const doc = null;
-    parseAllDatesDoc(doc);
-    expect(doc).toBe(null);
+    expect(() => parseAllDatesDoc(doc)).not.toThrowError();
   });
 
   test("retains falsey", () => {
     const doc = { a: null };
-    parseAllDatesDoc(doc);
-    expect(doc.a).toBe(null);
+    const res = parseAllDatesDoc(doc);
+    expect(res.a).toBe(null);
   });
 
   test("retains number", () => {
     const doc = { a: 1 };
-    parseAllDatesDoc(doc);
-    expect(doc.a).toBe(1);
+    const res = parseAllDatesDoc(doc);
+    expect(res.a).toBe(1);
   });
 
   test("retains string", () => {
     const doc = { a: "1" };
-    parseAllDatesDoc(doc);
-    expect(doc.a).toBe("1");
+    const res = parseAllDatesDoc(doc);
+    expect(res.a).toBe("1");
   });
 
   test("retains object", () => {
     const doc = { a: { f: "1" } };
-    parseAllDatesDoc(doc);
-    expect(doc.a.f).toBe("1");
+    const res = parseAllDatesDoc(doc);
+    expect(res.a.f).toBe("1");
   });
 
   test("converts timestamp simple", () => {
     const doc = { a: makeTimestamp() };
-    parseAllDatesDoc(doc);
-    expect(doc.a).toBeInstanceOf(Date);
+    const res = parseAllDatesDoc(doc);
+    expect(res.a).toBeInstanceOf(Date);
   });
 
   test("converts timestamp deep nested", () => {
     const doc = { a: { b: makeTimestamp(), c: { d: makeTimestamp() } } };
-    parseAllDatesDoc(doc);
-    expect(doc.a.b).toBeInstanceOf(Date);
+    const res = parseAllDatesDoc(doc);
+    expect(res.a.b).toBeInstanceOf(Date);
     expect(doc.a.c.d).toBeInstanceOf(Date);
   });
 
   test("converts timestamp array", () => {
     const doc = { a: { c: [makeTimestamp(), makeTimestamp()] } };
-    parseAllDatesDoc(doc);
-    expect(doc.a.c[0]).toBeInstanceOf(Date);
+    const res = parseAllDatesDoc(doc);
+    expect(res.a.c[0]).toBeInstanceOf(Date);
     expect(doc.a.c[1]).toBeInstanceOf(Date);
   });
 
   test("converts timestamp array", () => {
     const doc = { a: { c: [{ d: makeTimestamp() }] } };
-    parseAllDatesDoc(doc);
-    expect(doc.a.c[0].d).toBeInstanceOf(Date);
+    const res = parseAllDatesDoc(doc);
+    expect(res.a.c[0].d).toBeInstanceOf(Date);
   });
 
   test("retains falsey", () => {
     const doc = ['okay'];
-    recusivelyCheckObjectValue(doc);
-    expect(doc[0]).toBe('okay');
+    const res = parseAllDatesDoc(doc);
+    expect(res[0]).toBe('okay');
   });
 });
 
