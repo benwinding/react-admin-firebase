@@ -1,4 +1,8 @@
-import { parseDocGetAllUploads } from "../src/misc";
+import { translateDocToFirestore } from "../src/misc";
+
+function parseDocGetAllUploads(doc: any) {
+  return translateDocToFirestore(doc).uploads;
+}
 
 describe("file-parser tests", () => {
   test("simple single file", () => {
