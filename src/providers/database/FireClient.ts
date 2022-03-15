@@ -7,8 +7,8 @@ import {
   joinPaths,
   log,
   logError,
-  parseDocGetAllUploads,
   dispatch,
+  translateDocToFirestore,
 } from "../../misc";
 import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
@@ -44,7 +44,8 @@ export class FireClient {
     }
     const docPath = r.collection.doc(id).path;
 
-    const uploads = parseDocGetAllUploads(data);
+    const result = translateDocToFirestore(data);
+    const uploads = result.uploads;
     await Promise.all(
       uploads.map(async (u) => {
         const link = await this.uploadAndGetLink(

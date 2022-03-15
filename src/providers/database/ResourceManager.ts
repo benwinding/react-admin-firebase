@@ -4,17 +4,18 @@ import {
   log,
   getAbsolutePath,
   messageTypes,
-  parseAllDatesDoc,
   logWarn,
   IFirestoreLogger,
+  parseFireStoreDocument,
 } from '../../misc';
-import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQueryDocumentSnapshot } from 'misc/firebase-models';
+import { FireStoreCollectionRef } from 'misc/firebase-models';
 
+type IResourceItem = {} & { id: string, deleted?: boolean };
 export interface IResource {
   path: string;
   pathAbsolute: string;
   collection: FireStoreCollectionRef;
-  list: Array<{} & { deleted?: boolean }>;
+  list: Array<IResourceItem>;
 }
 
 export class ResourceManager {
@@ -91,7 +92,7 @@ export class ResourceManager {
     const query = this.applyQuery(collection, collectionQuery);
     const newDocs = await query.get();
 
-    resource.list = newDocs.docs.map((doc) => this.parseFireStoreDocument(doc));
+    resource.list = newDocs.docs.map((doc) => parseFireStoreDocument<IResourceItem>(doc));
     const count = newDocs.docs.length;
     this.flogger.logDocument(count)();
     log('resourceManager.RefreshResource', {
@@ -109,7 +110,7 @@ export class ResourceManager {
     if (!docSnap.exists) {
       throw new Error('react-admin-firebase: No id found matching: ' + docId);
     }
-    const result = this.parseFireStoreDocument(docSnap);
+    const result = parseFireStoreDocument(docSnap);
     log('resourceManager.GetSingleDoc', {
       relativePath,
       resource,
@@ -133,7 +134,7 @@ export class ResourceManager {
       return;
     }
     const collection = this.fireWrapper.dbGetCollection(absolutePath);
-    const list: Array<{}> = [];
+    const list: Array<IResourceItem> = [];
     const resource: IResource = {
       collection,
       list,
@@ -147,18 +148,6 @@ export class ResourceManager {
       collection: collection,
       collectionPath: collection.path,
     });
-  }
-
-  private parseFireStoreDocument(doc: FireStoreQueryDocumentSnapshot | FireStoreDocumentSnapshot | undefined): {} {
-    if (!doc) {
-      logWarn('parseFireStoreDocument: no doc', { doc });
-      return {};
-    }
-    const data = doc.data();
-    parseAllDatesDoc(data);
-    // React Admin requires an id field on every document,
-    // So we can just using the firestore document id
-    return { id: doc.id, ...data };
   }
 
   public async getUserIdentifier(): Promise<string> {

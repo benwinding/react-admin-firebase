@@ -53,7 +53,7 @@ export class FirebaseLazyLoadingClient {
     }
     this.client.flogger.logDocument(resultsCount)();
 
-    const data = snapshots.docs.map(d => parseFireStoreDocument(d)) as T[];
+    const data = snapshots.docs.map(doc => parseFireStoreDocument<T>(doc));
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
     // After fetching documents save queryCursor for next page
     setQueryCursor(nextPageCursor, getNextPageParams(params), resourceName);
