@@ -10,6 +10,11 @@ import {
 import firebase from "firebase/compat/app";
 
 import UserIcon from '@material-ui/icons/People';
+import CommentIcon from '@material-ui/icons/Comment';
+
+import * as Posts from "./posts";
+import * as Users from "./users";
+import * as Comments from "./comments";
 
 import CustomLoginPage from './CustomLoginPage';
 import EventMonitor from './EventMonitor';
