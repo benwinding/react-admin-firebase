@@ -1,4 +1,6 @@
 import { FireStoreCollectionRef } from "./firebase-models";
+import { ParsedRefDoc } from "./internal.models";
+// Firebase types
 import { GetListParams } from "./react-admin-models";
 
 // PARAMETERS
@@ -42,8 +44,9 @@ export namespace messageTypes {
     ids: string[];
   }
 
+  export type IdMaybeRef = string | any;
   export interface IParamsGetMany {
-    ids: string[];
+    ids: (string | ParsedRefDoc)[];
   }
 
   export interface IParamsGetManyReference {

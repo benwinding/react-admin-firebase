@@ -1,6 +1,6 @@
 import { FireStoreQueryDocumentSnapshot, FireStoreDocumentSnapshot } from "./firebase-models";
 import { logWarn } from "./logger";
-import { translateDocFromFirestore } from "./translate-from-firestore";
+import { applyRefDocs, translateDocFromFirestore } from "./translate-from-firestore";
 import * as ra from './react-admin-models';
 
 export function parseFireStoreDocument<T extends ra.Record>(doc: FireStoreQueryDocumentSnapshot | FireStoreDocumentSnapshot | undefined): T {
@@ -10,8 +10,8 @@ export function parseFireStoreDocument<T extends ra.Record>(doc: FireStoreQueryD
   }
   const data = doc.data();
   const result = translateDocFromFirestore(data);
-  const dataParsed = result.parsedDoc;
+  const dataWithRefs = applyRefDocs(result.parsedDoc, result.refdocs);
   // React Admin requires an id field on every document,
   // So we can just using the firestore document id
-  return { id: doc.id, ...dataParsed } as T;
+  return { id: doc.id, ...dataWithRefs } as T;
 }

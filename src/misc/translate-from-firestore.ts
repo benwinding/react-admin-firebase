@@ -1,8 +1,8 @@
-import { logError } from "./logger";
+import { set, has } from "lodash";
 import { IFirebaseWrapper } from "providers/database";
-// import { DocumentReference } from "@firebase/firestore-types";
-// import { set } from "lodash";
-// import { REF_INDENTIFIER } from "./internal.models";
+import { REF_INDENTIFIER } from "./internal.models";
+import { logError } from "./logger";
+import { FireStoreDocumentRef } from "./firebase-models";
 
 export interface RefDocFound {
   fieldPath: string;
@@ -54,12 +54,12 @@ export function recusivelyCheckObjectValue(
       recusivelyCheckObjectValue(value, `${fieldPath}.${index}`, result)
     );
   }
-  // const isDocumentReference = isInputADocReference(input);
-  // if (isDocumentReference) {
-  //   const ref = input as DocumentReference;
-  //   result.refdocs.push({ fieldPath: fieldPath, refDocPath: ref.path });
-  //   return ref.id;
-  // }
+  const isDocumentReference = isInputADocReference(input);
+  if (isDocumentReference) {
+    const ref = input as FireStoreDocumentRef;
+    result.refdocs.push({ fieldPath: fieldPath, refDocPath: ref.path });
+    return ref.id;
+  }
   const isObject = typeof input === "object";
   if (isObject) {
     Object.keys(input).map((key) => {
@@ -73,6 +73,7 @@ export function recusivelyCheckObjectValue(
 
 function isInputADocReference(input: any): boolean {
   const isDocumentReference = typeof input.id === "string" &&
+    typeof input.firestore === "object" &&
     typeof input.parent === "object" &&
     typeof input.path === "string";
   return isDocumentReference;
@@ -82,9 +83,9 @@ export function applyRefDocs(
   doc: any,
   refDocs: RefDocFound[],
 ) {
-  // refDocs.map((d) => {
-  //   set(doc, REF_INDENTIFIER + d.fieldPath, d.refDocPath);
-  // });
+  refDocs.map((d) => {
+    set(doc, REF_INDENTIFIER + d.fieldPath, d.refDocPath);
+  });
   return doc;
 }
 
@@ -92,43 +93,47 @@ export const recursivelyMapStorageUrls = async (
   fireWrapper: IFirebaseWrapper,
   fieldValue: any
 ): Promise<any> => {
-  const isArray = Array.isArray(fieldValue);
-  const isObject = !isArray && typeof fieldValue === "object";
-  const isFileField = isObject && !!fieldValue && fieldValue.hasOwnProperty("src");
+  const isPrimitive = !fieldValue || typeof fieldValue !== 'object';
+  if (isPrimitive) {
+    return fieldValue
+  }
+  const isFileField = has(fieldValue, 'src');
   if (isFileField) {
-    const isAlreadyUploaded = fieldValue.src.startsWith('https://');
-    if (isAlreadyUploaded) {
-      return fieldValue;
-    }
     try {
-      const src = await fireWrapper.getStorageDownloadUrl(fieldValue.src);
+      const src = await fireWrapper
+        .storage()
+        .ref(fieldValue.src)
+        .getDownloadURL();
       return {
         ...fieldValue,
-        src
+        src,
       };
     } catch (error) {
       logError(`Error when getting download URL`, {
         error,
-        fieldValue,
       });
       return fieldValue;
     }
-  } else if (isObject) {
-    for (let key in fieldValue) {
-      if (fieldValue.hasOwnProperty(key)) {
-        const value = fieldValue[key];
-        fieldValue[key] = await recursivelyMapStorageUrls(fireWrapper, value);
-      }
-    }
-
-    return fieldValue;
-  } else if (isArray) {
-    for (let i = 0; i < fieldValue.length; i++) {
-      fieldValue[i] = await recursivelyMapStorageUrls(fireWrapper, fieldValue[i])
-    }
-
+  }
+  const isArray = Array.isArray(fieldValue);
+  if (isArray) {
+    return Promise.all(
+      (fieldValue as any[]).map(async (value, index) => {
+        fieldValue[index] = await recursivelyMapStorageUrls(fireWrapper, value);
+      })
+    );
+  }
+  const isDocumentReference = isInputADocReference(fieldValue);
+  if (isDocumentReference) {
     return fieldValue;
   }
-
-  return fieldValue;
+  const isObject = !isArray && typeof fieldValue === "object";
+  if (isObject) {
+    return Promise.all(
+      Object.keys(fieldValue).map(async (key) => {
+        const value = fieldValue[key];
+        fieldValue[key] = await recursivelyMapStorageUrls(fireWrapper, value);
+      })
+    );
+  }
 };

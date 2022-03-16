@@ -25,7 +25,7 @@ export async function MakeMockClient(options: RAFirebaseOptions = {}) {
 
 export async function initFireWrapper(projectId: string, rafOptions: RAFirebaseOptions = {}): Promise<IFirebaseWrapper> {
   const safeId = makeSafeId(projectId);
-  const testOptions = { projectId: safeId };
+  const testOptions = { projectId: safeId, firestore: { host: 'localhost', port: 8080 }};
   const enivornment = await initializeTestEnvironment(testOptions);
   const context = enivornment.unauthenticatedContext();
   const fire: IFirebaseWrapper = new FirebaseWrapperStub(

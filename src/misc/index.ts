@@ -1,6 +1,7 @@
 export * from './arrayHelpers';
 export * from './dispatcher';
 export * from './document-parser';
+export * from './internal.models';
 export * from './logger';
 export * from './messageTypes';
 export * from './metadata-parser';

@@ -9,10 +9,16 @@ export async function GetMany<T extends ra.Record>(
 ): Promise<ra.GetManyResult<T>> {
   const { rm, options, fireWrapper } = client;
   const r = await rm.TryGetResource(resourceName);
-  log('GetMany', { resourceName, resource: r, params });
   const ids = params.ids;
+  log("GetMany", { resourceName, resource: r, params, ids });
   const matchDocSnaps = await Promise.all(
-    ids.map((id) => r.collection.doc(id + '').get())
+    ids.map(idObj => {
+      if (typeof idObj === 'string') {
+        return r.collection.doc(idObj).get()
+      }
+      // Will get and resolve reference documents into the current doc
+      return r.collection.doc((idObj as any)['___refid']).get()
+    })
   );
   client.flogger.logDocument(ids.length)();
   const matches = matchDocSnaps.map((snap) => {

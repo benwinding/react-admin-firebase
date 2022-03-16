@@ -1,4 +1,4 @@
-// import { REF_INDENTIFIER } from "./internal.models";
+import { REF_INDENTIFIER } from "./internal.models";
 
 interface ParsedUpload {
   fieldDotsPath: string;
@@ -44,16 +44,16 @@ export function recusivelyParseObjectValue(
   if (isFalsey) {
     return input;
   }
-  // const isRefField =
-  //   typeof fieldPath === "string" && fieldPath.includes(REF_INDENTIFIER);
-  // if (isRefField) {
-  //   const refDocFullPath = input as string;
-  //   result.refdocs.push({
-  //     fieldDotsPath: fieldPath,
-  //     refPath: refDocFullPath,
-  //   });
-  //   return;
-  // }
+  const isRefField =
+    typeof fieldPath === "string" && fieldPath.includes(REF_INDENTIFIER);
+  if (isRefField) {
+    const refDocFullPath = input as string;
+    result.refdocs.push({
+      fieldDotsPath: fieldPath,
+      refPath: refDocFullPath,
+    });
+    return;
+  }
   const isPrimitive = typeof input !== "object";
   if (isPrimitive) {
     return input;
