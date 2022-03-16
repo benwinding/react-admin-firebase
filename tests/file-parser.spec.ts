@@ -1,18 +1,14 @@
 import { translateDocToFirestore } from "../src/misc";
 
-function parseDocGetAllUploads(doc: any) {
-  return translateDocToFirestore(doc).uploads;
-}
-
 describe("file-parser tests", () => {
   test("simple single file", () => {
     const doc = {
       name: "Some guy",
       file: makeFile(),
     };
-    const uploads = parseDocGetAllUploads(doc);
-    expect(uploads.length).toBe(1);
-    expect(uploads[0].fieldDotsPath).toBe("file");
+    const result = translateDocToFirestore(doc);
+    expect(result.uploads.length).toBe(1);
+    expect(result.uploads[0].fieldDotsPath).toBe("file");
     expect(doc.file.rawFile).toBeFalsy();
   });
 
@@ -21,9 +17,9 @@ describe("file-parser tests", () => {
       name: "Some guy",
       files: [makeFile(), makeFile()],
     };
-    const uploads = parseDocGetAllUploads(doc);
-    expect(uploads.length).toBe(2);
-    expect(uploads[0].fieldDotsPath).toBe("files.0");
+    const result = translateDocToFirestore(doc);
+    expect(result.uploads.length).toBe(2);
+    expect(result.uploads[0].fieldDotsPath).toBe("files.0");
     expect(doc.files[0].rawFile).toBeFalsy();
   });
 
@@ -41,10 +37,10 @@ describe("file-parser tests", () => {
         },
       ],
     };
-    const uploads = parseDocGetAllUploads(doc);
-    expect(uploads.length).toBe(2);
-    expect(uploads[0].fieldDotsPath).toBe("items.0.image");
-    expect(uploads[0].fieldSlashesPath).toBe("items/0/image");
+    const result = translateDocToFirestore(doc);
+    expect(result.uploads.length).toBe(2);
+    expect(result.uploads[0].fieldDotsPath).toBe("items.0.image");
+    expect(result.uploads[0].fieldSlashesPath).toBe("items/0/image");
     expect(doc.items[0].image.rawFile).toBeFalsy();
   });
 });
