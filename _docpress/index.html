@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style.css?t=90051322">
+    <script src="assets/script.js?t=93f1a66c"></script>
+    <title>command-pal</title>
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="-menu-visible">
+    <div class="doc-layout">
+      <div class="toggle menu-toggle js-menu-toggle"></div>
+      <div class="menu toc-menu">
+        <ul>
+          <li class="menu-item -level-0 -parent">
+            <ul class="submenu">
+              <li class="menu-item -level-1"><a class="link title -active link-index" href="index.html">command-pal</a>
+                <ul class="headings heading-list">
+                  <li class="heading-item -depth-2"><a class="hlink link-features" href="#features">Features</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-firestore-dataprovider-features" href="#firestore-dataprovider-features">Firestore Dataprovider Features</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-get-started" href="#get-started">Get Started</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-demos-basic" href="#demos-basic">Demos Basic</a>
+                    <ul class="heading-list -depth-2">
+                      <li class="heading-item -depth-3"><a class="hlink link-prerequisits" href="#prerequisits">Prerequisits</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-options" href="#options">Options</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-data-provider" href="#data-provider">Data Provider</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-auth-provider" href="#auth-provider">Auth Provider</a>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-realtime-updates!" href="#realtime-updates!">Realtime Updates!</a>
+                    <ul class="heading-list -depth-2">
+                      <li class="heading-item -depth-3"><a class="hlink link-realtime-options" href="#realtime-options">Realtime Options</a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="heading-item -depth-2"><a class="hlink link-upload-progress" href="#upload-progress">Upload Progress</a>
+                    <ul class="heading-list -depth-2">
+                      <li class="heading-item -depth-3"><a class="hlink link-run-tests" href="#run-tests">Run tests</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="body page-index">
+        <div class="header-nav">
+          <div class="right">
+          </div>
+        </div>
+        <div class="markdown-body"><h1 id="react-admin-firebase">react-admin-firebase</h1>
+<!-- [START badges] -->
+<p><a href="https://www.npmjs.com/package/react-admin-firebase"><img src="https://img.shields.io/npm/v/react-admin-firebase.svg" alt="NPM Version"></a>
+<a href="https://github.com/benwinding/react-admin-firebase/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/react-admin-firebase.svg" alt="License"></a>
+<a href="https://www.npmjs.com/package/react-admin-firebase"><img src="https://img.shields.io/npm/dm/react-admin-firebase.svg" alt="Downloads/week"></a>
+<a href="https://github.com/benwinding/react-admin-firebase"><img src="https://img.shields.io/github/issues/benwinding/react-admin-firebase.svg" alt="Github Issues"></a></p>
+<!-- [END badges] -->
+<p>A firebase data provider for the <a href="https://github.com/marmelab/react-admin">React-Admin</a> framework. It maps collections from the Firebase database (Firestore) to your react-admin application. It&apos;s an <a href="https://www.npmjs.com/package/react-admin-firebase">npm package</a>!</p>
+<hr>
+<h2 id="features">Features</h2>
+<ul>
+<li>[x] Firestore Dataprovider <em>(details below)</em></li>
+<li>[x] Firebase AuthProvider (email, password)</li>
+<li>[x] Login with: Google, Facebook, Github etc... <a href="https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomLoginPage.js">(Example Here)</a></li>
+<li>[x] Forgot password button... <a href="https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomForgotPassword.js">(Example Here)</a></li>
+<li>[x] Firebase storage upload functionality, with upload monitoring... <a href="https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/EventMonitor.js">(Example Here)</a></li>
+</ul>
+<p><em>Pull requests welcome!!</em></p>
+<h2 id="firestore-dataprovider-features">Firestore Dataprovider Features</h2>
+<ul>
+<li>[x] Dynamic caching of resources</li>
+<li>[x] All methods implemented; <code>(GET, POST, GET_LIST ect...)</code></li>
+<li>[x] Filtering, sorting etc...</li>
+<li>[x] Ability to manage sub collections through app configuration</li>
+<li>[x] Ability to use externally initialized firebaseApp instance</li>
+<li>[x] Override firestore random id by using &quot;id&quot; as a field in the Create part of the resource</li>
+<li>[x] Upload to the firebase storage bucket using the standard <code>&lt;FileInput /&gt;</code> field</li>
+<li>[ ] Realtime updates, using ra-realtime
+<ul>
+<li>Optional watch collection array or dontwatch collection array</li>
+</ul>
+</li>
+</ul>
+<h2 id="get-started">Get Started</h2>
+<p><code>yarn add react-admin-firebase firebase</code></p>
+<p>or</p>
+<p><code>npm install --save react-admin-firebase firebase</code></p>
+<h2 id="demos-basic">Demos Basic</h2>
+<p>A simple example based on the <a href="https://marmelab.com/react-admin/Tutorial.html">React Admin Tutorial</a>.</p>
+<ul>
+<li><a href="https://github.com/benwinding/demo-react-admin-firebase">Demo Project (javascript)</a></li>
+<li><a href="https://github.com/benwinding/react-admin-firebase-demo-typescript">Demo Project (typescript)</a></li>
+<li><a href="https://benwinding.github.io/react-admin-firebase/demo">Live Demo</a></li>
+</ul>
+<h3 id="prerequisits">Prerequisits</h3>
+<ul>
+<li>Create a <code>posts</code> collection in the firebase firestore database</li>
+<li>Get config credentials using the dashboard</li>
+</ul>
+<h2 id="options">Options</h2>
+<pre><code class="lang-javascript"><span class="pl-k">import</span> {
+  FirebaseAuthProvider,
+  FirebaseDataProvider,
+  FirebaseRealTimeSaga
+} <span class="pl-k">from</span> <span class="pl-s">&apos;react-admin-firebase&apos;</span>;
+
+<span class="pl-k">const</span> config = {
+  <span class="hljs-attr">apiKey</span>: <span class="pl-s">&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</span>,
+  <span class="hljs-attr">authDomain</span>: <span class="pl-s">&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</span>,
+  <span class="hljs-attr">databaseURL</span>: <span class="pl-s">&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</span>,
+  <span class="hljs-attr">projectId</span>: <span class="pl-s">&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</span>,
+  <span class="hljs-attr">storageBucket</span>: <span class="pl-s">&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</span>,
+  <span class="hljs-attr">messagingSenderId</span>: <span class="pl-s">&quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;</span>,
+};
+
+<span class="pl-c">// All options are optional</span>
+<span class="pl-k">const</span> options = {
+  <span class="pl-c">// Use a different root document to set your resource collections, by default it uses the root collections of firestore</span>
+  <span class="hljs-attr">rootRef</span>: <span class="pl-s">&apos;root-collection/some-doc&apos;</span> | <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="pl-s">&apos;root-collection/some-doc&apos;</span>,
+  <span class="pl-c">// Your own, previously initialized firebase app instance</span>
+  <span class="hljs-attr">app</span>: firebaseAppInstance,
+  <span class="pl-c">// Enable logging of react-admin-firebase</span>
+  <span class="hljs-attr">logging</span>: <span class="pl-c1">true</span>,
+  <span class="pl-c">// Resources to watch for realtime updates, will implicitly watch all resources by default, if not set.</span>
+  <span class="hljs-attr">watch</span>: [<span class="pl-s">&apos;posts&apos;</span>],
+  <span class="pl-c">// Resources you explicitly dont want realtime updates for</span>
+  <span class="hljs-attr">dontwatch</span>: [<span class="pl-s">&apos;comments&apos;</span>],
+  <span class="pl-c">// Authentication persistence, defaults to &apos;session&apos;, options are &apos;session&apos; | &apos;local&apos; | &apos;none&apos;</span>
+  <span class="hljs-attr">persistence</span>: <span class="pl-s">&apos;session&apos;</span>,
+  <span class="pl-c">// Disable the metadata; &apos;createdate&apos;, &apos;lastupdate&apos;, &apos;createdby&apos;, &apos;updatedby&apos;</span>
+  <span class="hljs-attr">disableMeta</span>: <span class="pl-c1">false</span>,
+  <span class="pl-c">// Have custom metadata field names instead of: &apos;createdate&apos;, &apos;lastupdate&apos;, &apos;createdby&apos;, &apos;updatedby&apos;</span>
+  <span class="hljs-attr">renameMetaFields</span>: {
+    <span class="hljs-attr">created_at</span>: <span class="pl-s">&apos;my_created_at&apos;</span>, <span class="pl-c">// default: &apos;createdate&apos;</span>
+    <span class="hljs-attr">created_by</span>: <span class="pl-s">&apos;my_created_by&apos;</span>, <span class="pl-c">// default: &apos;createdby&apos;</span>
+    <span class="hljs-attr">updated_at</span>: <span class="pl-s">&apos;my_updated_at&apos;</span>, <span class="pl-c">// default: &apos;lastupdate&apos;</span>
+    <span class="hljs-attr">updated_by</span>: <span class="pl-s">&apos;my_updated_by&apos;</span>, <span class="pl-c">// default: &apos;updatedby&apos;</span>
+  },
+  <span class="pl-c">// Prevents document from getting the ID field added as a property</span>
+  <span class="hljs-attr">dontAddIdFieldToDoc</span>: <span class="pl-c1">false</span>,
+  <span class="pl-c">// Adds &apos;deleted&apos; meta field for non-destructive deleting functionality</span>
+  <span class="pl-c">// <span class="hljs-doctag">NOTE:</span> Hides &apos;deleted&apos; records from list views unless overridden by filtering for {deleted: true} </span>
+  <span class="hljs-attr">softDelete</span>: <span class="pl-c1">false</span>,
+  <span class="pl-c">// Changes meta fields like &apos;createdby&apos; and &apos;updatedby&apos; to store user IDs instead of email addresses</span>
+  <span class="hljs-attr">associateUsersById</span>: <span class="pl-c1">false</span>,
+  <span class="pl-c">// Casing for meta fields like &apos;createdby&apos; and &apos;updatedby&apos;, defaults to &apos;lower&apos;, options are &apos;lower&apos; | &apos;camel&apos; | &apos;snake&apos; | &apos;pascal&apos; | &apos;kebab&apos;</span>
+  <span class="hljs-attr">metaFieldCasing</span>: <span class="pl-s">&apos;lower&apos;</span>,
+  <span class="pl-c">// Instead of saving full download url for file, save just relative path and then get download url</span>
+  <span class="pl-c">// when getting docs - main use case is handling multiple firebase projects (environments)</span>
+  <span class="pl-c">// and moving/copying documents/storage files between them - with relativeFilePaths, download url</span>
+  <span class="pl-c">// always point to project own storage</span>
+  <span class="hljs-attr">relativeFilePaths</span>: <span class="pl-c1">false</span>, 
+  <span class="pl-c">// Add file name to storage path, when set to true the file name is included in the path</span>
+  <span class="hljs-attr">useFileNamesInStorage</span>: <span class="pl-c1">false</span>,
+  <span class="pl-c">// Use firebase sdk queries for pagination, filtering and sorting</span>
+  <span class="hljs-attr">lazyLoading</span>: {
+    <span class="hljs-attr">enabled</span>: <span class="pl-c1">false</span>
+  },
+  <span class="pl-c">// Logging of all reads performed by app (additional feature, for lazy-loading testing)</span>
+  <span class="hljs-attr">firestoreCostsLogger</span>: {
+    <span class="hljs-attr">enabled</span>: <span class="pl-c1">false</span>,
+    localStoragePrefix <span class="pl-c">// optional</span>
+  },
+  <span class="pl-c">// Function to transform documentData before they are written to Firestore</span>
+  <span class="hljs-attr">transformToDb</span>: <span class="hljs-function">(<span class="hljs-params">resourceName, documentData, documentId</span>) =&gt;</span> documentDataTransformed
+}
+
+<span class="pl-k">const</span> dataProvider = FirebaseDataProvider(config, options);
+<span class="pl-k">const</span> authProvider = FirebaseAuthProvider(config, options);
+<span class="pl-k">const</span> firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
+</code></pre>
+<h2 id="data-provider">Data Provider</h2>
+<pre><code class="lang-javascript">import * as React from &apos;react&apos;;
+import { Admin, Resource } from &apos;react-admin&apos;;
+
+import { PostList, PostShow, PostCreate, PostEdit } from &quot;./posts&quot;;
+import {
+  FirebaseAuthProvider,
+  FirebaseDataProvider,
+  FirebaseRealTimeSaga
+} from &apos;react-admin-firebase&apos;;
+
+const config = {
+  apiKey: &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;,
+  authDomain: &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;,
+  databaseURL: &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;,
+  projectId: &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;,
+  storageBucket: &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;,
+  messagingSenderId: &quot;aaaaaaaaaaaaaaaaaaaaaaaaaaa&quot;,
+};
+
+const options = {};
+
+const dataProvider = FirebaseDataProvider(config, options);
+...
+      &lt;Admin 
+        dataProvider={dataProvider} 
+      &gt;
+        &lt;Resource name=&quot;posts&quot; list={PostList} show={PostShow} create={PostCreate} edit={PostEdit}/&gt;
+      &lt;/Admin&gt;
+...
+</code></pre>
+<h2 id="auth-provider">Auth Provider</h2>
+<p>Using the <code>FirebaseAuthProvider</code> you can allow authentication in the application.</p>
+<pre><code class="lang-javascript"><span class="pl-k">const</span> dataProvider = FirebaseDataProvider(config);
+<span class="pl-k">const</span> authProvider = FirebaseAuthProvider(config);
+...
+      &lt;Admin 
+        dataProvider={dataProvider}
+        authProvider={authProvider}
+      &gt;
+...
+</code></pre>
+<p>Also checkout how to login with: Google, Facebook, Github etc... <a href="https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomLoginPage.js">(Example Here)</a></p>
+<p>And you might want a &quot;Forgot password&quot; button... <a href="https://github.com/benwinding/react-admin-firebase/blob/master/src-demo/src/CustomForgotPassword.js">(Example Here)</a></p>
+<h4 id="note">Note</h4>
+<p>To get the currently logged in user run <code>const user = await authProvider.checkAuth()</code>, this will return the firebase user object, or null if there is no currently logged in user.</p>
+<h2 id="realtime-updates!">Realtime Updates!</h2>
+<p>NOTE: Realtime updates were removed in <code>react-admin</code> v3.x (see <a href="https://github.com/marmelab/react-admin/pull/3908">https://github.com/marmelab/react-admin/pull/3908</a>). As such, <code>react-admin-firebase</code> v3.x also does not support Realtime Updates. However, much of the original code used for this functionalaity in <code>react-admin</code> v2.x remains - including the documentation below. For updates on the implementation of realtime please follow these issues:</p>
+<ul>
+<li><a href="https://github.com/benwinding/react-admin-firebase/issues/49">https://github.com/benwinding/react-admin-firebase/issues/49</a></li>
+<li><a href="https://github.com/benwinding/react-admin-firebase/issues/57">https://github.com/benwinding/react-admin-firebase/issues/57</a></li>
+</ul>
+<p>Get realtime updates from the firebase server instantly on your tables, with minimal overheads, using rxjs observables!</p>
+<pre><code class="lang-javascript">...
+import {
+  FirebaseRealTimeSaga,
+  FirebaseDataProvider
+} <span class="pl-k">from</span> <span class="pl-s">&apos;react-admin-firebase&apos;</span>;
+...
+const dataProvider = FirebaseDataProvider(config);
+<span class="pl-k">const</span> firebaseRealtime = FirebaseRealTimeSaga(dataProvider);
+...
+      &lt;Admin 
+        dataProvider={dataProvider} 
+        customSagas={[firebaseRealtime]}
+      &gt;
+...
+</code></pre>
+<h3 id="realtime-options">Realtime Options</h3>
+<p>Trigger realtime on only some routes using the options object.</p>
+<pre><code class="lang-javascript">...
+const dataProvider = FirebaseDataProvider(config);
+<span class="pl-k">const</span> options = {
+  <span class="hljs-attr">watch</span>: [<span class="pl-s">&apos;posts&apos;</span>, <span class="pl-s">&apos;comments&apos;</span>],
+  <span class="hljs-attr">dontwatch</span>: [<span class="pl-s">&apos;users&apos;</span>]
+}
+<span class="pl-k">const</span> firebaseRealtime = FirebaseRealTimeSaga(dataProvider, options);
+...
+</code></pre>
+<h2 id="upload-progress">Upload Progress</h2>
+<p>Monitor file upload data using custom React component which listen for following events (<code>CustomEvent</code>):</p>
+<ul>
+<li><code>FILE_UPLOAD_WILL_START</code></li>
+<li><code>FILE_UPLOAD_START</code></li>
+<li><code>FILE_UPLOAD_PROGRESS</code></li>
+<li><code>FILE_UPLOAD_PAUSED</code></li>
+<li><code>FILE_UPLOAD_CANCELD</code></li>
+<li><code>FILE_UPLOAD_COMPLETE</code></li>
+<li><code>FILE_SAVED</code></li>
+</ul>
+<p>All events have data passed in <code>details</code> key:</p>
+<ul>
+<li><code>fileName</code>: the file anme</li>
+<li><code>data</code>: percentage for <code>FILE_UPLOAD_PROGRESS</code></li>
+</ul>
+<!-- Events are sent to HTML DOM element with id "eventMonitor". See demo implementation for example at [src-demo/src/App.js](src-demo/src/App.js); -->
+<h1 id="help-develop-react-admin-firebase">Help Develop <code>react-admin-firebase</code>?</h1>
+<ol>
+<li><code>git clone https://github.com/benwinding/react-admin-firebase</code></li>
+<li><code>yarn</code></li>
+<li><code>yarn start-demo</code></li>
+</ol>
+<p>Now all local changes in the library source code can be tested immediately in the demo app.</p>
+<h3 id="run-tests">Run tests</h3>
+<p>To run the tests, either watch for changes or just run all tests.</p>
+<ul>
+<li><code>yarn test-watch</code></li>
+<li><code>yarn test</code></li>
+</ul>
+<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=ben.winding%40gmail.com&amp;item_name=Development&amp;currency_code=AUD&amp;source=url"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="paypal"></a></p>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

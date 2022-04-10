@@ -1,0 +1,159 @@
+{
+  "toc": {
+    "sections": [
+      {
+        "title": "command-pal",
+        "source": "README.md",
+        "url": "index.html",
+        "slug": "index",
+        "headings": [
+          {
+            "title": "Features",
+            "depth": 2,
+            "id": "features"
+          },
+          {
+            "title": "Firestore Dataprovider Features",
+            "depth": 2,
+            "id": "firestore-dataprovider-features"
+          },
+          {
+            "title": "Get Started",
+            "depth": 2,
+            "id": "get-started"
+          },
+          {
+            "title": "Demos Basic",
+            "depth": 2,
+            "id": "demos-basic",
+            "headings": [
+              {
+                "title": "Prerequisits",
+                "depth": 3,
+                "id": "prerequisits"
+              }
+            ]
+          },
+          {
+            "title": "Options",
+            "depth": 2,
+            "id": "options"
+          },
+          {
+            "title": "Data Provider",
+            "depth": 2,
+            "id": "data-provider"
+          },
+          {
+            "title": "Auth Provider",
+            "depth": 2,
+            "id": "auth-provider"
+          },
+          {
+            "title": "Realtime Updates!",
+            "depth": 2,
+            "id": "realtime-updates!",
+            "headings": [
+              {
+                "title": "Realtime Options",
+                "depth": 3,
+                "id": "realtime-options"
+              }
+            ]
+          },
+          {
+            "title": "Upload Progress",
+            "depth": 2,
+            "id": "upload-progress",
+            "headings": [
+              {
+                "title": "Run tests",
+                "depth": 3,
+                "id": "run-tests"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "index": {
+    "index.html": {
+      "source": "README.md",
+      "title": "command-pal",
+      "pageTitle": "command-pal",
+      "slug": "index",
+      "headings": [
+        {
+          "title": "Features",
+          "depth": 2,
+          "id": "features"
+        },
+        {
+          "title": "Firestore Dataprovider Features",
+          "depth": 2,
+          "id": "firestore-dataprovider-features"
+        },
+        {
+          "title": "Get Started",
+          "depth": 2,
+          "id": "get-started"
+        },
+        {
+          "title": "Demos Basic",
+          "depth": 2,
+          "id": "demos-basic",
+          "headings": [
+            {
+              "title": "Prerequisits",
+              "depth": 3,
+              "id": "prerequisits"
+            }
+          ]
+        },
+        {
+          "title": "Options",
+          "depth": 2,
+          "id": "options"
+        },
+        {
+          "title": "Data Provider",
+          "depth": 2,
+          "id": "data-provider"
+        },
+        {
+          "title": "Auth Provider",
+          "depth": 2,
+          "id": "auth-provider"
+        },
+        {
+          "title": "Realtime Updates!",
+          "depth": 2,
+          "id": "realtime-updates!",
+          "headings": [
+            {
+              "title": "Realtime Options",
+              "depth": 3,
+              "id": "realtime-options"
+            }
+          ]
+        },
+        {
+          "title": "Upload Progress",
+          "depth": 2,
+          "id": "upload-progress",
+          "headings": [
+            {
+              "title": "Run tests",
+              "depth": 3,
+              "id": "run-tests"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "sources": {
+    "README.md": "index.html"
+  }
+}

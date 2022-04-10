@@ -42,6 +42,7 @@ A simple example based on the [React Admin Tutorial](https://marmelab.com/react-
 
 - [Demo Project (javascript)](https://github.com/benwinding/demo-react-admin-firebase)
 - [Demo Project (typescript)](https://github.com/benwinding/react-admin-firebase-demo-typescript)
+- [Live Demo](https://benwinding.github.io/react-admin-firebase/demo)
 
 ### Prerequisits
 - Create a `posts` collection in the firebase firestore database
@@ -232,7 +233,7 @@ All events have data passed in `details` key:
 - `fileName`: the file anme
 - `data`: percentage for `FILE_UPLOAD_PROGRESS`
 
-Events are sent to HTML DOM element with id "eventMonitor". See demo implementation for example at [src-demo/src/App.js](src-demo/src/App.js);
+<!-- Events are sent to HTML DOM element with id "eventMonitor". See demo implementation for example at [src-demo/src/App.js](src-demo/src/App.js); -->
 
 # Help Develop `react-admin-firebase`?
 

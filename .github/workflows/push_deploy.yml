@@ -21,7 +21,7 @@ jobs:
         if: steps.cache-modules.outputs.cache-hit != 'true'
         run: yarn install --pure-lockfile
       - name: Check library builds
-        run: yarn build
+        run: yarn build-lib
       - name: Check tests build
         run: yarn tsc-test
       - name: Check tests pass
@@ -61,7 +61,7 @@ jobs:
 
   demo:
     needs: build
-    name: Deploy Demo
+    name: Deploy Demo/Docs
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -77,12 +77,12 @@ jobs:
       if: steps.cache-modules.outputs.cache-hit != 'true'
       run: yarn install
       working-directory: ./src-demo
-    - run: REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" yarn build-ci
-      working-directory: ./src-demo
+    - run: REACT_APP_FIREBASE_CONFIG="${{ secrets.FIREBASE_JSON }}" yarn build-demo
+    - run: yarn build-docs
     - name: Deploy to GH Pages 🚀
       if: github.ref == 'refs/heads/master'
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: src-demo/build # The folder the action should deploy.
+        FOLDER: dist-gh # The folder the action should deploy.

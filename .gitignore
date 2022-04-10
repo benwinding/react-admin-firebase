@@ -12,7 +12,7 @@ node_modules
 
 # ignore dist now
 /dist
-dist
+dist*
 
 #ide
 .idea

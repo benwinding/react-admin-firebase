@@ -1,0 +1,1 @@
+* [command-pal](../README.md)
