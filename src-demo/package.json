@@ -11,7 +11,7 @@
     "react": "^18.x",
     "react-admin": "^4.1.0",
     "react-dom": "^18.x",
-    "react-admin-firebase": "3.3.2",
+    "react-admin-firebase": "4.0.0",
     "react-firebaseui": "^6.0.0",
     "react-scripts": "^5.0.0",
     "source-map-loader": "^3"
