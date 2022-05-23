@@ -19,7 +19,7 @@ import {
   SelectInput,
   ReferenceInput,
 } from "react-admin";
-import RichTextInput from "ra-input-rich-text";
+import { RichTextInput } from "ra-input-rich-text";
 
 export const CommentsList = (props) => (
   <List

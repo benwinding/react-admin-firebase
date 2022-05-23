@@ -25,7 +25,7 @@ import {
   SimpleFormIterator,
   DateInput,
 } from "react-admin";
-import RichTextInput from "ra-input-rich-text";
+import { RichTextInput } from "ra-input-rich-text";
 import { FirebaseReferenceField, FirebaseReferenceInput } from './FirebaseReferenceFields';
 
 // const PostFilter = (props) => (
