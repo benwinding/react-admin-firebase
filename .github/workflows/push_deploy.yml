@@ -7,10 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 12.22.8
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v1
         with:
-          node-version: 12.22.8
+          node-version: 16.14.2
       - name: Cache node_modules
         id: cache-modules
         uses: actions/cache@v1
@@ -41,7 +40,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:
-        node-version: 12.22.8
+        node-version: 16.14.2
     - uses: actions/cache@v1
       id: cache-modules
       with:
@@ -67,7 +66,7 @@ jobs:
     - uses: actions/checkout@master
     - uses: actions/setup-node@v1
       with:
-        node-version: 14
+        node-version: 16.14.2
     - uses: actions/cache@v1
       id: cache-modules
       with:
