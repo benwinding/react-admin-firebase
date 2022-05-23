@@ -26,7 +26,7 @@
     "firebase-tools": "11.x",
     "gulp": "^4.0.2",
     "jest": "^23.6.0",
-    "microbundle": "^0.12.4",
+    "microbundle": "^0.15.0",
     "ra-core": "3.10.0",
     "ts-jest": "^25",
     "tslint": "^5.16.0",
