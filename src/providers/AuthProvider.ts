@@ -55,7 +55,7 @@ class AuthClient {
       log('API is actually authenticated');
       return Promise.resolve();
     }
-    logWarn('Recieved authentication error from API');
+    logWarn('Received authentication error from API');
     return Promise.reject();
   }
 
