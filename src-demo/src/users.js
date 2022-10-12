@@ -14,8 +14,8 @@ import {
   TextInput,
   ShowButton,
   EditButton,
-  DeleteButton,
 } from "react-admin";
+import {CustomDeleteButton, } from './CustomDeleteButtons'
 
 const UserFilter = (props) => (
   <Filter {...props}>
@@ -32,7 +32,7 @@ export const UserList = (props) => (
       <TextField source="lastupdate" />
       <ShowButton label="" />
       <EditButton label="" />
-      <DeleteButton label="" redirect={false}/>
+      <CustomDeleteButton label="" redirect={false}/>
     </Datagrid>
   </List>
 );

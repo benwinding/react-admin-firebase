@@ -13,12 +13,12 @@ import {
   TextInput,
   ShowButton,
   EditButton,
-  DeleteButton,
   RichTextField,
   ReferenceField,
   SelectInput,
   ReferenceInput,
 } from "react-admin";
+import {CustomDeleteButton} from './CustomDeleteButtons'
 import { RichTextInput } from "ra-input-rich-text";
 
 export const CommentsList = (props) => (
@@ -35,7 +35,7 @@ export const CommentsList = (props) => (
       </ReferenceField>
       <ShowButton label="" />
       <EditButton label="" />
-      <DeleteButton label="" redirect={false} />
+      <CustomDeleteButton label="" redirect={false} />
     </Datagrid>
   </List>
 );
