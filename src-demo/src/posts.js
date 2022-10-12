@@ -14,7 +14,6 @@ import {
   TextInput,
   ShowButton,
   EditButton,
-  DeleteButton,
   RichTextField,
   ReferenceField,
   SelectInput,
@@ -24,7 +23,12 @@ import {
   ArrayInput,
   SimpleFormIterator,
   DateInput,
+  Toolbar,
+  SaveButton,
 } from "react-admin";
+import {
+  CustomDeleteButton, 
+  CustomBulkDeleteButton} from './CustomDeleteButtons'
 import { RichTextInput } from "ra-input-rich-text";
 import { FirebaseReferenceField, FirebaseReferenceInput } from './FirebaseReferenceFields';
 
@@ -50,6 +54,7 @@ import { FirebaseReferenceField, FirebaseReferenceInput } from './FirebaseRefere
 export const PostList = (props) => (
   <List
     {...props}
+    bulkActionButtons={<CustomBulkDeleteButton />}
     // filters={<ReferenceFilter />}
     // filter={{ updatedby: "test@example.com" }}
   >
@@ -66,7 +71,7 @@ export const PostList = (props) => (
 
       <ShowButton label="" />
       <EditButton label="" />
-      <DeleteButton label="" redirect={false} />
+      {/* <CustomDeleteButton label="" redirect={false} /> */}
     </Datagrid>
   </List>
 );
@@ -161,9 +166,18 @@ export const PostCreate = (props) => (
   </Create>
 );
 
+const ToolbarForEdit = (props) => {
+  return(
+      <Toolbar {...props} style={{justifyContent: 'space-between'}}>
+          <SaveButton />
+          <CustomDeleteButton />
+      </Toolbar>
+  )
+}
+
 export const PostEdit = (props) => (
   <Edit {...props}>
-    <SimpleForm>
+    <SimpleForm toolbar={<ToolbarForEdit />}>
       <TextInput disabled source="id" />
       <DateField source="createdate" />
       <DateField source="lastupdate" />

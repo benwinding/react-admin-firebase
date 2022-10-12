@@ -27,7 +27,7 @@ try {
 }
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
-
+export const storage = firebase.storage(firebaseApp)
 console.log({firebaseConfig, firebaseApp});
 
 const authProvider = FirebaseAuthProvider(firebaseConfig);
