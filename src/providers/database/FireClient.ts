@@ -48,10 +48,15 @@ export class FireClient {
     const uploads = result.uploads;
     await Promise.all(
       uploads.map(async (u) => {
+
+        const fileNameBits = u.rawFile instanceof File ? u.rawFile.name.split('.') ?? null : null;
+
+        const extension = fileNameBits === null || fileNameBits.length === 0 ? '' : '.' + fileNameBits.pop();
+
         const link = await this.uploadAndGetLink(
           u.rawFile,
           docPath,
-          u.fieldSlashesPath,
+          u.fieldSlashesPath + extension,
           !!this.options.useFileNamesInStorage
         );
         set(data, u.fieldDotsPath + ".src", link);
