@@ -121,12 +121,20 @@ export const recursivelyMapStorageUrls = async (
       (fieldValue as any[]).map(async (value, index) => {
         fieldValue[index] = await recursivelyMapStorageUrls(fireWrapper, value);
       })
-    );
+    ).then(() => {
+      return fieldValue;
+    });
   }
   const isDocumentReference = isInputADocReference(fieldValue);
   if (isDocumentReference) {
     return fieldValue;
   }
+
+  const isJSDate = fieldValue instanceof Date;
+  if(isJSDate){
+    return fieldValue;
+  }
+
   const isObject = !isArray && typeof fieldValue === "object";
   if (isObject) {
     return Promise.all(
@@ -134,6 +142,8 @@ export const recursivelyMapStorageUrls = async (
         const value = fieldValue[key];
         fieldValue[key] = await recursivelyMapStorageUrls(fireWrapper, value);
       })
-    );
+    ).then(() => {
+      return fieldValue;
+    });;
   }
 };
