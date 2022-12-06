@@ -129,11 +129,12 @@ export const recursivelyMapStorageUrls = async (
   }
   const isObject = !isArray && typeof fieldValue === "object";
   if (isObject) {
-    return Promise.all(
+    await Promise.all(
       Object.keys(fieldValue).map(async (key) => {
         const value = fieldValue[key];
         fieldValue[key] = await recursivelyMapStorageUrls(fireWrapper, value);
       })
     );
+    return fieldValue;
   }
 };
