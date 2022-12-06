@@ -11,3 +11,4 @@ export * from './react-admin-models';
 export * from './status-code-translator';
 export * from './translate-from-firestore';
 export * from './translate-to-firestore';
+export * from './storage-parser';
