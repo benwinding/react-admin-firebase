@@ -55,6 +55,6 @@
   "umd:main": "dist/index.umd.js",
   "source": "src/index.ts",
   "engines": {
-    "node": ">=10 <=16"
+    "node": ">=10"
   }
 }
