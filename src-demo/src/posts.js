@@ -28,8 +28,8 @@ import {
 } from "react-admin";
 import {
   CustomDeleteButton, 
-  CustomBulkDeleteButton} from './CustomDeleteButtons'
-import { RichTextInput } from "ra-input-rich-text";
+  CustomBulkDeleteButton,
+} from './CustomDeleteButtons'
 import { FirebaseReferenceField, FirebaseReferenceInput } from './FirebaseReferenceFields';
 
 // const PostFilter = (props) => (
@@ -119,7 +119,7 @@ export const PostCreate = (props) => (
     <SimpleForm>
       <TextInput source="id" />
       <TextInput source="title" />
-      <RichTextInput source="body" />
+      <TextInput source="body" />
       <DateInput source="date" parse={val => new Date(val)} />
       <ReferenceInput
         label="User Id"
@@ -182,7 +182,7 @@ export const PostEdit = (props) => (
       <DateField source="createdate" />
       <DateField source="lastupdate" />
       <TextInput source="title" />
-      <RichTextInput source="body" />
+      <TextInput source="body" />
       <ReferenceInput
         label="User Id"
         source="user_id"

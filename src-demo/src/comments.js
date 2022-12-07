@@ -19,7 +19,6 @@ import {
   ReferenceInput,
 } from "react-admin";
 import {CustomDeleteButton} from './CustomDeleteButtons'
-import { RichTextInput } from "ra-input-rich-text";
 
 export const CommentsList = (props) => (
   <List
@@ -58,7 +57,7 @@ export const CommentCreate = (props) => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source="id" />
-      <RichTextInput source="text" />
+      <TextInput source="text" />
       <ReferenceInput
         label="Post"
         source="_DOCREF_post_ref"
@@ -75,7 +74,7 @@ export const CommentEdit = (props) => (
   <Edit {...props}>
     <SimpleForm>
       <TextInput source="id" />
-      <RichTextInput source="text" />
+      <TextInput source="text" />
       <ReferenceInput
         label="Post"
         source="post_ref"
