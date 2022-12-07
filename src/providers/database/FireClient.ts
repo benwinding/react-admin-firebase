@@ -9,6 +9,7 @@ import {
   logError,
   dispatch,
   translateDocToFirestore,
+  parseStoragePath,
 } from "../../misc";
 import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
@@ -48,17 +49,8 @@ export class FireClient {
     const uploads = result.uploads;
     await Promise.all(
       uploads.map(async (u) => {
-
-        const fileNameBits = u.rawFile instanceof File ? u.rawFile.name.split('.') : [];
-
-        const fileExtension = !fileNameBits?.length ? '' : '.' + fileNameBits.pop();
-
-        const link = await this.uploadAndGetLink(
-          u.rawFile,
-          docPath,
-          u.fieldSlashesPath + fileExtension,
-          !!this.options.useFileNamesInStorage
-        );
+        const storagePath = parseStoragePath(u.rawFile, docPath, u.fieldDotsPath, !!this.options.useFileNamesInStorage);
+        const link = await this.saveFile(storagePath, u.rawFile);
         set(data, u.fieldDotsPath + ".src", link);
       })
     );
@@ -71,18 +63,6 @@ export class FireClient {
 
   public async addUpdatedByFields(obj: any) {
     return AddUpdatedByFields(obj, this.fireWrapper, this.rm, this.options);
-  }
-
-  private async uploadAndGetLink(
-    rawFile: any,
-    docPath: string,
-    fieldPath: string,
-    useFileName: boolean
-  ): Promise<string | undefined> {
-    const storagePath = useFileName
-      ? joinPaths(docPath, fieldPath, rawFile.name)
-      : joinPaths(docPath, fieldPath);
-    return this.saveFile(storagePath, rawFile);
   }
 
   private async saveFile(
@@ -113,9 +93,9 @@ export class FireClient {
             dispatch('FILE_UPLOAD_CANCELED', name);
             break;
           // case storage.TaskState.ERROR:
-            // already handled by catch
+          // already handled by catch
           // case storage.TaskState.SUCCESS:
-            // already handled by then
+          // already handled by then
         }
       });
       const [getDownloadURL] = await Promise.all([
