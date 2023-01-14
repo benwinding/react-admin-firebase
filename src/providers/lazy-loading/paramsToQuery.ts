@@ -1,5 +1,5 @@
 import { FireStoreCollectionRef, FireStoreQuery, FireStoreQueryOrder } from 'misc/firebase-models';
-import { log, IFirestoreLogger, messageTypes } from '../../misc';
+import { IFirestoreLogger, messageTypes } from '../../misc';
 import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
 interface ParamsToQueryOptions {
@@ -23,7 +23,6 @@ export async function paramsToQuery<
   flogger: IFirestoreLogger,
   options: ParamsToQueryOptions = defaultParamsToQueryOptions
 ): Promise<FireStoreQuery> {
-  log('PARAMS', {options});
   const filtersStepQuery = options.filters
     ? filtersToQuery(collection, params.filter)
     : collection;
