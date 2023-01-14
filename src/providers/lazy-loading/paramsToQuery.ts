@@ -1,5 +1,5 @@
 import { FireStoreCollectionRef, FireStoreQuery, FireStoreQueryOrder } from 'misc/firebase-models';
-import { IFirestoreLogger, messageTypes } from '../../misc';
+import { log, IFirestoreLogger, messageTypes } from '../../misc';
 import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
 interface ParamsToQueryOptions {
@@ -23,6 +23,7 @@ export async function paramsToQuery<
   flogger: IFirestoreLogger,
   options: ParamsToQueryOptions = defaultParamsToQueryOptions
 ): Promise<FireStoreQuery> {
+  log('PARAMS', {options});
   const filtersStepQuery = options.filters
     ? filtersToQuery(collection, params.filter)
     : collection;
@@ -47,8 +48,14 @@ export function filtersToQuery(
   filters: { [fieldName: string]: any }
 ): FireStoreQuery {
   const res = Object.entries(filters).reduce((acc,[fieldName, fieldValue]) => {
-    const opStr = fieldValue && Array.isArray(fieldValue) ? 'in' : '==';
-    return acc.where(fieldName, opStr, fieldValue);
+    if (Array.isArray(fieldValue)) {
+      return acc.where(fieldName, 'in', fieldValue);
+    } else {
+      return acc
+        .where(fieldName, '>=', fieldValue)
+        .where(fieldName, '<', fieldValue + 'z');
+    }
+    
   }, query);
   return res;
 }
