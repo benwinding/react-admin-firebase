@@ -1,4 +1,8 @@
-import { FireStoreCollectionRef, FireStoreQuery, FireStoreQueryOrder } from 'misc/firebase-models';
+import {
+  FireStoreCollectionRef,
+  FireStoreQuery,
+  FireStoreQueryOrder,
+} from 'misc/firebase-models';
 import { IFirestoreLogger, messageTypes } from '../../misc';
 import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
@@ -46,15 +50,16 @@ export function filtersToQuery(
   query: FireStoreQuery,
   filters: { [fieldName: string]: any }
 ): FireStoreQuery {
-  const res = Object.entries(filters).reduce((acc,[fieldName, fieldValue]) => {
+  const res = Object.entries(filters).reduce((acc, [fieldName, fieldValue]) => {
     if (Array.isArray(fieldValue)) {
       return acc.where(fieldName, 'in', fieldValue);
-    } else {
+    } else if (isNaN(fieldValue)) {
       return acc
         .where(fieldName, '>=', fieldValue)
         .where(fieldName, '<', fieldValue + 'z');
+    } else {
+      return acc.where(fieldName, '==', fieldValue);
     }
-    
   }, query);
   return res;
 }
