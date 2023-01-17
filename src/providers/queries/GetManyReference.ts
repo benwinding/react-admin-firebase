@@ -1,6 +1,6 @@
-import { FireClient } from "../database/FireClient";
-import { filterArray, log, recursivelyMapStorageUrls, sortArray } from "../../misc";
-import * as ra from "../../misc/react-admin-models";
+import { FireClient } from '../database/FireClient';
+import { filterArray, log, recursivelyMapStorageUrls, sortArray } from '../../misc';
+import * as ra from '../../misc/react-admin-models';
 
 export async function GetManyReference<T extends ra.Record>(
   resourceName: string,
@@ -8,22 +8,22 @@ export async function GetManyReference<T extends ra.Record>(
   client: FireClient
 ): Promise<ra.GetManyReferenceResult<T>> {
   const { rm, options, fireWrapper } = client;
-  log("GetManyReference", { resourceName, params });
+  log('GetManyReference', { resourceName, params });
   const filterSafe = params.filter || {};
   const collectionQuery = filterSafe.collectionQuery;
   const r = await rm.TryGetResource(
     resourceName,
-    "REFRESH",
+    'REFRESH',
     collectionQuery
   );
   delete filterSafe.collectionQuery;
-  log("apiGetManyReference", { resourceName, resource: r, params });
+  log('apiGetManyReference', { resourceName, resource: r, params });
   const data = r.list;
   const targetField = params.target;
   const targetValue = params.id;
   let softDeleted = data;
   if (options.softDelete) {
-    softDeleted = data.filter(doc => !doc["deleted"]);
+    softDeleted = data.filter(doc => !doc['deleted']);
   }
   const filteredData = filterArray(softDeleted, filterSafe);
   const targetIdFilter: Record<string, ra.Identifier> = {};
@@ -31,10 +31,10 @@ export async function GetManyReference<T extends ra.Record>(
   const permittedData = filterArray(filteredData, targetIdFilter);
   if (params.sort != null) {
     const { field, order } = params.sort;
-    if (order === "ASC") {
-      sortArray(permittedData, field, "asc");
+    if (order === 'ASC') {
+      sortArray(permittedData, field, 'asc');
     } else {
-      sortArray(permittedData, field, "desc");
+      sortArray(permittedData, field, 'desc');
     }
   }
   const pageStart = (params.pagination.page - 1) * params.pagination.perPage;

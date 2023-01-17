@@ -1,5 +1,5 @@
-import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQuery } from "misc/firebase-models";
-import { IFirestoreLogger, messageTypes } from "../../misc";
+import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQuery } from 'misc/firebase-models';
+import { IFirestoreLogger, messageTypes } from '../../misc';
 
 export function setQueryCursor(
   doc: FireStoreDocumentSnapshot,
@@ -72,7 +72,7 @@ export async function findLastQueryCursor(
   while (!lastQueryCursor && currentPage > 1) {
     currentPage--;
     currentPageParams.pagination.page = currentPage;
-    console.log("getting query cursor currentPage=", currentPage);
+    console.log('getting query cursor currentPage=', currentPage);
     lastQueryCursor = await getQueryCursor(
       collection,
       currentPageParams,

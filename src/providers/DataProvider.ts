@@ -5,14 +5,14 @@ import {
   retrieveStatusCode,
   logError,
   MakeFirestoreLogger
-} from "../misc";
-import * as ra from "../misc/react-admin-models";
-import { RAFirebaseOptions } from "./options";
-import { FirebaseWrapper } from "./database/firebase/FirebaseWrapper";
-import { FireApp } from "../misc/firebase-models";
-import { FireClient } from "./database/FireClient";
-import { GetList, GetMany, GetManyReference, GetOne } from "./queries";
-import { Create, Delete, DeleteMany, Update, UpdateMany } from "./commands";
+} from '../misc';
+import * as ra from '../misc/react-admin-models';
+import { RAFirebaseOptions } from './options';
+import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
+import { FireApp } from '../misc/firebase-models';
+import { FireClient } from './database/FireClient';
+import { GetList, GetMany, GetManyReference, GetOne } from './queries';
+import { Create, Delete, DeleteMany, Update, UpdateMany } from './commands';
 
 export interface IDataProvider extends ra.DataProvider {
   app: FireApp;
@@ -29,7 +29,7 @@ export function DataProvider(
   logger.SetEnabled(!!options?.logging);
   flogger.SetEnabled(!!options?.firestoreCostsLogger?.enabled);
   flogger.ResetCount(!options?.firestoreCostsLogger?.persistCount);
-  log("Creating FirebaseDataProvider", {
+  log('Creating FirebaseDataProvider', {
     firebaseConfig,
     options
   });
@@ -42,10 +42,10 @@ export function DataProvider(
       res = await cb();
       return res;
     } catch (error) {
-      const errorMsg = ((error as any) || "").toString();
+      const errorMsg = ((error as any) || '').toString();
       const code = retrieveStatusCode(errorMsg);
       const errorObj = { status: code, message: errorMsg, json: res };
-      logError("DataProvider:", error, { errorMsg, code, errorObj });
+      logError('DataProvider:', error, { errorMsg, code, errorObj });
       throw errorObj;
     }
   }
@@ -122,11 +122,11 @@ function verifyDataProviderArgs(
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {
     throw new Error(
-      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
+      'Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider'
     );
   }
   if (options && options.rootRef) {
     // Will throw error if rootRef doesn't point to a document
-    getAbsolutePath(options.rootRef, "test");
+    getAbsolutePath(options.rootRef, 'test');
   }
 }

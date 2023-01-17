@@ -1,19 +1,19 @@
-import { FireClient } from "../database/FireClient";
-import { FirebaseLazyLoadingClient } from "../lazy-loading/FirebaseLazyLoadingClient";
+import { FireClient } from '../database/FireClient';
+import { FirebaseLazyLoadingClient } from '../lazy-loading/FirebaseLazyLoadingClient';
 import {
   filterArray,
   log,
   recursivelyMapStorageUrls,
   sortArray
-} from "../../misc";
-import * as ra from "../../misc/react-admin-models";
+} from '../../misc';
+import * as ra from '../../misc/react-admin-models';
 
 export async function GetList<T extends ra.Record>(
   resourceName: string,
   params: ra.GetListParams,
   client: FireClient
 ): Promise<ra.GetListResult<T>> {
-  log("GetList", { resourceName, params });
+  log('GetList', { resourceName, params });
   const { rm, fireWrapper, options } = client;
 
   if (options?.lazyLoading?.enabled) {
@@ -30,18 +30,18 @@ export async function GetList<T extends ra.Record>(
   const collectionQuery = filterSafe.collectionQuery;
   delete filterSafe.collectionQuery;
 
-  const r = await rm.TryGetResource(resourceName, "REFRESH", collectionQuery);
+  const r = await rm.TryGetResource(resourceName, 'REFRESH', collectionQuery);
   const data = r.list;
   if (params.sort != null) {
     const { field, order } = params.sort;
-    if (order === "ASC") {
-      sortArray(data, field, "asc");
+    if (order === 'ASC') {
+      sortArray(data, field, 'asc');
     } else {
-      sortArray(data, field, "desc");
+      sortArray(data, field, 'desc');
     }
   }
   let softDeleted = data;
-  if (options.softDelete && !Object.keys(filterSafe).includes("deleted")) {
+  if (options.softDelete && !Object.keys(filterSafe).includes('deleted')) {
     softDeleted = data.filter((doc) => !doc.deleted);
   }
   const filteredData = filterArray(softDeleted, filterSafe);

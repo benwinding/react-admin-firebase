@@ -1,6 +1,6 @@
-import { FireStoreCollectionRef, FireStoreQuery, FireStoreQueryOrder } from "misc/firebase-models";
-import { IFirestoreLogger, messageTypes } from "../../misc";
-import { findLastQueryCursor, getQueryCursor } from "./queryCursors";
+import { FireStoreCollectionRef, FireStoreQuery, FireStoreQueryOrder } from 'misc/firebase-models';
+import { IFirestoreLogger, messageTypes } from '../../misc';
+import { findLastQueryCursor, getQueryCursor } from './queryCursors';
 
 interface ParamsToQueryOptions {
   filters?: boolean;
@@ -47,7 +47,7 @@ export function filtersToQuery(
   filters: { [fieldName: string]: any }
 ): FireStoreQuery {
   const res = Object.entries(filters).reduce((acc,[fieldName, fieldValue]) => {
-    const opStr = fieldValue && Array.isArray(fieldValue) ? "in" : "==";
+    const opStr = fieldValue && Array.isArray(fieldValue) ? 'in' : '==';
     return acc.where(fieldName, opStr, fieldValue);
   }, query);
   return res;
@@ -57,7 +57,7 @@ export function sortToQuery(
   query: FireStoreQuery,
   sort: { field: string; order: string }
 ): FireStoreQuery {
-  if (sort != null && sort.field !== "id") {
+  if (sort != null && sort.field !== 'id') {
     const { field, order } = sort;
     const parsedOrder = order.toLocaleLowerCase() as FireStoreQueryOrder;
     return query.orderBy(field, parsedOrder);

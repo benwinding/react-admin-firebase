@@ -1,14 +1,14 @@
 import {
   IFirebaseWrapper
-} from "./IFirebaseWrapper";
+} from './IFirebaseWrapper';
 
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
-import "firebase/compat/firestore";
-import "firebase/compat/storage";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
 
-import { log } from "misc";
-import { RAFirebaseOptions } from "providers/options";
+import { log } from 'misc';
+import { RAFirebaseOptions } from 'providers/options';
 import {
   FireApp,
   FireAuth,
@@ -20,7 +20,7 @@ import {
   FireStoreCollectionRef,
   FireUploadTaskSnapshot,
   FireUser
-} from "misc/firebase-models";
+} from 'misc/firebase-models';
 
 export class FirebaseWrapper implements IFirebaseWrapper {
   private firestore: FireStore;
@@ -33,7 +33,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   ) {
     const optionsSafe = inputOptions || {};
     this.options = optionsSafe;
-    this.app = (window as any)["_app"] = ObtainFirebaseApp(firebaseConfig, optionsSafe);
+    this.app = (window as any)['_app'] = ObtainFirebaseApp(firebaseConfig, optionsSafe);
     this.firestore = this.app.firestore();
   }
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
@@ -43,13 +43,13 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     return this.firestore.batch();
   }
   dbMakeNewId(): string {
-    return this.firestore.collection("collections").doc().id;
+    return this.firestore.collection('collections').doc().id;
   }
 
   public OnUserLogout(callBack: (u: FireUser | null) => any) {
     this.app.auth().onAuthStateChanged((user) => {
       const isLoggedOut = !user;
-      log("FirebaseWrapper.OnUserLogout", { user, isLoggedOut });
+      log('FirebaseWrapper.OnUserLogout', { user, isLoggedOut });
       if (isLoggedOut) {
         callBack(user);
       }
@@ -74,21 +74,21 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     // This line doesn't work for some reason, might be firebase sdk.
     return firebase.firestore.FieldValue.serverTimestamp();
   }
-  async authSetPersistence(persistenceInput: "session" | "local" | "none") {
+  async authSetPersistence(persistenceInput: 'session' | 'local' | 'none') {
     let persistenceResolved: string;
     switch (persistenceInput) {
-      case "local":
+      case 'local':
         persistenceResolved = firebase.auth.Auth.Persistence.LOCAL;
         break;
-      case "none":
+      case 'none':
         persistenceResolved = firebase.auth.Auth.Persistence.NONE;
         break;
-      case "session":
+      case 'session':
       default:
         persistenceResolved = firebase.auth.Auth.Persistence.SESSION;
         break;
     }
-    log("setPersistence", { persistenceInput, persistenceResolved });
+    log('setPersistence', { persistenceInput, persistenceResolved });
     return this.app.auth()
       .setPersistence(persistenceResolved)
       .catch((error) => console.error(error));

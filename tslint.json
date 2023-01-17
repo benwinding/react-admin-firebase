@@ -42,7 +42,7 @@
     "class-name": true,
     "prefer-conditional-expression": [true, "check-else-if"],
     "promise-function-async": true,
-    "quotemark": [true, "double"],
+    "quotemark": [true, "single"],
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "triple-equals": [true, "allow-null-check", "allow-undefined-check"],
     "no-unnecessary-callback-wrapper": true

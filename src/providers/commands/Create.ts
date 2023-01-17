@@ -1,6 +1,6 @@
-import { FireClient } from "../database/FireClient";
-import { log } from "../../misc";
-import * as ra from "../../misc/react-admin-models";
+import { FireClient } from '../database/FireClient';
+import { log } from '../../misc';
+import * as ra from '../../misc/react-admin-models';
 
 export async function Create<T extends ra.Record>(
   resourceName: string,
@@ -9,9 +9,9 @@ export async function Create<T extends ra.Record>(
 ): Promise<ra.CreateResult<T>> {
   const { rm, fireWrapper } = client;
   const r = await rm.TryGetResource(resourceName);
-  log("Create", { resourceName, resource: r, params });
+  log('Create', { resourceName, resource: r, params });
   const hasOverridenDocId = params.data && params.data.id;
-  log("Create", { hasOverridenDocId });
+  log('Create', { hasOverridenDocId });
   if (hasOverridenDocId) {
     const overridenId = params.data.id;
     const exists = (await r.collection.doc(overridenId).get()).exists;
@@ -22,14 +22,14 @@ export async function Create<T extends ra.Record>(
     }
     const docData = await client.parseDataAndUpload(r, overridenId, params.data);
     if (!overridenId) {
-      throw new Error("id must be a valid string");
+      throw new Error('id must be a valid string');
     }
     const documentObj = { ...docData };
     client.checkRemoveIdField(documentObj, overridenId);
     await client.addCreatedByFields(documentObj);
     await client.addUpdatedByFields(documentObj);
     const documentObjTransformed = client.transformToDb(resourceName, documentObj, overridenId);
-    log("Create", { documentObj });
+    log('Create', { documentObj });
     await r.collection.doc(overridenId).set(documentObjTransformed, { merge: false });
     return {
       data: {

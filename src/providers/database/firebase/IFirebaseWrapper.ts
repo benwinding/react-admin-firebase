@@ -1,4 +1,4 @@
-import { RAFirebaseOptions } from "../../options";
+import { RAFirebaseOptions } from '../../options';
 import {
   FireApp,
   FireAuth,
@@ -10,7 +10,7 @@ import {
   FireStoragePutFileResult,
   FireStoreCollectionRef,
   FireStoreBatch
-} from "misc/firebase-models";
+} from 'misc/firebase-models';
 
 export interface IFirebaseWrapper {
   options: RAFirebaseOptions;
@@ -22,7 +22,7 @@ export interface IFirebaseWrapper {
   dbMakeNewId(): string;
   
   OnUserLogout(cb: (user: FireUser | null) => void): void;
-  authSetPersistence(persistenceInput: "session" | "local" | "none"): Promise<void>;
+  authSetPersistence(persistenceInput: 'session' | 'local' | 'none'): Promise<void>;
   authGetUserLoggedIn(): Promise<FireUser>;
   authSigninEmailPassword(email: string, password: string): Promise<FireAuthUserCredentials>;
   authSignOut(): Promise<void>;

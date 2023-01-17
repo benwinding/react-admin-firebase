@@ -1,5 +1,5 @@
-import firebase from "firebase/compat/app";
-import "firebase/compat/storage";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/storage';
 
 export type FireUser = firebase.User;
 export type FireApp = firebase.app.App;

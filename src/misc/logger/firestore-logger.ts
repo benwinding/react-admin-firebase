@@ -1,10 +1,10 @@
-import { RAFirebaseOptions } from "providers/options";
-import { LogNoOp, LoggerBase } from "./logger-base";
+import { RAFirebaseOptions } from 'providers/options';
+import { LogNoOp, LoggerBase } from './logger-base';
 
-const LOGGER_ENABLEDKEY = "LOGGING_FIRESTORE_COSTS_ENABLED";
-const logger = new LoggerBase("💸firestore-costs:", LOGGER_ENABLEDKEY);
+const LOGGER_ENABLEDKEY = 'LOGGING_FIRESTORE_COSTS_ENABLED';
+const logger = new LoggerBase('💸firestore-costs:', LOGGER_ENABLEDKEY);
 
-const KEY_SINGLE = "firecosts-single-reads";
+const KEY_SINGLE = 'firecosts-single-reads';
 
 export interface IFirestoreLogger {
   logDocument: (count: number) => Function;
@@ -20,10 +20,10 @@ export function MakeFirestoreLogger(
   }
 
   function incrementRead(incrementBy = 1) {
-    const currentCountRaw = localStorage.getItem(KEY_SINGLE) || "";
+    const currentCountRaw = localStorage.getItem(KEY_SINGLE) || '';
     const currentCount = parseInt(currentCountRaw) || 0;
     const incremented = currentCount + incrementBy;
-    localStorage.setItem(KEY_SINGLE, incremented + "");
+    localStorage.setItem(KEY_SINGLE, incremented + '');
     return incremented;
   }
   function clearCache() {

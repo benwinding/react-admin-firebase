@@ -11,7 +11,7 @@ export class LoggerBase {
 
   SetEnabled(isEnabled: boolean) {
     if (isEnabled) {
-      localStorage.setItem(this.cacheEnabledKey, "true");
+      localStorage.setItem(this.cacheEnabledKey, 'true');
     } else {
       localStorage.removeItem(this.cacheEnabledKey);
     }
