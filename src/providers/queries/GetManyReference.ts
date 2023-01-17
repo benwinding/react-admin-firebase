@@ -23,7 +23,7 @@ export async function GetManyReference<T extends ra.Record>(
   const targetValue = params.id;
   let softDeleted = data;
   if (options.softDelete) {
-    softDeleted = data.filter(doc => !doc['deleted'])
+    softDeleted = data.filter(doc => !doc["deleted"]);
   }
   const filteredData = filterArray(softDeleted, filterSafe);
   const targetIdFilter: Record<string, ra.Identifier> = {};
@@ -43,12 +43,12 @@ export async function GetManyReference<T extends ra.Record>(
   const total = permittedData.length;
 
   if (options.relativeFilePaths) {
-    const data = await Promise.all(
+    const dataWithUrls = await Promise.all(
       permittedData.map((doc) =>
         recursivelyMapStorageUrls(fireWrapper, doc)
       )
     );
-    return { data, total };
+    return { data: dataWithUrls, total };
   }
 
   return { data: dataPage, total };

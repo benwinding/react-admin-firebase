@@ -18,7 +18,7 @@ export function translateDocFromFirestore(obj: any) {
   const isObject = !!obj && typeof obj === "object";
   const result: FromFirestoreResult = {
     parsedDoc: {},
-    refdocs: [],
+    refdocs: []
   };
   if (!isObject) {
     return result;
@@ -81,7 +81,7 @@ function isInputADocReference(input: any): boolean {
 
 export function applyRefDocs(
   doc: any,
-  refDocs: RefDocFound[],
+  refDocs: RefDocFound[]
 ) {
   refDocs.map((d) => {
     set(doc, REF_INDENTIFIER + d.fieldPath, d.refDocPath);
@@ -93,11 +93,11 @@ export const recursivelyMapStorageUrls = async (
   fireWrapper: IFirebaseWrapper,
   fieldValue: any
 ): Promise<any> => {
-  const isPrimitive = !fieldValue || typeof fieldValue !== 'object';
+  const isPrimitive = !fieldValue || typeof fieldValue !== "object";
   if (isPrimitive) {
-    return fieldValue
+    return fieldValue;
   }
-  const isFileField = has(fieldValue, 'src');
+  const isFileField = has(fieldValue, "src");
   if (isFileField) {
     try {
       const src = await fireWrapper
@@ -106,11 +106,11 @@ export const recursivelyMapStorageUrls = async (
         .getDownloadURL();
       return {
         ...fieldValue,
-        src,
+        src
       };
     } catch (error) {
       logError(`Error when getting download URL`, {
-        error,
+        error
       });
       return fieldValue;
     }

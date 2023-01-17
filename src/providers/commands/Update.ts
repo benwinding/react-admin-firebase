@@ -22,7 +22,7 @@ export async function Update<T extends ra.Record>(
   return {
     data: {
       ...data,
-      id: id,
-    },
+      id: id
+    }
   };
 }

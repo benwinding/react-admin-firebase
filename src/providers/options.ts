@@ -18,19 +18,19 @@ export interface RAFirebaseOptions {
     created_at?: string, // default createdate
     created_by?: string, // default createdby
     updated_at?: string, // default lastupdate
-    updated_by?: string, // default updatedby
-  },
+    updated_by?: string // default updatedby
+  };
   // Prevents document from getting the ID field added as a property
   dontAddIdFieldToDoc?: boolean;
   // Authentication persistence, defaults to 'session', options are 'session' | 'local' | 'none'
-  persistence?: 'session' | 'local' | 'none';
+  persistence?: "session" | "local" | "none";
   // Adds 'deleted' meta field for non-destructive deleting functionality
   // NOTE: Hides 'deleted' records from list views unless overridden by filtering for {deleted: true} 
   softDelete?: boolean;
   // Changes meta fields like 'createdby' and 'updatedby' to store user IDs instead of email addresses
   associateUsersById?: boolean;
   // Casing for meta fields like 'createdby' and 'updatedby', defaults to 'lower', options are 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab'
-  metaFieldCasing?: 'lower' | 'camel' | 'snake' | 'pascal' | 'kebab';
+  metaFieldCasing?: "lower" | "camel" | "snake" | "pascal" | "kebab";
   // Instead of saving full download url for file, save just relative path and then get download url
   // when getting docs - main use case is handling multiple firebase projects (environments)
   // and moving/copying documents/storage files between them - with relativeFilePaths, download url

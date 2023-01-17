@@ -1,14 +1,14 @@
-import { RAFirebaseOptions } from '../options';
-import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
+import { RAFirebaseOptions } from "../options";
+import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
 import {
   log,
   getAbsolutePath,
   messageTypes,
   logWarn,
   IFirestoreLogger,
-  parseFireStoreDocument,
-} from '../../misc';
-import { FireStoreCollectionRef } from 'misc/firebase-models';
+  parseFireStoreDocument
+} from "../../misc";
+import { FireStoreCollectionRef } from "misc/firebase-models";
 
 type IResourceItem = {} & { id: string, deleted?: boolean };
 export interface IResource {
@@ -33,7 +33,7 @@ export class ResourceManager {
 
   public async TryGetResource(
     resourceName: string,
-    refresh?: 'REFRESH',
+    refresh?: "REFRESH",
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<IResource> {
     if (refresh) {
@@ -56,9 +56,9 @@ export class ResourceManager {
     relativePath: string,
     collectionQuery?: messageTypes.CollectionQueryType
   ): Promise<IResource> {
-    log('resourceManager.TryGetResourcePromise', {
+    log("resourceManager.TryGetResourcePromise", {
       relativePath,
-      collectionQuery,
+      collectionQuery
     });
     await this.initPath(relativePath);
 
@@ -76,15 +76,15 @@ export class ResourceManager {
     collectionQuery: messageTypes.CollectionQueryType | undefined
   ) {
     if (this.options?.lazyLoading?.enabled) {
-      logWarn('resourceManager.RefreshResource', {
-        warn: 'RefreshResource is not available in lazy loading mode',
+      logWarn("resourceManager.RefreshResource", {
+        warn: "RefreshResource is not available in lazy loading mode"
       });
       throw new Error(
-        'react-admin-firebase: RefreshResource is not available in lazy loading mode'
+        "react-admin-firebase: RefreshResource is not available in lazy loading mode"
       );
     }
 
-    log('resourceManager.RefreshResource', { relativePath, collectionQuery });
+    log("resourceManager.RefreshResource", { relativePath, collectionQuery });
     await this.initPath(relativePath);
     const resource = this.resources[relativePath];
 
@@ -92,13 +92,13 @@ export class ResourceManager {
     const query = this.applyQuery(collection, collectionQuery);
     const newDocs = await query.get();
 
-    resource.list = newDocs.docs.map((doc) => parseFireStoreDocument<IResourceItem>(doc));
+    resource.list = newDocs.docs.map(parseFireStoreDocument);
     const count = newDocs.docs.length;
     this.flogger.logDocument(count)();
-    log('resourceManager.RefreshResource', {
+    log("resourceManager.RefreshResource", {
       newDocs,
       resource,
-      collectionPath: collection.path,
+      collectionPath: collection.path
     });
   }
 
@@ -108,15 +108,15 @@ export class ResourceManager {
     this.flogger.logDocument(1)();
     const docSnap = await resource.collection.doc(docId).get();
     if (!docSnap.exists) {
-      throw new Error('react-admin-firebase: No id found matching: ' + docId);
+      throw new Error("react-admin-firebase: No id found matching: " + docId);
     }
     const result = parseFireStoreDocument(docSnap);
-    log('resourceManager.GetSingleDoc', {
+    log("resourceManager.GetSingleDoc", {
       relativePath,
       resource,
       docId,
       docSnap,
-      result,
+      result
     });
     return result;
   }
@@ -125,12 +125,12 @@ export class ResourceManager {
     const rootRef = this.options && this.options.rootRef;
     const absolutePath = getAbsolutePath(rootRef, relativePath);
     const hasBeenInited = !!this.resources[relativePath];
-    log('resourceManager.initPath()', {
+    log("resourceManager.initPath()", {
       absolutePath,
-      hasBeenInited,
+      hasBeenInited
     });
     if (hasBeenInited) {
-      log('resourceManager.initPath() has been initialized already...');
+      log("resourceManager.initPath() has been initialized already...");
       return;
     }
     const collection = this.fireWrapper.dbGetCollection(absolutePath);
@@ -139,14 +139,14 @@ export class ResourceManager {
       collection,
       list,
       path: relativePath,
-      pathAbsolute: absolutePath,
+      pathAbsolute: absolutePath
     };
     this.resources[relativePath] = resource;
-    log('resourceManager.initPath() setting resource...', {
+    log("resourceManager.initPath() setting resource...", {
       resource,
       allResources: this.resources,
       collection: collection,
-      collectionPath: collection.path,
+      collectionPath: collection.path
     });
   }
 
@@ -162,7 +162,7 @@ export class ResourceManager {
     if (user) {
       return user.email as string;
     } else {
-      return 'annonymous user';
+      return "annonymous user";
     }
   }
   private async getCurrentUserId() {
@@ -170,7 +170,7 @@ export class ResourceManager {
     if (user) {
       return user.uid;
     } else {
-      return 'annonymous user';
+      return "annonymous user";
     }
   }
 
@@ -180,10 +180,10 @@ export class ResourceManager {
   ): FireStoreCollectionRef {
     const collRef = collectionQuery ? collectionQuery(collection) : collection;
 
-    log('resourceManager.applyQuery() ...', {
+    log("resourceManager.applyQuery() ...", {
       collection,
-      collectionQuery: (collectionQuery || '-').toString(),
-      collRef,
+      collectionQuery: (collectionQuery || "-").toString(),
+      collRef
     });
     return collRef;
   }

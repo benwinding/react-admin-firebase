@@ -7,12 +7,12 @@ export function parseStoragePath(
   useFileName: boolean
 ): string {
   const fileNameBits = rawFile instanceof File
-    ? rawFile.name.split('.')
+    ? rawFile.name.split(".")
     : [];
 
   const fileExtension = !fileNameBits?.length
-    ? ''
-    : '.' + fileNameBits.pop();
+    ? ""
+    : "." + fileNameBits.pop();
 
   return useFileName
     ? joinPaths(docPath, fieldPath, rawFile.name)

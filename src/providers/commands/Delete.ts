@@ -21,6 +21,6 @@ export async function Delete<T extends ra.Record>(
     throw new Error(error as any);
   }
   return {
-    data: params.previousData as T,
+    data: params.previousData as T
   };
 }

@@ -5,7 +5,7 @@ export function getAbsolutePath(
   relativePath: string | null
 ): string {
   if (!rootRef) {
-    return relativePath+'';
+    return relativePath+"";
   }
   if (!relativePath) {
     throw new Error(

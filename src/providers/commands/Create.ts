@@ -20,22 +20,22 @@ export async function Create<T extends ra.Record>(
         `the id:"${overridenId}" already exists, please use a unique string if overriding the 'id' field`
       );
     }
-    const data = await client.parseDataAndUpload(r, overridenId, params.data);
+    const docData = await client.parseDataAndUpload(r, overridenId, params.data);
     if (!overridenId) {
       throw new Error("id must be a valid string");
     }
-    const docObj = { ...data };
-    client.checkRemoveIdField(docObj, overridenId);
-    await client.addCreatedByFields(docObj);
-    await client.addUpdatedByFields(docObj);
-    const docObjTransformed = client.transformToDb(resourceName, docObj, overridenId);
-    log("Create", { docObj });
-    await r.collection.doc(overridenId).set(docObjTransformed, { merge: false });
+    const documentObj = { ...docData };
+    client.checkRemoveIdField(documentObj, overridenId);
+    await client.addCreatedByFields(documentObj);
+    await client.addUpdatedByFields(documentObj);
+    const documentObjTransformed = client.transformToDb(resourceName, documentObj, overridenId);
+    log("Create", { documentObj });
+    await r.collection.doc(overridenId).set(documentObjTransformed, { merge: false });
     return {
       data: {
-        ...docObjTransformed,
-        id: overridenId,
-      },
+        ...documentObjTransformed,
+        id: overridenId
+      }
     };
   }
   const newId = fireWrapper.dbMakeNewId();
@@ -49,7 +49,7 @@ export async function Create<T extends ra.Record>(
   return {
     data: {
       ...docObjTransformed,
-      id: newId,
-    },
+      id: newId
+    }
   };
 }

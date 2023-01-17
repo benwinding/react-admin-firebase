@@ -17,7 +17,7 @@ export async function DeleteMany(
   const returnData: ra.Identifier[] = [];
   const batch = fireWrapper.dbCreateBatch();
   for (const id of params.ids) {
-    const idStr = id + '';
+    const idStr = id + "";
     const docToDelete = r.collection.doc(idStr);
     batch.delete(docToDelete);
     returnData.push(id);
@@ -25,7 +25,7 @@ export async function DeleteMany(
   try {
     await batch.commit();
   } catch (error) {
-    throw new Error(error as any)
+    throw new Error(error as any);
   }
   return { data: returnData };
 }

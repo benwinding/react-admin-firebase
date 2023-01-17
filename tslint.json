@@ -22,7 +22,10 @@
       true,
       "check-module"
     ],
-    "max-line-length": [true, 80],
+    "max-line-length": [80, {
+      "ignore": ["non-comments"],
+      "ignorePattern": ["/(https?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?)/"]
+    }],
     "no-trailing-whitespace": [true, "ignore-comments", "ignore-blank-lines", "ignore-jsdoc", "ignore-template-strings"],
     "no-unsafe-any": true,
     "no-unused-variable": [true, "check-parameters"],
@@ -39,7 +42,7 @@
     "class-name": true,
     "prefer-conditional-expression": [true, "check-else-if"],
     "promise-function-async": true,
-    "quotemark": [true, "single"],
+    "quotemark": [true, "double"],
     "semicolon": [true, "always", "ignore-bound-class-methods"],
     "triple-equals": [true, "allow-null-check", "allow-undefined-check"],
     "no-unnecessary-callback-wrapper": true

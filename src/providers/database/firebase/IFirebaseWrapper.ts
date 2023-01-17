@@ -22,7 +22,7 @@ export interface IFirebaseWrapper {
   dbMakeNewId(): string;
   
   OnUserLogout(cb: (user: FireUser | null) => void): void;
-  authSetPersistence(persistenceInput: 'session' | 'local' | 'none'): Promise<void>;
+  authSetPersistence(persistenceInput: "session" | "local" | "none"): Promise<void>;
   authGetUserLoggedIn(): Promise<FireUser>;
   authSigninEmailPassword(email: string, password: string): Promise<FireAuthUserCredentials>;
   authSignOut(): Promise<void>;

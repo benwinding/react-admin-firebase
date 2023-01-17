@@ -9,7 +9,7 @@ import {
   logError,
   dispatch,
   translateDocToFirestore,
-  parseStoragePath,
+  parseStoragePath
 } from "../../misc";
 import { RAFirebaseOptions } from "../options";
 import { IFirebaseWrapper } from "./firebase/IFirebaseWrapper";
@@ -33,7 +33,7 @@ export class FireClient {
   }
 
   public transformToDb(resourceName: string, documentData: any, docId: string): any {
-    if (typeof this.options.transformToDb === 'function') {
+    if (typeof this.options.transformToDb === "function") {
       return this.options.transformToDb(resourceName, documentData, docId);
     }
     return documentData;
@@ -74,23 +74,23 @@ export class FireClient {
       const { task, taskResult, downloadUrl } = this.fireWrapper.putFile(storagePath, rawFile);
       const { name } = rawFile;
       // monitor upload status & progress
-      dispatch('FILE_UPLOAD_WILL_START', name);
-      task.on('state_changed', (snapshot) => {
+      dispatch("FILE_UPLOAD_WILL_START", name);
+      task.on("state_changed", (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        log('Upload is ' + progress + '% done');
-        dispatch('FILE_UPLOAD_PROGRESS', name, progress);
+        log("Upload is " + progress + "% done");
+        dispatch("FILE_UPLOAD_PROGRESS", name, progress);
         switch (snapshot.state) {
           case TASK_PAUSED:
-            log('Upload is paused');
-            dispatch('FILE_UPLOAD_PAUSED', name);
+            log("Upload is paused");
+            dispatch("FILE_UPLOAD_PAUSED", name);
             break;
           case TASK_RUNNING:
-            log('Upload is running');
-            dispatch('FILE_UPLOAD_RUNNING', name);
+            log("Upload is running");
+            dispatch("FILE_UPLOAD_RUNNING", name);
             break;
           case TASK_CANCELED:
-            log('Upload has been canceled');
-            dispatch('FILE_UPLOAD_CANCELED', name);
+            log("Upload has been canceled");
+            dispatch("FILE_UPLOAD_CANCELED", name);
             break;
           // case storage.TaskState.ERROR:
           // already handled by catch
@@ -100,25 +100,25 @@ export class FireClient {
       });
       const [getDownloadURL] = await Promise.all([
         downloadUrl,
-        taskResult,
+        taskResult
       ]);
-      dispatch('FILE_UPLOAD_COMPLETE', name);
-      dispatch('FILE_SAVED', name);
+      dispatch("FILE_UPLOAD_COMPLETE", name);
+      dispatch("FILE_SAVED", name);
       log("saveFile() saved file", {
         storagePath,
         taskResult,
-        getDownloadURL,
+        getDownloadURL
       });
       return this.options.relativeFilePaths ? storagePath : getDownloadURL;
     } catch (storageError) {
-      if (get(storageError, 'code') === "storage/unknown") {
+      if (get(storageError, "code") === "storage/unknown") {
         logError(
-          'saveFile() error saving file, No bucket found! Try clicking "Get Started" in firebase -> storage',
+          "saveFile() error saving file, No bucket found! Try clicking \"Get Started\" in firebase -> storage",
           { storageError }
         );
       } else {
         logError("saveFile() error saving file", {
-          storageError,
+          storageError
         });
       }
     }

@@ -3,15 +3,15 @@
 import { logError } from "./logger";
 
 // - https://github.com/firebase/firebase-js-sdk/blob/9f109f85ad0d99f6c13e68dcb549a0b852e35a2a/packages/functions/src/api/error.ts
-export function retrieveStatusTxt(status: number): 'ok' | 'unauthenticated' {
+export function retrieveStatusTxt(status: number): "ok" | "unauthenticated" {
   // Make sure any successful status is OK.
   if (status >= 200 && status < 300) {
-    return 'ok';
+    return "ok";
   }
   switch (status) {
     case 401: // 'unauthenticated'
     case 403: // 'permission-denied'
-      return 'unauthenticated';
+      return "unauthenticated";
 
     case 0: // 'internal'
     case 400: // 'invalid-argument'
@@ -25,7 +25,7 @@ export function retrieveStatusTxt(status: number): 'ok' | 'unauthenticated' {
     case 504: // 'deadline-exceeded'
     default:
       // ignore
-      return 'ok';
+      return "ok";
   }
 }
 
@@ -37,32 +37,32 @@ export function retrieveStatusCode(statusTxt: string): number {
   const regexResult = /\[code\=([\w-]*)/g.exec(statusTxt);
   const status = Array.isArray(regexResult) && regexResult[1];
   if (!status) {
-    logError('unknown StatusCode ', {statusTxt});
+    logError("unknown StatusCode ", {statusTxt});
   }
   switch (status) {
-    case 'unauthenticated':
+    case "unauthenticated":
       return 401;
-    case 'permission-denied':
+    case "permission-denied":
       return 403;
-    case 'internal':
+    case "internal":
       return 0;
-    case 'invalid-argument':
+    case "invalid-argument":
       return 400;
-    case 'not-found':
+    case "not-found":
       return 404;
-    case 'aborted':
+    case "aborted":
       return 409;
-    case 'resource-exhausted':
+    case "resource-exhausted":
       return 429;
-    case 'cancelled':
+    case "cancelled":
       return 499;
-    case 'internal':
+    case "internal":
       return 500;
-    case 'unimplemented':
+    case "unimplemented":
       return 501;
-    case 'unavailable':
+    case "unavailable":
       return 503;
-    case 'deadline-exceeded':
+    case "deadline-exceeded":
       return 504;
     default:
       return 200;

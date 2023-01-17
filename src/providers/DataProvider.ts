@@ -4,7 +4,7 @@ import {
   logger,
   retrieveStatusCode,
   logError,
-  MakeFirestoreLogger,
+  MakeFirestoreLogger
 } from "../misc";
 import * as ra from "../misc/react-admin-models";
 import { RAFirebaseOptions } from "./options";
@@ -29,7 +29,7 @@ export function DataProvider(
   logger.SetEnabled(!!options?.logging);
   flogger.SetEnabled(!!options?.firestoreCostsLogger?.enabled);
   flogger.ResetCount(!options?.firestoreCostsLogger?.persistCount);
-  log('Creating FirebaseDataProvider', {
+  log("Creating FirebaseDataProvider", {
     firebaseConfig,
     options
   });
@@ -42,7 +42,7 @@ export function DataProvider(
       res = await cb();
       return res;
     } catch (error) {
-      const errorMsg = ((error as any) || '').toString();
+      const errorMsg = ((error as any) || "").toString();
       const code = retrieveStatusCode(errorMsg);
       const errorObj = { status: code, message: errorMsg, json: res };
       logError("DataProvider:", error, { errorMsg, code, errorObj });
@@ -108,7 +108,7 @@ export function DataProvider(
       params: ra.DeleteManyParams
     ): Promise<ra.DeleteManyResult> {
       return run(() => DeleteMany(resource, params, client));
-    },
+    }
   };
 
   return newProviderApi;
@@ -122,11 +122,11 @@ function verifyDataProviderArgs(
   const hasNoConfig = !firebaseConfig;
   if (hasNoConfig && hasNoApp) {
     throw new Error(
-      'Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider'
+      "Please pass the Firebase firebaseConfig object or options.app to the FirebaseAuthProvider"
     );
   }
   if (options && options.rootRef) {
     // Will throw error if rootRef doesn't point to a document
-    getAbsolutePath(options.rootRef, 'test');
+    getAbsolutePath(options.rootRef, "test");
   }
 }

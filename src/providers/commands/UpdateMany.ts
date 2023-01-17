@@ -15,7 +15,7 @@ export async function UpdateMany(
   const ids = params.ids;
   const returnData = await Promise.all(
     ids.map(async id => {
-      const idStr = id+'';
+      const idStr = id+"";
       const data = await client.parseDataAndUpload(r, idStr, params.data);
       const docObj = { ...data };
       client.checkRemoveIdField(docObj, idStr);
