@@ -9,10 +9,10 @@ export type FireStorageReference = firebase.storage.Reference;
 export type FireUploadTaskSnapshot = firebase.storage.UploadTaskSnapshot;
 export type FireUploadTask = firebase.storage.UploadTask;
 export type FireStoragePutFileResult = {
-  task: FireUploadTask, 
+  task: FireUploadTask,
   taskResult: Promise<FireUploadTaskSnapshot>,
-  downloadUrl: Promise<string>,
-}
+  downloadUrl: Promise<string>
+};
 
 export type FireAuth = firebase.auth.Auth;
 export type FireAuthUserCredentials = firebase.auth.UserCredential;
@@ -27,6 +27,6 @@ export type FireStoreQueryDocumentSnapshot = firebase.firestore.QueryDocumentSna
 export type FireStoreQuery = firebase.firestore.Query;
 export type FireStoreQueryOrder = firebase.firestore.OrderByDirection;
 
-export const TASK_PAUSED = firebase.storage.TaskState.PAUSED
-export const TASK_RUNNING = firebase.storage.TaskState.RUNNING
-export const TASK_CANCELED = firebase.storage.TaskState.CANCELED
+export const TASK_PAUSED = firebase.storage.TaskState.PAUSED;
+export const TASK_RUNNING = firebase.storage.TaskState.RUNNING;
+export const TASK_CANCELED = firebase.storage.TaskState.CANCELED;

@@ -1,4 +1,4 @@
-import { FireApp } from "misc/firebase-models";
+import { FireApp } from 'misc/firebase-models';
 
 export interface RAFirebaseOptions {
   // Use a different root document to set your resource collections, by default it uses the root collections of firestore
@@ -18,8 +18,8 @@ export interface RAFirebaseOptions {
     created_at?: string, // default createdate
     created_by?: string, // default createdby
     updated_at?: string, // default lastupdate
-    updated_by?: string, // default updatedby
-  },
+    updated_by?: string // default updatedby
+  };
   // Prevents document from getting the ID field added as a property
   dontAddIdFieldToDoc?: boolean;
   // Authentication persistence, defaults to 'session', options are 'session' | 'local' | 'none'

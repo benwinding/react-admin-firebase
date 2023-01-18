@@ -1,4 +1,4 @@
-import { REF_INDENTIFIER } from "./internal.models";
+import { REF_INDENTIFIER } from './internal.models';
 
 interface ParsedUpload {
   fieldDotsPath: string;
@@ -18,7 +18,7 @@ interface ParseResult {
 }
 
 export function translateDocToFirestore(obj: any): ParseResult {
-  const isObject = !!obj && typeof obj === "object";
+  const isObject = !!obj && typeof obj === 'object';
   const result: ParseResult = {
     uploads: [],
     refdocs: [],
@@ -45,7 +45,7 @@ export function recusivelyParseObjectValue(
     return input;
   }
   const isRefField =
-    typeof fieldPath === "string" && fieldPath.includes(REF_INDENTIFIER);
+    typeof fieldPath === 'string' && fieldPath.includes(REF_INDENTIFIER);
   if (isRefField) {
     const refDocFullPath = input as string;
     result.refdocs.push({
@@ -54,11 +54,11 @@ export function recusivelyParseObjectValue(
     });
     return;
   }
-  const isPrimitive = typeof input !== "object";
+  const isPrimitive = typeof input !== 'object';
   if (isPrimitive) {
     return input;
   }
-  const isTimestamp = !!input.toDate && typeof input.toDate === "function";
+  const isTimestamp = !!input.toDate && typeof input.toDate === 'function';
   if (isTimestamp) {
     return input.toDate();
   }
@@ -68,11 +68,11 @@ export function recusivelyParseObjectValue(
       recusivelyParseObjectValue(value, `${fieldPath}.${index}`, result)
     );
   }
-  const isFileField = !!input && input.hasOwnProperty("rawFile");
+  const isFileField = !!input && input.hasOwnProperty('rawFile');
   if (isFileField) {
     result.uploads.push({
       fieldDotsPath: fieldPath,
-      fieldSlashesPath: fieldPath.split(".").join("/"),
+      fieldSlashesPath: fieldPath.split('.').join('/'),
       rawFile: input.rawFile,
     });
     delete input.rawFile;

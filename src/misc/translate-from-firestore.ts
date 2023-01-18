@@ -1,8 +1,8 @@
-import { set, has } from "lodash";
-import { IFirebaseWrapper } from "providers/database";
-import { REF_INDENTIFIER } from "./internal.models";
-import { logError } from "./logger";
-import { FireStoreDocumentRef } from "./firebase-models";
+import { set, has } from 'lodash';
+import { IFirebaseWrapper } from 'providers/database';
+import { REF_INDENTIFIER } from './internal.models';
+import { logError } from './logger';
+import { FireStoreDocumentRef } from './firebase-models';
 
 export interface RefDocFound {
   fieldPath: string;
@@ -15,7 +15,7 @@ export interface FromFirestoreResult {
 }
 
 export function translateDocFromFirestore(obj: any) {
-  const isObject = !!obj && typeof obj === "object";
+  const isObject = !!obj && typeof obj === 'object';
   const result: FromFirestoreResult = {
     parsedDoc: {},
     refdocs: [],
@@ -40,11 +40,11 @@ export function recusivelyCheckObjectValue(
   if (isFalsey) {
     return input;
   }
-  const isPrimitive = typeof input !== "object";
+  const isPrimitive = typeof input !== 'object';
   if (isPrimitive) {
     return input;
   }
-  const isTimestamp = !!input.toDate && typeof input.toDate === "function";
+  const isTimestamp = !!input.toDate && typeof input.toDate === 'function';
   if (isTimestamp) {
     return input.toDate();
   }
@@ -60,7 +60,7 @@ export function recusivelyCheckObjectValue(
     result.refdocs.push({ fieldPath: fieldPath, refDocPath: ref.path });
     return ref.id;
   }
-  const isObject = typeof input === "object";
+  const isObject = typeof input === 'object';
   if (isObject) {
     Object.keys(input).map((key) => {
       const value = input[key];
@@ -72,16 +72,16 @@ export function recusivelyCheckObjectValue(
 }
 
 function isInputADocReference(input: any): boolean {
-  const isDocumentReference = typeof input.id === "string" &&
-    typeof input.firestore === "object" &&
-    typeof input.parent === "object" &&
-    typeof input.path === "string";
+  const isDocumentReference = typeof input.id === 'string' &&
+    typeof input.firestore === 'object' &&
+    typeof input.parent === 'object' &&
+    typeof input.path === 'string';
   return isDocumentReference;
 }
 
 export function applyRefDocs(
   doc: any,
-  refDocs: RefDocFound[],
+  refDocs: RefDocFound[]
 ) {
   refDocs.map((d) => {
     set(doc, REF_INDENTIFIER + d.fieldPath, d.refDocPath);
@@ -95,7 +95,7 @@ export const recursivelyMapStorageUrls = async (
 ): Promise<any> => {
   const isPrimitive = !fieldValue || typeof fieldValue !== 'object';
   if (isPrimitive) {
-    return fieldValue
+    return fieldValue;
   }
   const isFileField = has(fieldValue, 'src');
   if (isFileField) {
@@ -127,7 +127,7 @@ export const recursivelyMapStorageUrls = async (
   if (isDocumentReference) {
     return fieldValue;
   }
-  const isObject = !isArray && typeof fieldValue === "object";
+  const isObject = !isArray && typeof fieldValue === 'object';
   if (isObject) {
     return Promise.all(
       Object.keys(fieldValue).map(async (key) => {

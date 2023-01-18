@@ -4,7 +4,7 @@ import { RAFirebaseOptions } from './options';
 import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
 import {
   AuthProvider as RaAuthProvider,
-  UserIdentity,
+  UserIdentity
 } from '../misc/react-admin-models';
 import { IFirebaseWrapper } from './database';
 import { FireUser } from '../misc/firebase-models';
@@ -221,8 +221,8 @@ export type ReactAdminFirebaseAuthProvider = RaAuthProvider & {
   getJWTExpirationTime: () => Promise<string | null>,
   getJWTSignInProvider: () => Promise<string | null>,
   getJWTClaims: () => Promise<{ [key: string]: any; } | null>,
-  getJWTToken: () => Promise<string | null>,  
-}
+  getJWTToken: () => Promise<string | null>
+};
 
 function VerifyAuthProviderArgs(
   firebaseConfig: {},

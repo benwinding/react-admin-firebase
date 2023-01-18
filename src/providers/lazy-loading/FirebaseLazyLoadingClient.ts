@@ -2,7 +2,7 @@ import {
   log,
   messageTypes,
   parseFireStoreDocument,
-  recursivelyMapStorageUrls,
+  recursivelyMapStorageUrls
 } from '../../misc';
 import { IResource, ResourceManager } from '../database/ResourceManager';
 import { RAFirebaseOptions } from '../options';
@@ -10,7 +10,7 @@ import * as ra from '../../misc/react-admin-models';
 import {
   getFullParamsForQuery,
   getNextPageParams,
-  paramsToQuery,
+  paramsToQuery
 } from './paramsToQuery';
 import { clearQueryCursors, setQueryCursor } from './queryCursors';
 import { FireClient } from 'providers/database';
@@ -53,7 +53,7 @@ export class FirebaseLazyLoadingClient {
     }
     this.client.flogger.logDocument(resultsCount)();
 
-    const data = snapshots.docs.map(doc => parseFireStoreDocument<T>(doc));
+    const data = snapshots.docs.map(parseFireStoreDocument);
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
     // After fetching documents save queryCursor for next page
     setQueryCursor(nextPageCursor, getNextPageParams(params), resourceName);
@@ -72,7 +72,7 @@ export class FirebaseLazyLoadingClient {
     if (isOnLastPage) {
       const { page, perPage } = params.pagination;
       total = (page - 1) * perPage + data.length;
-      log('apiGetListLazy', { message: "It's last page of collection." });
+      log('apiGetListLazy', { message: 'It\'s last page of collection.' });
     }
 
     if (this.options.relativeFilePaths) {
@@ -141,7 +141,7 @@ export class FirebaseLazyLoadingClient {
     const snapshots = await query.get();
     const resultsCount = snapshots.docs.length;
     this.client.flogger.logDocument(resultsCount)();
-    const data = snapshots.docs.map(d => parseFireStoreDocument(d));
+    const data = snapshots.docs.map(parseFireStoreDocument);
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(
         data.map(async (doc: any) => {
@@ -179,7 +179,7 @@ export class FirebaseLazyLoadingClient {
     collection: FireStoreCollectionRef,
     params: TParams,
     resourceName: string,
-    nextPageCursor: FireStoreDocumentSnapshot,
+    nextPageCursor: FireStoreDocumentSnapshot
   ): Promise<boolean> {
     const query = await paramsToQuery(
       collection,

@@ -1,4 +1,4 @@
-import { joinPaths } from "./pathHelper";
+import { joinPaths } from './pathHelper';
 
 export function parseStoragePath(
   rawFile: File,

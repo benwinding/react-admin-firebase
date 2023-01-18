@@ -13,17 +13,36 @@
     "no-empty": true,
     "object-literal-sort-keys": false,
     "no-floating-promises": true,
-    "trailing-comma": [true, {
-      "multiline": "never",
-      "singleline": "never"
-    }],
-    "interface-name": false,
-    "whitespace": [
+    "trailing-comma": [
       true,
-      "check-module"
+      {
+        "multiline": {
+          "objects": "always",
+          "arrays": "always",
+          "functions": "never",
+          "typeLiterals": "ignore"
+        },
+        "esSpecCompliant": true
+      }
     ],
-    "max-line-length": [true, 80],
-    "no-trailing-whitespace": [true, "ignore-comments", "ignore-blank-lines", "ignore-jsdoc", "ignore-template-strings"],
+    "interface-name": false,
+    "whitespace": [true, "check-module"],
+    "max-line-length": [
+      80,
+      {
+        "ignore": ["non-comments"],
+        "ignorePattern": [
+          "/(https?://([-\\w\\.]+)+(:\\d+)?(/([\\w/_\\.]*(\\?\\S+)?)?)?)/"
+        ]
+      }
+    ],
+    "no-trailing-whitespace": [
+      true,
+      "ignore-comments",
+      "ignore-blank-lines",
+      "ignore-jsdoc",
+      "ignore-template-strings"
+    ],
     "no-unsafe-any": true,
     "no-unused-variable": [true, "check-parameters"],
     "no-unused-expression": [true, "allow-fast-null-checks"],
@@ -32,7 +51,11 @@
     "no-duplicate-variable": [true, "check-parameters"],
     "no-return-await": true,
     "no-shadowed-variable": true,
-    "only-arrow-functions": [true, "allow-named-functions", "allow-declarations"],
+    "only-arrow-functions": [
+      true,
+      "allow-named-functions",
+      "allow-declarations"
+    ],
     "deprecation": true,
     "indent": [true, "spaces", 2],
     "curly": [true, "ignore-same-line"],

@@ -1,6 +1,6 @@
 // From firebase SDK
 
-import { logError } from "./logger";
+import { logError } from './logger';
 
 // - https://github.com/firebase/firebase-js-sdk/blob/9f109f85ad0d99f6c13e68dcb549a0b852e35a2a/packages/functions/src/api/error.ts
 export function retrieveStatusTxt(status: number): 'ok' | 'unauthenticated' {

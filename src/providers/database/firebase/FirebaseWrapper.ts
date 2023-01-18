@@ -1,5 +1,5 @@
 import {
-  IFirebaseWrapper,
+  IFirebaseWrapper
 } from './IFirebaseWrapper';
 
 import firebase from 'firebase/compat/app';
@@ -29,8 +29,8 @@ export class FirebaseWrapper implements IFirebaseWrapper {
 
   constructor(
     inputOptions: RAFirebaseOptions | undefined,
-    firebaseConfig: {},
-  ) { 
+    firebaseConfig: {}
+  ) {
     const optionsSafe = inputOptions || {};
     this.options = optionsSafe;
     this.app = (window as any)['_app'] = ObtainFirebaseApp(firebaseConfig, optionsSafe);
@@ -43,7 +43,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     return this.firestore.batch();
   }
   dbMakeNewId(): string {
-    return this.firestore.collection("collections").doc().id
+    return this.firestore.collection('collections').doc().id;
   }
 
   public OnUserLogout(callBack: (u: FireUser | null) => any) {
@@ -60,12 +60,12 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     const taskResult = new Promise<FireUploadTaskSnapshot>(
       (res, rej) => task.then(res).catch(rej)
     );
-    const downloadUrl = taskResult.then(t => t.ref.getDownloadURL()).then(url => url as string)
+    const downloadUrl = taskResult.then(t => t.ref.getDownloadURL()).then(url => url as string);
     return {
       task,
       taskResult,
       downloadUrl,
-    }
+    };
   }
   async getStorageDownloadUrl(fieldSrc: string): Promise<string> {
     return this.app.storage().ref(fieldSrc).getDownloadURL();

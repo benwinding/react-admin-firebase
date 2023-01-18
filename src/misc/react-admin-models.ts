@@ -23,4 +23,4 @@ export {
   Identifier,
   AuthProvider,
   UserIdentity
-} from "ra-core";
+} from 'ra-core';

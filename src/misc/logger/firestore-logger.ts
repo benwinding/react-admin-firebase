@@ -34,7 +34,7 @@ export function MakeFirestoreLogger(
       logger.SetEnabled(isEnabled);
     },
     ResetCount(shouldReset: boolean) {
-      shouldReset && clearCache()
+      shouldReset && clearCache();
     },
     logDocument(docCount: number) {
       if (notEnabled()) {

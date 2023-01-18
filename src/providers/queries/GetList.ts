@@ -4,7 +4,7 @@ import {
   filterArray,
   log,
   recursivelyMapStorageUrls,
-  sortArray,
+  sortArray
 } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
 
@@ -51,11 +51,11 @@ export async function GetList<T extends ra.Record>(
   const total = filteredData.length;
 
   if (options.relativeFilePaths) {
-    const data = await Promise.all(
+    const dataWithUrls = await Promise.all(
       dataPage.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
     );
     return {
-      data,
+      data: dataWithUrls,
       total,
     };
   }

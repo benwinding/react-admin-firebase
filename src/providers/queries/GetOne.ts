@@ -7,7 +7,7 @@ export async function GetOne<T extends ra.Record>(
   params: ra.GetOneParams,
   client: FireClient
 ): Promise<ra.GetOneResult<T>> {
-  log("GetOne", { resourceName, params });
+  log('GetOne', { resourceName, params });
   const { rm } = client;
   try {
     const id = params.id + '';

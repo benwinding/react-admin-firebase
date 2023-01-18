@@ -1,6 +1,6 @@
-import { FireClient } from "../database/FireClient";
-import { log } from "../../misc";
-import * as ra from "../../misc/react-admin-models";
+import { FireClient } from '../database/FireClient';
+import { log } from '../../misc';
+import * as ra from '../../misc/react-admin-models';
 
 export async function Update<T extends ra.Record>(
   resourceName: string,
@@ -8,11 +8,11 @@ export async function Update<T extends ra.Record>(
   client: FireClient
 ): Promise<ra.UpdateResult<T>> {
   const { rm } = client;
-  log("Update", { resourceName, params });
-  const id = params.id + "";
+  log('Update', { resourceName, params });
+  const id = params.id + '';
   delete params.data.id;
   const r = await rm.TryGetResource(resourceName);
-  log("Update", { resourceName, resource: r, params });
+  log('Update', { resourceName, resource: r, params });
   const data = await client.parseDataAndUpload(r, id, params.data);
   const docObj = { ...data };
   client.checkRemoveIdField(docObj, id);
