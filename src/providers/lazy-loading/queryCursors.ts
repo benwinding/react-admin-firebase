@@ -66,8 +66,8 @@ export async function findLastQueryCursor(
   const currentPageParams = {
     ...params,
     pagination: {
-      ...params.pagination
-    }
+      ...params.pagination,
+    },
   };
   while (!lastQueryCursor && currentPage > 1) {
     currentPage--;

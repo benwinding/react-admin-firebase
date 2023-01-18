@@ -56,12 +56,12 @@ export async function GetList<T extends ra.Record>(
     );
     return {
       data: dataWithUrls,
-      total
+      total,
     };
   }
 
   return {
     data: dataPage,
-    total
+    total,
   };
 }

@@ -47,7 +47,7 @@ export class FirebaseLazyLoadingClient {
     const resultsCount = snapshots.docs.length;
     if (!resultsCount) {
       log('apiGetListLazy', {
-        message: 'There are not records for given query'
+        message: 'There are not records for given query',
       });
       return { data: [], total: 0 };
     }
@@ -91,19 +91,19 @@ export class FirebaseLazyLoadingClient {
       log('apiGetListLazy result', {
         docs: parsedData,
         resource: r,
-        collectionPath: r.collection.path
+        collectionPath: r.collection.path,
       });
 
       return {
         data: parsedData,
-        total
+        total,
       };
     }
 
     log('apiGetListLazy result', {
       docs: data,
       resource: r,
-      collectionPath: r.collection.path
+      collectionPath: r.collection.path,
     });
 
     return { data, total };
@@ -117,16 +117,16 @@ export class FirebaseLazyLoadingClient {
     log('apiGetManyReferenceLazy', {
       resourceName,
       resource: r,
-      reactAdminParams
+      reactAdminParams,
     });
     const filterWithTarget = {
       ...reactAdminParams.filter,
-      [reactAdminParams.target]: reactAdminParams.id
+      [reactAdminParams.target]: reactAdminParams.id,
     };
     const params = getFullParamsForQuery(
       {
         ...reactAdminParams,
-        filter: filterWithTarget
+        filter: filterWithTarget,
       },
       !!this.options.softDelete
     );
@@ -158,19 +158,19 @@ export class FirebaseLazyLoadingClient {
       log('apiGetManyReferenceLazy result', {
         docs: parsedData,
         resource: r,
-        collectionPath: r.collection.path
+        collectionPath: r.collection.path,
       });
 
       return {
         data: parsedData,
-        total: data.length
+        total: data.length,
       };
     }
 
     log('apiGetManyReferenceLazy result', {
       docs: data,
       resource: r,
-      collectionPath: r.collection.path
+      collectionPath: r.collection.path,
     });
     return { data, total: data.length };
   }
@@ -188,7 +188,7 @@ export class FirebaseLazyLoadingClient {
       this.client.flogger,
       {
         filters: true,
-        sort: true
+        sort: true,
       }
     );
     if (!nextPageCursor) {

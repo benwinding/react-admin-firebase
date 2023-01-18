@@ -30,11 +30,11 @@ export async function GetMany<T extends ra.Record>(
       permittedData.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
     );
     return {
-      data
+      data,
     };
   }
 
   return {
-    data: permittedData
+    data: permittedData,
   };
 }

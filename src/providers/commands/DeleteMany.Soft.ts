@@ -26,6 +26,6 @@ export async function DeleteManySoft(
     })
   );
   return {
-    data: returnData
+    data: returnData,
   };
 }

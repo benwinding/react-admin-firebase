@@ -18,7 +18,7 @@ export function translateDocFromFirestore(obj: any) {
   const isObject = !!obj && typeof obj === 'object';
   const result: FromFirestoreResult = {
     parsedDoc: {},
-    refdocs: []
+    refdocs: [],
   };
   if (!isObject) {
     return result;
@@ -106,11 +106,11 @@ export const recursivelyMapStorageUrls = async (
         .getDownloadURL();
       return {
         ...fieldValue,
-        src
+        src,
       };
     } catch (error) {
       logError(`Error when getting download URL`, {
-        error
+        error,
       });
       return fieldValue;
     }

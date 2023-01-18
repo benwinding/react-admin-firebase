@@ -31,7 +31,7 @@ export function DataProvider(
   flogger.ResetCount(!options?.firestoreCostsLogger?.persistCount);
   log('Creating FirebaseDataProvider', {
     firebaseConfig,
-    options
+    options,
   });
 
   const fireWrapper = new FirebaseWrapper(optionsInput, firebaseConfig);
@@ -108,7 +108,7 @@ export function DataProvider(
       params: ra.DeleteManyParams
     ): Promise<ra.DeleteManyResult> {
       return run(() => DeleteMany(resource, params, client));
-    }
+    },
   };
 
   return newProviderApi;

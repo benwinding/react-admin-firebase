@@ -64,7 +64,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     return {
       task,
       taskResult,
-      downloadUrl
+      downloadUrl,
     };
   }
   async getStorageDownloadUrl(fieldSrc: string): Promise<string> {

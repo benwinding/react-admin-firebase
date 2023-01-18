@@ -11,7 +11,7 @@ interface ParamsToQueryOptions {
 const defaultParamsToQueryOptions = {
   filters: true,
   sort: true,
-  pagination: true
+  pagination: true,
 };
 
 export async function paramsToQuery<
@@ -105,9 +105,9 @@ export function getFullParamsForQuery<
     filter: softdeleteEnabled
       ? {
           deleted: false,
-          ...reactAdminParams.filter
+          ...reactAdminParams.filter,
         }
-      : reactAdminParams.filter
+      : reactAdminParams.filter,
   };
 }
 
@@ -118,7 +118,7 @@ export function getNextPageParams<TParams extends messageTypes.IParamsGetList>(
     ...params,
     pagination: {
       ...params.pagination,
-      page: params.pagination.page + 1
-    }
+      page: params.pagination.page + 1,
+    },
   };
 }

@@ -20,6 +20,6 @@ export async function DeleteSoft<T extends ra.Record>(
       logError('DeleteSoft error', { error });
     });
   return {
-    data: params.previousData as T
+    data: params.previousData as T,
   };
 }

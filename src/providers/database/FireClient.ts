@@ -100,14 +100,14 @@ export class FireClient {
       });
       const [getDownloadURL] = await Promise.all([
         downloadUrl,
-        taskResult
+        taskResult,
       ]);
       dispatch('FILE_UPLOAD_COMPLETE', name);
       dispatch('FILE_SAVED', name);
       log('saveFile() saved file', {
         storagePath,
         taskResult,
-        getDownloadURL
+        getDownloadURL,
       });
       return this.options.relativeFilePaths ? storagePath : getDownloadURL;
     } catch (storageError) {
@@ -118,7 +118,7 @@ export class FireClient {
         );
       } else {
         logError('saveFile() error saving file', {
-          storageError
+          storageError,
         });
       }
     }

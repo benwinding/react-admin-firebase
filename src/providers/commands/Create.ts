@@ -34,8 +34,8 @@ export async function Create<T extends ra.Record>(
     return {
       data: {
         ...documentObjTransformed,
-        id: overridenId
-      }
+        id: overridenId,
+      },
     };
   }
   const newId = fireWrapper.dbMakeNewId();
@@ -49,7 +49,7 @@ export async function Create<T extends ra.Record>(
   return {
     data: {
       ...docObjTransformed,
-      id: newId
-    }
+      id: newId,
+    },
   };
 }

@@ -22,7 +22,7 @@ export function translateDocToFirestore(obj: any): ParseResult {
   const result: ParseResult = {
     uploads: [],
     refdocs: [],
-    parsedDoc: {}
+    parsedDoc: {},
   };
   if (!isObject) {
     return result;
@@ -50,7 +50,7 @@ export function recusivelyParseObjectValue(
     const refDocFullPath = input as string;
     result.refdocs.push({
       fieldDotsPath: fieldPath,
-      refPath: refDocFullPath
+      refPath: refDocFullPath,
     });
     return;
   }
@@ -73,7 +73,7 @@ export function recusivelyParseObjectValue(
     result.uploads.push({
       fieldDotsPath: fieldPath,
       fieldSlashesPath: fieldPath.split('.').join('/'),
-      rawFile: input.rawFile
+      rawFile: input.rawFile,
     });
     delete input.rawFile;
     return;

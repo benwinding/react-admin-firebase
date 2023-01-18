@@ -47,6 +47,6 @@ export function MakeFirestoreLogger(
         suffix
       );
       return boundLogFn;
-    }
+    },
   };
 }

@@ -19,8 +19,8 @@ export function getFieldReferences(
     return [
       {
         searchField: fieldName,
-        searchValue: value as SearchValue
-      }
+        searchValue: value as SearchValue,
+      },
     ];
   }
   const tree = {} as Record<string, SearchValue>;

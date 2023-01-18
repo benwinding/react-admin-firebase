@@ -76,7 +76,7 @@ class AuthClient {
       return token.claims;
     } catch (e) {
       log('HandleGetPermission: no user is logged in or tokenResult error', {
-        e
+        e,
       });
       return null;
     }
@@ -88,12 +88,12 @@ class AuthClient {
       const identity: UserIdentity = {
         id: uid,
         fullName: `${displayName ?? ''}`,
-        avatar: `${photoURL ?? ''}`
+        avatar: `${photoURL ?? ''}`,
       };
       return identity;
     } catch (e) {
       log('HandleGetIdentity: no user is logged in', {
-        e
+        e,
       });
       return null as any;
     }
@@ -108,7 +108,7 @@ class AuthClient {
       return token.authTime;
     } catch (e) {
       log('HandleGetJWTAuthTime: no user is logged in or tokenResult error', {
-        e
+        e,
       });
       return null;
     }
@@ -125,7 +125,7 @@ class AuthClient {
       log(
         'HandleGetJWTExpirationTime: no user is logged in or tokenResult error',
         {
-          e
+          e,
         }
       );
       return null;
@@ -143,7 +143,7 @@ class AuthClient {
       log(
         'HandleGetJWTSignInProvider: no user is logged in or tokenResult error',
         {
-          e
+          e,
         }
       );
       return null;
@@ -161,7 +161,7 @@ class AuthClient {
       log(
         'HandleGetJWTIssuedAtTime: no user is logged in or tokenResult error',
         {
-          e
+          e,
         }
       );
       return null;
@@ -179,7 +179,7 @@ class AuthClient {
       log(
         'HandleGetJWTToken: no user is logged in or tokenResult error',
         {
-          e
+          e,
         }
       );
       return null;
@@ -209,7 +209,7 @@ export function AuthProvider(
     getJWTExpirationTime: () => auth.HandleGetJWTExpirationTime(),
     getJWTSignInProvider: () => auth.HandleGetJWTSignInProvider(),
     getJWTClaims: () => auth.HandleGetPermissions(),
-    getJWTToken: () => auth.HandleGetJWTToken()
+    getJWTToken: () => auth.HandleGetJWTToken(),
   };
   return provider;
 }

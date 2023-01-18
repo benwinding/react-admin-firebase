@@ -26,11 +26,11 @@ export async function UpdateMany(
         .update(docObjTransformed);
       return {
         ...data,
-        id: idStr
+        id: idStr,
       };
     })
   );
   return {
-    data: returnData
+    data: returnData,
   };
 }
