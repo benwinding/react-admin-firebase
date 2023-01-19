@@ -1,5 +1,10 @@
 import { FireClient } from '../database/FireClient';
-import { filterArray, log, recursivelyMapStorageUrls, sortArray } from '../../misc';
+import {
+  filterArray,
+  log,
+  recursivelyMapStorageUrls,
+  sortArray,
+} from '../../misc';
 import * as ra from '../../misc/react-admin-models';
 
 export async function GetManyReference<T extends ra.Record>(
@@ -11,11 +16,7 @@ export async function GetManyReference<T extends ra.Record>(
   log('GetManyReference', { resourceName, params });
   const filterSafe = params.filter || {};
   const collectionQuery = filterSafe.collectionQuery;
-  const r = await rm.TryGetResource(
-    resourceName,
-    'REFRESH',
-    collectionQuery
-  );
+  const r = await rm.TryGetResource(resourceName, 'REFRESH', collectionQuery);
   delete filterSafe.collectionQuery;
   log('apiGetManyReference', { resourceName, resource: r, params });
   const data = r.list;
@@ -23,7 +24,7 @@ export async function GetManyReference<T extends ra.Record>(
   const targetValue = params.id;
   let softDeleted = data;
   if (options.softDelete) {
-    softDeleted = data.filter(doc => !doc['deleted']);
+    softDeleted = data.filter((doc) => !doc['deleted']);
   }
   const filteredData = filterArray(softDeleted, filterSafe);
   const targetIdFilter: Record<string, ra.Identifier> = {};
@@ -44,9 +45,7 @@ export async function GetManyReference<T extends ra.Record>(
 
   if (options.relativeFilePaths) {
     const dataWithUrls = await Promise.all(
-      permittedData.map((doc) =>
-        recursivelyMapStorageUrls(fireWrapper, doc)
-      )
+      permittedData.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
     );
     return { data: dataWithUrls, total };
   }

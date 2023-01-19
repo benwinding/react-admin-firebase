@@ -2,7 +2,7 @@ import {
   log,
   messageTypes,
   parseFireStoreDocument,
-  recursivelyMapStorageUrls
+  recursivelyMapStorageUrls,
 } from '../../misc';
 import { IResource, ResourceManager } from '../database/ResourceManager';
 import { RAFirebaseOptions } from '../options';
@@ -10,11 +10,14 @@ import * as ra from '../../misc/react-admin-models';
 import {
   getFullParamsForQuery,
   getNextPageParams,
-  paramsToQuery
+  paramsToQuery,
 } from './paramsToQuery';
 import { clearQueryCursors, setQueryCursor } from './queryCursors';
 import { FireClient } from 'providers/database';
-import { FireStoreCollectionRef, FireStoreDocumentSnapshot } from 'misc/firebase-models';
+import {
+  FireStoreCollectionRef,
+  FireStoreDocumentSnapshot,
+} from 'misc/firebase-models';
 
 export class FirebaseLazyLoadingClient {
   constructor(
@@ -72,7 +75,7 @@ export class FirebaseLazyLoadingClient {
     if (isOnLastPage) {
       const { page, perPage } = params.pagination;
       total = (page - 1) * perPage + data.length;
-      log('apiGetListLazy', { message: 'It\'s last page of collection.' });
+      log('apiGetListLazy', { message: `It's last page of collection.` });
     }
 
     if (this.options.relativeFilePaths) {

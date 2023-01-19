@@ -20,7 +20,11 @@ export async function Create<T extends ra.Record>(
         `the id:"${overridenId}" already exists, please use a unique string if overriding the 'id' field`
       );
     }
-    const docData = await client.parseDataAndUpload(r, overridenId, params.data);
+    const docData = await client.parseDataAndUpload(
+      r,
+      overridenId,
+      params.data
+    );
     if (!overridenId) {
       throw new Error('id must be a valid string');
     }
@@ -28,9 +32,15 @@ export async function Create<T extends ra.Record>(
     client.checkRemoveIdField(documentObj, overridenId);
     await client.addCreatedByFields(documentObj);
     await client.addUpdatedByFields(documentObj);
-    const documentObjTransformed = client.transformToDb(resourceName, documentObj, overridenId);
+    const documentObjTransformed = client.transformToDb(
+      resourceName,
+      documentObj,
+      overridenId
+    );
     log('Create', { documentObj });
-    await r.collection.doc(overridenId).set(documentObjTransformed, { merge: false });
+    await r.collection
+      .doc(overridenId)
+      .set(documentObjTransformed, { merge: false });
     return {
       data: {
         ...documentObjTransformed,

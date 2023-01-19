@@ -1,13 +1,13 @@
 import { log } from './logger';
 
 export type DispatchEvent =
-  'FILE_UPLOAD_WILL_START' |
-  'FILE_UPLOAD_PROGRESS' |
-  'FILE_UPLOAD_PAUSED' |
-  'FILE_UPLOAD_RUNNING' |
-  'FILE_UPLOAD_CANCELED' |
-  'FILE_UPLOAD_COMPLETE' |
-  'FILE_SAVED';
+  | 'FILE_UPLOAD_WILL_START'
+  | 'FILE_UPLOAD_PROGRESS'
+  | 'FILE_UPLOAD_PAUSED'
+  | 'FILE_UPLOAD_RUNNING'
+  | 'FILE_UPLOAD_CANCELED'
+  | 'FILE_UPLOAD_COMPLETE'
+  | 'FILE_SAVED';
 
 export function dispatch(
   eventName: DispatchEvent,
@@ -16,7 +16,9 @@ export function dispatch(
 ): void {
   const eventMonitor = document.getElementById('eventMonitor');
   if (!eventMonitor) {
-    log(`eventMonitor not found to dispatch event ${eventName} for ${fileName}`);
+    log(
+      `eventMonitor not found to dispatch event ${eventName} for ${fileName}`
+    );
     return;
   }
   const eventData = { fileName, data };

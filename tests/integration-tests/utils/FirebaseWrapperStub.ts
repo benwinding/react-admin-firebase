@@ -9,7 +9,7 @@ import {
   FireStore,
   FireStoreBatch,
   FireStoreCollectionRef,
-  FireUploadTaskSnapshot, 
+  FireUploadTaskSnapshot,
   FireUser,
 } from '../../../src/misc/firebase-models';
 
@@ -17,8 +17,8 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   constructor(
     private firestore: FireStore,
     private app: FireApp,
-    public options: RAFirebaseOptions,
-  ) { }
+    public options: RAFirebaseOptions
+  ) {}
 
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
     return this.firestore.collection(absolutePath);
@@ -27,34 +27,45 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
     return this.firestore.batch();
   }
   dbMakeNewId(): string {
-    return this.firestore.collection("collections").doc().id
+    return this.firestore.collection('collections').doc().id;
   }
 
   public OnUserLogout(callBack: (u: FireUser) => any) {
-
+    return null;
   }
-  putFile: any = async (storagePath: string, rawFile: any): Promise<FireStoragePutFileResult> => {
+
+  putFile: any = async (
+    storagePath: string,
+    rawFile: any
+  ): Promise<FireStoragePutFileResult> => {
     const task = this.app.storage().ref(storagePath).put(rawFile);
-    const taskResult = new Promise<FireUploadTaskSnapshot>(
-      (res, rej) => task.then(res).catch(rej)
+    const taskResult = new Promise<FireUploadTaskSnapshot>((res, rej) =>
+      task.then(res).catch(rej)
     );
-    const downloadUrl = taskResult.then(t => t.ref.getDownloadURL()).then(url => url as string)
+    const downloadUrl = taskResult
+      .then((t) => t.ref.getDownloadURL())
+      .then((url) => url as string);
     return {
       task,
       taskResult,
       downloadUrl,
     };
-  }
+  };
   async getStorageDownloadUrl(fieldSrc: string): Promise<string> {
     return this.app.storage().ref(fieldSrc).getDownloadURL();
   }
-  authSetPersistence(persistenceInput: 'session' | 'local' | 'none'): Promise<void> {
+  authSetPersistence(
+    persistenceInput: 'session' | 'local' | 'none'
+  ): Promise<void> {
     throw new Error('Method not implemented.');
   }
   authGetUserLoggedIn(): Promise<FireUser> {
-    return { uid: "alice", email: 'alice@test.com' } as any;
+    return { uid: 'alice', email: 'alice@test.com' } as any;
   }
-  authSigninEmailPassword(email: string, password: string): Promise<FireAuthUserCredentials> {
+  authSigninEmailPassword(
+    email: string,
+    password: string
+  ): Promise<FireAuthUserCredentials> {
     throw new Error('Method not implemented.');
   }
   authSignOut(): Promise<void> {

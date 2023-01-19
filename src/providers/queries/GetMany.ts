@@ -12,7 +12,7 @@ export async function GetMany<T extends ra.Record>(
   const ids = params.ids;
   log('GetMany', { resourceName, resource: r, params, ids });
   const matchDocSnaps = await Promise.all(
-    ids.map(idObj => {
+    ids.map((idObj) => {
       if (typeof idObj === 'string') {
         return r.collection.doc(idObj).get();
       }
@@ -21,7 +21,9 @@ export async function GetMany<T extends ra.Record>(
     })
   );
   client.flogger.logDocument(ids.length)();
-  const matches = matchDocSnaps.map((snap) => ({ ...snap.data(), id: snap.id } as T));
+  const matches = matchDocSnaps.map(
+    (snap) => ({ ...snap.data(), id: snap.id } as T)
+  );
   const permittedData = options.softDelete
     ? matches.filter((row) => !row['deleted'])
     : matches;

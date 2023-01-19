@@ -1,9 +1,17 @@
-import { FireStoreQueryDocumentSnapshot, FireStoreDocumentSnapshot } from './firebase-models';
+import {
+  FireStoreQueryDocumentSnapshot,
+  FireStoreDocumentSnapshot,
+} from './firebase-models';
 import { logWarn } from './logger';
-import { applyRefDocs, translateDocFromFirestore } from './translate-from-firestore';
+import {
+  applyRefDocs,
+  translateDocFromFirestore,
+} from './translate-from-firestore';
 import * as ra from './react-admin-models';
 
-export function parseFireStoreDocument<T extends ra.Record>(doc: FireStoreQueryDocumentSnapshot | FireStoreDocumentSnapshot | undefined): T {
+export function parseFireStoreDocument<T extends ra.Record>(
+  doc: FireStoreQueryDocumentSnapshot | FireStoreDocumentSnapshot | undefined
+): T {
   if (!doc) {
     logWarn('parseFireStoreDocument: no doc', { doc });
     return {} as T;

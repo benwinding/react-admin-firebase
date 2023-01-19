@@ -14,16 +14,18 @@ export async function UpdateMany(
   log('UpdateMany', { resourceName, resource: r, params });
   const ids = params.ids;
   const returnData = await Promise.all(
-    ids.map(async id => {
-      const idStr = id+'';
+    ids.map(async (id) => {
+      const idStr = id + '';
       const data = await client.parseDataAndUpload(r, idStr, params.data);
       const docObj = { ...data };
       client.checkRemoveIdField(docObj, idStr);
       await client.addUpdatedByFields(docObj);
-      const docObjTransformed = client.transformToDb(resourceName, docObj, idStr);
-      await r.collection
-        .doc(idStr)
-        .update(docObjTransformed);
+      const docObjTransformed = client.transformToDb(
+        resourceName,
+        docObj,
+        idStr
+      );
+      await r.collection.doc(idStr).update(docObjTransformed);
       return {
         ...data,
         id: idStr,
