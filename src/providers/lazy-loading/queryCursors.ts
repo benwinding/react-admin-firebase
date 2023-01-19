@@ -1,4 +1,8 @@
-import { FireStoreCollectionRef, FireStoreDocumentSnapshot, FireStoreQuery } from 'misc/firebase-models';
+import {
+  FireStoreCollectionRef,
+  FireStoreDocumentSnapshot,
+  FireStoreQuery,
+} from 'misc/firebase-models';
 import { IFirestoreLogger, messageTypes } from '../../misc';
 
 export function setQueryCursor(

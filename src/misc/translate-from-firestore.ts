@@ -72,17 +72,15 @@ export function recusivelyCheckObjectValue(
 }
 
 function isInputADocReference(input: any): boolean {
-  const isDocumentReference = typeof input.id === 'string' &&
+  const isDocumentReference =
+    typeof input.id === 'string' &&
     typeof input.firestore === 'object' &&
     typeof input.parent === 'object' &&
     typeof input.path === 'string';
   return isDocumentReference;
 }
 
-export function applyRefDocs(
-  doc: any,
-  refDocs: RefDocFound[]
-) {
+export function applyRefDocs(doc: any, refDocs: RefDocFound[]) {
   refDocs.map((d) => {
     set(doc, REF_INDENTIFIER + d.fieldPath, d.refDocPath);
   });

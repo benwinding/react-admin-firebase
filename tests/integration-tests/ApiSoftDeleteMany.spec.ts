@@ -1,14 +1,17 @@
-import { MakeMockClient } from "./utils/test-helpers";
-import { DeleteManySoft } from "../../src/providers/commands";
+import { MakeMockClient } from './utils/test-helpers';
+import { DeleteManySoft } from '../../src/providers/commands';
 
-describe("api methods", () => {
-  test("FireClient delete doc", async () => {
-    const client = await MakeMockClient({ softDelete: true, disableMeta: true });
-    const docIds = ["test123", "test22222", "asdads"];
-    const collName = "deleteables";
+describe('api methods', () => {
+  test('FireClient delete doc', async () => {
+    const client = await MakeMockClient({
+      softDelete: true,
+      disableMeta: true,
+    });
+    const docIds = ['test123', 'test22222', 'asdads'];
+    const collName = 'deleteables';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
-      docIds.map((id) => collection.doc(id).set({ title: "ee" }))
+      docIds.map((id) => collection.doc(id).set({ title: 'ee' }))
     );
 
     await DeleteManySoft(collName, { ids: docIds.slice(1) }, client);

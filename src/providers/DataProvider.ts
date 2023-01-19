@@ -4,7 +4,7 @@ import {
   logger,
   retrieveStatusCode,
   logError,
-  MakeFirestoreLogger
+  MakeFirestoreLogger,
 } from '../misc';
 import * as ra from '../misc/react-admin-models';
 import { RAFirebaseOptions } from './options';
@@ -75,9 +75,7 @@ export function DataProvider(
       resource: string,
       params: ra.GetManyReferenceParams
     ): Promise<ra.GetManyReferenceResult<RecordType>> {
-      return run(() =>
-        GetManyReference<RecordType>(resource, params, client)
-      );
+      return run(() => GetManyReference<RecordType>(resource, params, client));
     },
     update<RecordType extends ra.Record = ra.Record>(
       resource: string,

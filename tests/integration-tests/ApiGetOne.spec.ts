@@ -1,34 +1,34 @@
-import { MakeMockClient } from "./utils/test-helpers";
-import { GetOne } from "../../src/providers/queries";
-import { REF_INDENTIFIER } from "../../src/misc";
+import { MakeMockClient } from './utils/test-helpers';
+import { GetOne } from '../../src/providers/queries';
+import { REF_INDENTIFIER } from '../../src/misc';
 
-describe("api methods", () => {
-  test("FireClient apiGetOne", async () => {
+describe('api methods', () => {
+  test('FireClient apiGetOne', async () => {
     const client = await MakeMockClient();
-    const docIds = ["test123", "test22222", "asdads"];
-    const collName = "list-mes";
+    const docIds = ['test123', 'test22222', 'asdads'];
+    const collName = 'list-mes';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
-      docIds.map((id) => collection.doc(id).set({ title: "ee" }))
+      docIds.map((id) => collection.doc(id).set({ title: 'ee' }))
     );
     type D = { title: string; id: string };
-    const result = await GetOne<D>(collName, { id: "test22222" }, client);
+    const result = await GetOne<D>(collName, { id: 'test22222' }, client);
     expect(result.data).toBeTruthy();
-    expect(result.data.title).toBe("ee");
-    expect(result.data.id).toBe("test22222");
+    expect(result.data.title).toBe('ee');
+    expect(result.data.id).toBe('test22222');
   }, 100000);
 
-  test("FireClient apiGetOne, with nested Dates", async () => {
+  test('FireClient apiGetOne, with nested Dates', async () => {
     const client = await MakeMockClient();
-    const collName = "list-mes";
-    const docId = "1234";
+    const collName = 'list-mes';
+    const docId = '1234';
     const collection = client.fireWrapper.dbGetCollection(collName);
     const testDocNestedDates = {
-      a: new Date("1999"),
+      a: new Date('1999'),
       b: {
-        b1: new Date("2006"),
+        b1: new Date('2006'),
         c: {
-          c1: new Date("2006"),
+          c1: new Date('2006'),
         },
       },
     };
@@ -48,10 +48,10 @@ describe("api methods", () => {
     expect(data.b.c.c1).toBeInstanceOf(Date);
   }, 100000);
 
-  test("FireClient apiGetOne, with refdocument", async () => {
+  test('FireClient apiGetOne, with refdocument', async () => {
     const client = await MakeMockClient();
-    const collName = "get-one";
-    const docId = "12345";
+    const collName = 'get-one';
+    const docId = '12345';
     const collection = client.fireWrapper.db().collection(collName);
     const refId = '22222';
     const refFullPath = 'ascasc/' + refId;

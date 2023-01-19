@@ -4,7 +4,7 @@ import { RAFirebaseOptions } from './options';
 import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
 import {
   AuthProvider as RaAuthProvider,
-  UserIdentity
+  UserIdentity,
 } from '../misc/react-admin-models';
 import { IFirebaseWrapper } from './database';
 import { FireUser } from '../misc/firebase-models';
@@ -176,12 +176,9 @@ class AuthClient {
 
       return token.token;
     } catch (e) {
-      log(
-        'HandleGetJWTToken: no user is logged in or tokenResult error',
-        {
-          e,
-        }
-      );
+      log('HandleGetJWTToken: no user is logged in or tokenResult error', {
+        e,
+      });
       return null;
     }
   }
@@ -216,12 +213,12 @@ export function AuthProvider(
 
 export type ReactAdminFirebaseAuthProvider = RaAuthProvider & {
   // Custom Functions
-  getAuthUser: () => Promise<FireUser>,
-  getJWTAuthTime: () => Promise<string | null>,
-  getJWTExpirationTime: () => Promise<string | null>,
-  getJWTSignInProvider: () => Promise<string | null>,
-  getJWTClaims: () => Promise<{ [key: string]: any; } | null>,
-  getJWTToken: () => Promise<string | null>
+  getAuthUser: () => Promise<FireUser>;
+  getJWTAuthTime: () => Promise<string | null>;
+  getJWTExpirationTime: () => Promise<string | null>;
+  getJWTSignInProvider: () => Promise<string | null>;
+  getJWTClaims: () => Promise<{ [key: string]: any } | null>;
+  getJWTToken: () => Promise<string | null>;
 };
 
 function VerifyAuthProviderArgs(

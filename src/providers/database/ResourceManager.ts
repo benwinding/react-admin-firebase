@@ -6,11 +6,11 @@ import {
   messageTypes,
   logWarn,
   IFirestoreLogger,
-  parseFireStoreDocument
+  parseFireStoreDocument,
 } from '../../misc';
 import { FireStoreCollectionRef } from 'misc/firebase-models';
 
-type IResourceItem = {} & { id: string, deleted?: boolean };
+type IResourceItem = {} & { id: string; deleted?: boolean };
 export interface IResource {
   path: string;
   pathAbsolute: string;

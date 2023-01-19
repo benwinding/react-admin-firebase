@@ -4,7 +4,7 @@ import {
   filterArray,
   log,
   recursivelyMapStorageUrls,
-  sortArray
+  sortArray,
 } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
 
@@ -17,11 +17,7 @@ export async function GetList<T extends ra.Record>(
   const { rm, fireWrapper, options } = client;
 
   if (options?.lazyLoading?.enabled) {
-    const lazyClient = new FirebaseLazyLoadingClient(
-      options,
-      rm,
-      client
-    );
+    const lazyClient = new FirebaseLazyLoadingClient(options, rm, client);
     return lazyClient.apiGetList<T>(resourceName, params);
   }
 

@@ -1,23 +1,23 @@
-import { MakeMockClient } from "./utils/test-helpers";
-import { GetList } from "../../src/providers/queries";
-import { FireStoreCollectionRef } from "../../src/misc/firebase-models";
+import { MakeMockClient } from './utils/test-helpers';
+import { GetList } from '../../src/providers/queries';
+import { FireStoreCollectionRef } from '../../src/misc/firebase-models';
 
-describe("api methods", () => {
-  test("FireClient list docs", async () => {
+describe('api methods', () => {
+  test('FireClient list docs', async () => {
     const client = await MakeMockClient();
-    const docIds = ["test123", "test22222", "asdads"];
-    const collName = "list-mes";
+    const docIds = ['test123', 'test22222', 'asdads'];
+    const collName = 'list-mes';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
-      docIds.map((id) => collection.doc(id).set({ title: "ee" }))
+      docIds.map((id) => collection.doc(id).set({ title: 'ee' }))
     );
 
     const result = await GetList(
       collName,
       {
         sort: {
-          field: "title",
-          order: "asc",
+          field: 'title',
+          order: 'asc',
         },
         filter: {},
         pagination: {
@@ -30,23 +30,23 @@ describe("api methods", () => {
     expect(result.data.length).toBe(3);
   }, 100000);
 
-  test("FireClient list docs with boolean filter", async () => {
+  test('FireClient list docs with boolean filter', async () => {
     const client = await MakeMockClient();
     const testDocs = [
       {
-        title: "A",
+        title: 'A',
         isEnabled: false,
       },
       {
-        title: "B",
+        title: 'B',
         isEnabled: true,
       },
       {
-        title: "C",
+        title: 'C',
         isEnabled: false,
       },
     ];
-    const collName = "list-filtered";
+    const collName = 'list-filtered';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
@@ -54,8 +54,8 @@ describe("api methods", () => {
       collName,
       {
         sort: {
-          field: "title",
-          order: "asc",
+          field: 'title',
+          order: 'asc',
         },
         pagination: {
           page: 1,
@@ -70,29 +70,29 @@ describe("api methods", () => {
     expect(result.data.length).toBe(2);
   }, 100000);
 
-  test("FireClient list docs with dotpath sort", async () => {
+  test('FireClient list docs with dotpath sort', async () => {
     const client = await MakeMockClient();
     const testDocs = [
       {
         obj: {
-          title: "A",
+          title: 'A',
         },
         isEnabled: false,
       },
       {
         obj: {
-          title: "C",
+          title: 'C',
         },
         isEnabled: false,
       },
       {
         obj: {
-          title: "B",
+          title: 'B',
         },
         isEnabled: true,
       },
     ];
-    const collName = "list-filtered";
+    const collName = 'list-filtered';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
@@ -105,34 +105,34 @@ describe("api methods", () => {
           perPage: 10,
         },
         sort: {
-          field: "obj.title",
-          order: "ASC",
+          field: 'obj.title',
+          order: 'ASC',
         },
       },
       client
     );
     const second = result.data[1];
     expect(second).toBeTruthy();
-    expect(second.obj.title).toBe("B");
+    expect(second.obj.title).toBe('B');
   }, 100000);
 
-  test("FireClient with filter gte", async () => {
+  test('FireClient with filter gte', async () => {
     const client = await MakeMockClient();
     const testDocs = [
       {
-        title: "A",
+        title: 'A',
         obj: { volume: 100 },
       },
       {
-        title: "B",
+        title: 'B',
         obj: { volume: 101 },
       },
       {
-        title: "C",
+        title: 'C',
         obj: { volume: 99 },
       },
     ];
-    const collName = "list-filtered";
+    const collName = 'list-filtered';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(testDocs.map((doc) => collection.add(doc)));
 
@@ -141,15 +141,15 @@ describe("api methods", () => {
       {
         filter: {
           collectionQuery: (c: FireStoreCollectionRef) =>
-            c.where("obj.volume", ">=", 100),
+            c.where('obj.volume', '>=', 100),
         },
         pagination: {
           page: 1,
           perPage: 10,
         },
         sort: {
-          field: "obj.volume",
-          order: "ASC",
+          field: 'obj.volume',
+          order: 'ASC',
         },
       },
       client

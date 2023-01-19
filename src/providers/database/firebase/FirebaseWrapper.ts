@@ -1,6 +1,4 @@
-import {
-  IFirebaseWrapper
-} from './IFirebaseWrapper';
+import { IFirebaseWrapper } from './IFirebaseWrapper';
 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
@@ -19,7 +17,7 @@ import {
   FireStoreBatch,
   FireStoreCollectionRef,
   FireUploadTaskSnapshot,
-  FireUser
+  FireUser,
 } from 'misc/firebase-models';
 
 export class FirebaseWrapper implements IFirebaseWrapper {
@@ -27,13 +25,13 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   private app: FireApp;
   public options: RAFirebaseOptions;
 
-  constructor(
-    inputOptions: RAFirebaseOptions | undefined,
-    firebaseConfig: {}
-  ) {
+  constructor(inputOptions: RAFirebaseOptions | undefined, firebaseConfig: {}) {
     const optionsSafe = inputOptions || {};
     this.options = optionsSafe;
-    this.app = (window as any)['_app'] = ObtainFirebaseApp(firebaseConfig, optionsSafe);
+    this.app = (window as any)['_app'] = ObtainFirebaseApp(
+      firebaseConfig,
+      optionsSafe
+    );
     this.firestore = this.app.firestore();
   }
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
@@ -57,10 +55,12 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   }
   putFile(storagePath: string, rawFile: any): FireStoragePutFileResult {
     const task = this.app.storage().ref(storagePath).put(rawFile);
-    const taskResult = new Promise<FireUploadTaskSnapshot>(
-      (res, rej) => task.then(res).catch(rej)
+    const taskResult = new Promise<FireUploadTaskSnapshot>((res, rej) =>
+      task.then(res).catch(rej)
     );
-    const downloadUrl = taskResult.then(t => t.ref.getDownloadURL()).then(url => url as string);
+    const downloadUrl = taskResult
+      .then((t) => t.ref.getDownloadURL())
+      .then((url) => url as string);
     return {
       task,
       taskResult,
@@ -89,15 +89,18 @@ export class FirebaseWrapper implements IFirebaseWrapper {
         break;
     }
     log('setPersistence', { persistenceInput, persistenceResolved });
-    return this.app.auth()
+    return this.app
+      .auth()
       .setPersistence(persistenceResolved)
       .catch((error) => console.error(error));
   }
-  async authSigninEmailPassword(email: string, password: string): Promise<FireAuthUserCredentials> {
-    const user = await this.app.auth().signInWithEmailAndPassword(
-      email,
-      password
-    );
+  async authSigninEmailPassword(
+    email: string,
+    password: string
+  ): Promise<FireAuthUserCredentials> {
+    const user = await this.app
+      .auth()
+      .signInWithEmailAndPassword(email, password);
     return user;
   }
   async authSignOut(): Promise<void> {

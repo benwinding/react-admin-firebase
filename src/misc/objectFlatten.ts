@@ -1,4 +1,4 @@
-type SearchValues = {} | number | string | boolean | null ;
+type SearchValues = {} | number | string | boolean | null;
 type SearchValue = SearchValues | SearchValue[];
 
 export interface SearchObj {
@@ -10,7 +10,8 @@ export function getFieldReferences(
   value: {} | SearchValue
 ): SearchObj[] {
   const isFalsy = !value;
-  const isSimple = isFalsy ||
+  const isSimple =
+    isFalsy ||
     typeof value === 'string' ||
     typeof value === 'number' ||
     typeof value === 'boolean';

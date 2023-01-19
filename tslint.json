@@ -6,6 +6,7 @@
       "coverage/lcov-report/*.js"
     ]
   },
+  "extends": ["tslint-config-prettier"],
   "rules": {
     "no-console": false,
     "ordered-imports": false,

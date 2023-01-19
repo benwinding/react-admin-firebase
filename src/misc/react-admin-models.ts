@@ -22,5 +22,5 @@ export {
   UpdateResult,
   Identifier,
   AuthProvider,
-  UserIdentity
+  UserIdentity,
 } from 'ra-core';

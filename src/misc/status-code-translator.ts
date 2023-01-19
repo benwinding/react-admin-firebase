@@ -37,7 +37,7 @@ export function retrieveStatusCode(statusTxt: string): number {
   const regexResult = /\[code\=([\w-]*)/g.exec(statusTxt);
   const status = Array.isArray(regexResult) && regexResult[1];
   if (!status) {
-    logError('unknown StatusCode ', {statusTxt});
+    logError('unknown StatusCode ', { statusTxt });
   }
   switch (status) {
     case 'unauthenticated':
