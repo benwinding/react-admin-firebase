@@ -1,14 +1,14 @@
-import { RAFirebaseOptions } from '../options';
-import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
+import { FireStoreCollectionRef } from 'misc/firebase-models';
 import {
-  log,
   getAbsolutePath,
-  messageTypes,
-  logWarn,
   IFirestoreLogger,
+  log,
+  logWarn,
+  messageTypes,
   parseFireStoreDocument,
 } from '../../misc';
-import { FireStoreCollectionRef } from 'misc/firebase-models';
+import { RAFirebaseOptions } from '../options';
+import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
 
 type IResourceItem = {} & { id: string; deleted?: boolean };
 export interface IResource {
@@ -92,7 +92,9 @@ export class ResourceManager {
     const query = this.applyQuery(collection, collectionQuery);
     const newDocs = await query.get();
 
-    resource.list = newDocs.docs.map((doc) => parseFireStoreDocument<IResourceItem>(doc));
+    resource.list = newDocs.docs.map((doc) =>
+      parseFireStoreDocument<IResourceItem>(doc)
+    );
     const count = newDocs.docs.length;
     this.flogger.logDocument(count)();
     log('resourceManager.RefreshResource', {

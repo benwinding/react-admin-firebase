@@ -1,5 +1,5 @@
-import { getDocsFromCollection, MakeMockClient } from './utils/test-helpers';
 import { Create } from '../../src/providers/commands';
+import { getDocsFromCollection, MakeMockClient } from './utils/test-helpers';
 
 describe('ApiCreate', () => {
   test('FireClient create doc', async () => {

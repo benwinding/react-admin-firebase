@@ -1,13 +1,13 @@
-import { messageTypes } from './../misc/messageTypes';
-import { log, retrieveStatusTxt, logWarn, logger } from '../misc';
-import { RAFirebaseOptions } from './options';
-import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
+import { log, logger, logWarn, retrieveStatusTxt } from '../misc';
+import { FireUser } from '../misc/firebase-models';
 import {
   AuthProvider as RaAuthProvider,
   UserIdentity,
 } from '../misc/react-admin-models';
+import { messageTypes } from './../misc/messageTypes';
 import { IFirebaseWrapper } from './database';
-import { FireUser } from '../misc/firebase-models';
+import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
+import { RAFirebaseOptions } from './options';
 
 class AuthClient {
   private fireWrapper: IFirebaseWrapper;

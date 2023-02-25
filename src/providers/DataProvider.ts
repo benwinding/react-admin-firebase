@@ -1,18 +1,18 @@
 import {
   getAbsolutePath,
   log,
-  logger,
-  retrieveStatusCode,
   logError,
+  logger,
   MakeFirestoreLogger,
+  retrieveStatusCode,
 } from '../misc';
-import * as ra from '../misc/react-admin-models';
-import { RAFirebaseOptions } from './options';
-import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
 import { FireApp } from '../misc/firebase-models';
-import { FireClient } from './database/FireClient';
-import { GetList, GetMany, GetManyReference, GetOne } from './queries';
+import * as ra from '../misc/react-admin-models';
 import { Create, Delete, DeleteMany, Update, UpdateMany } from './commands';
+import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
+import { FireClient } from './database/FireClient';
+import { RAFirebaseOptions } from './options';
+import { GetList, GetMany, GetManyReference, GetOne } from './queries';
 
 export interface IDataProvider extends ra.DataProvider {
   app: FireApp;

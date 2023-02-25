@@ -1,4 +1,4 @@
-export * from './GetOne';
 export * from './GetList';
-export * from './GetManyReference';
 export * from './GetMany';
+export * from './GetManyReference';
+export * from './GetOne';

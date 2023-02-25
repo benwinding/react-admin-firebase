@@ -1,5 +1,5 @@
-import { DataProvider } from './providers/DataProvider';
 import { AuthProvider } from './providers/AuthProvider';
+import { DataProvider } from './providers/DataProvider';
 import { RAFirebaseOptions } from './providers/options';
 
 export {

@@ -1,6 +1,6 @@
 import {
-  filterArray,
   doesRowMatch,
+  filterArray,
   getFieldReferences,
   SearchObj,
 } from '../src/misc';

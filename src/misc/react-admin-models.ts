@@ -1,5 +1,6 @@
 // React-Admin Core
 export {
+  AuthProvider,
   CreateParams,
   CreateResult,
   DataProvider,
@@ -15,12 +16,11 @@ export {
   GetManyResult,
   GetOneParams,
   GetOneResult,
+  Identifier,
   Record,
   UpdateManyParams,
   UpdateManyResult,
   UpdateParams,
   UpdateResult,
-  Identifier,
-  AuthProvider,
   UserIdentity,
 } from 'ra-core';

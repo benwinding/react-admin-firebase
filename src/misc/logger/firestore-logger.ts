@@ -1,5 +1,5 @@
 import { RAFirebaseOptions } from 'providers/options';
-import { LogNoOp, LoggerBase } from './logger-base';
+import { LoggerBase, LogNoOp } from './logger-base';
 
 const LOGGER_ENABLEDKEY = 'LOGGING_FIRESTORE_COSTS_ENABLED';
 const logger = new LoggerBase('💸firestore-costs:', LOGGER_ENABLEDKEY);

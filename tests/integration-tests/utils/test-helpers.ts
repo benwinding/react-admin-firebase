@@ -1,11 +1,10 @@
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
-
-import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
-import { FirebaseWrapperStub } from './FirebaseWrapperStub';
-import { RAFirebaseOptions } from '../../../src/providers/options';
-import { FireClient } from '../../../src/providers/database/FireClient';
 import { IFirestoreLogger } from '../../../src/misc';
 import { FireApp, FireStore } from '../../../src/misc/firebase-models';
+import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
+import { FireClient } from '../../../src/providers/database/FireClient';
+import { RAFirebaseOptions } from '../../../src/providers/options';
+import { FirebaseWrapperStub } from './FirebaseWrapperStub';
 
 function makeSafeId(projectId: string): string {
   return projectId.split(' ').join('').toLowerCase();

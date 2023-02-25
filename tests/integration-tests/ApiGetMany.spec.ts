@@ -1,5 +1,5 @@
-import { MakeMockClient } from './utils/test-helpers';
 import { GetMany } from '../../src/providers/queries';
+import { MakeMockClient } from './utils/test-helpers';
 
 describe('api methods', () => {
   test('FireClient list docs', async () => {

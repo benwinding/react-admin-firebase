@@ -1,6 +1,6 @@
-import { FireClient } from '../database/FireClient';
 import { log, logError } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
+import { FireClient } from '../database/FireClient';
 
 export async function DeleteManySoft(
   resourceName: string,

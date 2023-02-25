@@ -1,5 +1,5 @@
-import { MakeMockClient } from './utils/test-helpers';
 import { DeleteSoft } from '../../src/providers/commands';
+import { MakeMockClient } from './utils/test-helpers';
 
 describe('api methods', () => {
   test('FireClient delete doc', async () => {

@@ -1,6 +1,6 @@
-import { FireClient } from '../database/FireClient';
 import { log } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
+import { FireClient } from '../database/FireClient';
 import { DeleteSoft } from './Delete.Soft';
 
 export async function Delete<T extends ra.Record>(
