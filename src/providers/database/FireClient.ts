@@ -1,20 +1,20 @@
-import { set, get } from 'lodash';
+import { get, set } from 'lodash';
+import {
+  AddCreatedByFields,
+  AddUpdatedByFields,
+  dispatch,
+  IFirestoreLogger,
+  joinPaths,
+  log,
+  logError,
+  parseStoragePath,
+  translateDocToFirestore,
+} from '../../misc';
 import {
   TASK_CANCELED,
   TASK_PAUSED,
   TASK_RUNNING,
 } from '../../misc/firebase-models';
-import {
-  AddCreatedByFields,
-  AddUpdatedByFields,
-  IFirestoreLogger,
-  joinPaths,
-  log,
-  logError,
-  dispatch,
-  translateDocToFirestore,
-  parseStoragePath,
-} from '../../misc';
 import { RAFirebaseOptions } from '../options';
 import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
 import { IResource, ResourceManager } from './ResourceManager';

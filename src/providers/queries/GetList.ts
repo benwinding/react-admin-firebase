@@ -1,5 +1,3 @@
-import { FireClient } from '../database/FireClient';
-import { FirebaseLazyLoadingClient } from '../lazy-loading/FirebaseLazyLoadingClient';
 import {
   filterArray,
   log,
@@ -7,6 +5,8 @@ import {
   sortArray,
 } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
+import { FireClient } from '../database/FireClient';
+import { FirebaseLazyLoadingClient } from '../lazy-loading/FirebaseLazyLoadingClient';
 
 export async function GetList<T extends ra.Record>(
   resourceName: string,

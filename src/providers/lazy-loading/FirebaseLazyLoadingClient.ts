@@ -1,23 +1,23 @@
 import {
+  FireStoreCollectionRef,
+  FireStoreDocumentSnapshot,
+} from 'misc/firebase-models';
+import { FireClient } from 'providers/database';
+import {
   log,
   messageTypes,
   parseFireStoreDocument,
   recursivelyMapStorageUrls,
 } from '../../misc';
+import * as ra from '../../misc/react-admin-models';
 import { IResource, ResourceManager } from '../database/ResourceManager';
 import { RAFirebaseOptions } from '../options';
-import * as ra from '../../misc/react-admin-models';
 import {
   getFullParamsForQuery,
   getNextPageParams,
   paramsToQuery,
 } from './paramsToQuery';
 import { clearQueryCursors, setQueryCursor } from './queryCursors';
-import { FireClient } from 'providers/database';
-import {
-  FireStoreCollectionRef,
-  FireStoreDocumentSnapshot,
-} from 'misc/firebase-models';
 
 export class FirebaseLazyLoadingClient {
   constructor(

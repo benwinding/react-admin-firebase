@@ -9,6 +9,6 @@ export * from './objectFlatten';
 export * from './pathHelper';
 export * from './react-admin-models';
 export * from './status-code-translator';
+export * from './storage-parser';
 export * from './translate-from-firestore';
 export * from './translate-to-firestore';
-export * from './storage-parser';

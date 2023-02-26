@@ -1,4 +1,3 @@
-import { FireClient } from '../database/FireClient';
 import {
   filterArray,
   log,
@@ -6,6 +5,7 @@ import {
   sortArray,
 } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
+import { FireClient } from '../database/FireClient';
 
 export async function GetManyReference<T extends ra.Record>(
   resourceName: string,

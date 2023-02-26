@@ -1,13 +1,13 @@
 import {
-  FireStoreQueryDocumentSnapshot,
   FireStoreDocumentSnapshot,
+  FireStoreQueryDocumentSnapshot,
 } from './firebase-models';
 import { logWarn } from './logger';
+import * as ra from './react-admin-models';
 import {
   applyRefDocs,
   translateDocFromFirestore,
 } from './translate-from-firestore';
-import * as ra from './react-admin-models';
 
 export function parseFireStoreDocument<T extends ra.Record>(
   doc: FireStoreQueryDocumentSnapshot | FireStoreDocumentSnapshot | undefined

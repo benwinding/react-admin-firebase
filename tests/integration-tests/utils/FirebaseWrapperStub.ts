@@ -1,5 +1,3 @@
-import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
-import { RAFirebaseOptions } from '../../../src/providers/options';
 import {
   FireApp,
   FireAuth,
@@ -12,6 +10,8 @@ import {
   FireUploadTaskSnapshot,
   FireUser,
 } from '../../../src/misc/firebase-models';
+import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
+import { RAFirebaseOptions } from '../../../src/providers/options';
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   constructor(

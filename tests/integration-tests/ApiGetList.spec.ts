@@ -1,6 +1,6 @@
-import { MakeMockClient } from './utils/test-helpers';
-import { GetList } from '../../src/providers/queries';
 import { FireStoreCollectionRef } from '../../src/misc/firebase-models';
+import { GetList } from '../../src/providers/queries';
+import { MakeMockClient } from './utils/test-helpers';
 
 describe('api methods', () => {
   test('FireClient list docs', async () => {

@@ -1,8 +1,8 @@
-import { set, has } from 'lodash';
+import { has, set } from 'lodash';
 import { IFirebaseWrapper } from 'providers/database';
+import { FireStoreDocumentRef } from './firebase-models';
 import { REF_INDENTIFIER } from './internal.models';
 import { logError } from './logger';
-import { FireStoreDocumentRef } from './firebase-models';
 
 export interface RefDocFound {
   fieldPath: string;

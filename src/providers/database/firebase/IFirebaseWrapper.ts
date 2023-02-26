@@ -1,16 +1,16 @@
-import { RAFirebaseOptions } from '../../options';
 import {
   FireApp,
   FireAuth,
-  FireUser,
   FireAuthUserCredentials,
   FireStorage,
-  FireStore,
-  FireStoreTimeStamp,
   FireStoragePutFileResult,
-  FireStoreCollectionRef,
+  FireStore,
   FireStoreBatch,
+  FireStoreCollectionRef,
+  FireStoreTimeStamp,
+  FireUser,
 } from 'misc/firebase-models';
+import { RAFirebaseOptions } from '../../options';
 
 export interface IFirebaseWrapper {
   options: RAFirebaseOptions;

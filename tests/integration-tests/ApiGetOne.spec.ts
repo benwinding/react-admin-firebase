@@ -1,6 +1,6 @@
-import { MakeMockClient } from './utils/test-helpers';
-import { GetOne } from '../../src/providers/queries';
 import { REF_INDENTIFIER } from '../../src/misc';
+import { GetOne } from '../../src/providers/queries';
+import { MakeMockClient } from './utils/test-helpers';
 
 describe('api methods', () => {
   test('FireClient apiGetOne', async () => {
