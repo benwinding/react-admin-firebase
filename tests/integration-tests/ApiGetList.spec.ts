@@ -1,3 +1,4 @@
+import { addDoc, doc, query, setDoc, where } from 'firebase/firestore';
 import { FireStoreCollectionRef } from '../../src/misc/firebase-models';
 import { GetList } from '../../src/providers/queries';
 import { MakeMockClient } from './utils/test-helpers';
@@ -9,7 +10,7 @@ describe('api methods', () => {
     const collName = 'list-mes';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
-      docIds.map((id) => collection.doc(id).set({ title: 'ee' }))
+      docIds.map((id) => setDoc(doc(collection, id), { title: 'ee' }))
     );
 
     const result = await GetList(
@@ -48,7 +49,7 @@ describe('api methods', () => {
     ];
     const collName = 'list-filtered';
     const collection = client.fireWrapper.dbGetCollection(collName);
-    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+    await Promise.all(testDocs.map((document) => addDoc(collection, document)));
 
     const result = await GetList(
       collName,
@@ -94,7 +95,7 @@ describe('api methods', () => {
     ];
     const collName = 'list-filtered';
     const collection = client.fireWrapper.dbGetCollection(collName);
-    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+    await Promise.all(testDocs.map((document) => addDoc(collection, document)));
 
     const result = await GetList(
       collName,
@@ -134,14 +135,14 @@ describe('api methods', () => {
     ];
     const collName = 'list-filtered';
     const collection = client.fireWrapper.dbGetCollection(collName);
-    await Promise.all(testDocs.map((doc) => collection.add(doc)));
+    await Promise.all(testDocs.map((document) => addDoc(collection, document)));
 
     const result = await GetList(
       collName,
       {
         filter: {
           collectionQuery: (c: FireStoreCollectionRef) =>
-            c.where('obj.volume', '>=', 100),
+            query(c, where('obj.volume', '>=', 100)),
         },
         pagination: {
           page: 1,

@@ -1,6 +1,7 @@
+import { doc, updateDoc } from 'firebase/firestore';
 import { log } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
-import { FireClient } from '../database/FireClient';
+import { FireClient } from '../database';
 
 export async function Update<T extends ra.Record>(
   resourceName: string,
@@ -18,7 +19,7 @@ export async function Update<T extends ra.Record>(
   client.checkRemoveIdField(docObj, id);
   await client.addUpdatedByFields(docObj);
   const docObjTransformed = client.transformToDb(resourceName, docObj, id);
-  await r.collection.doc(id).update(docObjTransformed);
+  await updateDoc(doc(r.collection, id), docObjTransformed);
   return {
     data: {
       ...data,

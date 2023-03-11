@@ -47,11 +47,11 @@ export async function GetList<T extends ra.Record>(
   const total = filteredData.length;
 
   if (options.relativeFilePaths) {
-    const dataWithUrls = await Promise.all(
+    const fetchedData = await Promise.all(
       dataPage.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
     );
     return {
-      data: dataWithUrls,
+      data: fetchedData,
       total,
     };
   }

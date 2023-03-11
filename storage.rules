@@ -1,0 +1,7 @@
+rules_version = '2';
+service firebase.storage {
+  match /{path=**} {
+    allow read;
+  }
+  // TODO: Add interesting example rules.
+}

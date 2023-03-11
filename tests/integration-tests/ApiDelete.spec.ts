@@ -1,3 +1,4 @@
+import { doc, setDoc } from 'firebase/firestore';
 import { Delete } from '../../src/providers/commands';
 import { getDocsFromCollection, MakeMockClient } from './utils/test-helpers';
 
@@ -7,7 +8,7 @@ describe('api methods', () => {
 
     const docId = 'test123';
     const docObj = { id: docId, name: 'Jim' };
-    await client.fireWrapper.dbGetCollection('t2').doc(docId).set(docObj);
+    await setDoc(doc(client.fireWrapper.dbGetCollection('t2'), docId), docObj);
 
     await Delete(
       't2',

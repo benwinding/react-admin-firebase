@@ -1,6 +1,7 @@
+import { doc } from 'firebase/firestore';
 import { log } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
-import { FireClient } from '../database/FireClient';
+import { FireClient } from '../database';
 import { DeleteManySoft } from './DeleteMany.Soft';
 
 export async function DeleteMany(
@@ -18,10 +19,11 @@ export async function DeleteMany(
   const batch = fireWrapper.dbCreateBatch();
   for (const id of params.ids) {
     const idStr = id + '';
-    const docToDelete = r.collection.doc(idStr);
+    const docToDelete = doc(r.collection, idStr);
     batch.delete(docToDelete);
     returnData.push(id);
   }
+
   try {
     await batch.commit();
   } catch (error) {

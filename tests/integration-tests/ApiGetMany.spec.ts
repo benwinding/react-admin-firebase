@@ -1,3 +1,5 @@
+import { doc, setDoc } from 'firebase/firestore';
+import { FireStore } from '../../src/misc/firebase-models';
 import { GetMany } from '../../src/providers/queries';
 import { MakeMockClient } from './utils/test-helpers';
 
@@ -8,7 +10,7 @@ describe('api methods', () => {
     const collName = 'list-mes';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
-      docIds.map((id) => collection.doc(id).set({ title: 'ee' }))
+      docIds.map((id) => setDoc(doc(collection, id), { title: 'ee' }))
     );
 
     const result = await GetMany(
@@ -39,7 +41,9 @@ describe('api methods', () => {
     const db = client.fireWrapper.db();
     await Promise.all(
       docs.map((user) =>
-        db.doc(collName + '/' + user.id).set({ name: user.name })
+        setDoc(doc(db as FireStore, collName + '/' + user.id), {
+          name: user.name,
+        })
       )
     );
 

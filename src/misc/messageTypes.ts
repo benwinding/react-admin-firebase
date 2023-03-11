@@ -1,4 +1,4 @@
-import { FireStoreCollectionRef } from './firebase-models';
+import { FireStoreCollectionRef, FireStoreQuery } from './firebase-models';
 import { ParsedRefDoc } from './internal.models';
 // Firebase types
 import { GetListParams } from './react-admin-models';
@@ -9,7 +9,7 @@ export namespace messageTypes {
 
   export type CollectionQueryType = (
     arg0: FireStoreCollectionRef
-  ) => FireStoreCollectionRef;
+  ) => FireStoreQuery;
 
   export interface IParamsGetOne {
     id: string;

@@ -34,3 +34,6 @@ src/**/*.js
 .rts*
 TEST.config.ts
 FIREBASE_CONFIG.js
+
+database-debug.log
+firestore-debug.log

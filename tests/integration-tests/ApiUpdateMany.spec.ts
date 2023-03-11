@@ -1,3 +1,4 @@
+import { doc, getDocs, setDoc } from 'firebase/firestore';
 import { UpdateMany } from '../../src/providers/commands';
 import { MakeMockClient } from './utils/test-helpers';
 
@@ -11,7 +12,7 @@ describe('api methods', () => {
     const collName = 'updatec';
     const collection = client.fireWrapper.dbGetCollection(collName);
     await Promise.all(
-      docIds.map((id) => collection.doc(id).set({ title: 'ee' }))
+      docIds.map((id) => setDoc(doc(collection, id), { title: 'ee' }))
     );
 
     await UpdateMany(
@@ -19,13 +20,14 @@ describe('api methods', () => {
       { ids: docIds, data: { title: 'blue' } },
       client
     );
-    const res = await collection.get();
+    const res = await getDocs(collection);
     expect(res.docs.length).toBe(3);
     expect(res.docs[0].get('title')).toBe('blue');
     expect(res.docs[1].get('title')).toBe('blue');
     expect(res.docs[2].get('title')).toBe('blue');
   }, 100000);
 
+  // tslint:disable-next-line:max-line-length
   test('FireClient updatemany doc with transformToDb function provided', async () => {
     const collectionName = 'updatec';
 
@@ -53,11 +55,13 @@ describe('api methods', () => {
       body: 'OK...',
     };
 
-    await Promise.all(docIds.map((id) => collection.doc(id).set(originalDoc)));
+    await Promise.all(
+      docIds.map((id) => setDoc(doc(collection, id), originalDoc))
+    );
 
     await UpdateMany(collectionName, { ids: docIds, data: updatedDoc }, client);
 
-    const res = await collection.get();
+    const res = await getDocs(collection);
     expect(res.docs.length).toBe(3);
     expect(res.docs[0].get('title')).toBe('BLUE');
     expect(res.docs[1].get('title')).toBe('BLUE');

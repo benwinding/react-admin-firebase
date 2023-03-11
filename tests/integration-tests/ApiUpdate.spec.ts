@@ -1,3 +1,4 @@
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { Update } from '../../src/providers/commands';
 import { MakeMockClient } from './utils/test-helpers';
 
@@ -6,8 +7,8 @@ describe('api methods', () => {
     const client = await MakeMockClient({ disableMeta: true });
     const id = 'testsss123';
     const collName = 't2';
-    const docRef = client.fireWrapper.dbGetCollection(collName).doc(id);
-    await docRef.set({ name: 'Jim' });
+    const docRef = doc(client.fireWrapper.dbGetCollection(collName), id);
+    await setDoc(docRef, { name: 'Jim' });
 
     await Update(
       collName,
@@ -19,11 +20,12 @@ describe('api methods', () => {
       client
     );
 
-    const res = await docRef.get();
+    const res = await getDoc(docRef);
     expect(res.exists).toBeTruthy();
     expect(res.get('title')).toBe('asd');
   }, 100000);
 
+  // tslint:disable-next-line:max-line-length
   test('FireClient update doc with transformToDb function provided', async () => {
     const client = await MakeMockClient({
       transformToDb: (resourceName, document) => {
@@ -38,8 +40,8 @@ describe('api methods', () => {
     });
 
     const id = 'user123';
-    const docRef = client.fireWrapper.dbGetCollection('users').doc(id);
-    await docRef.set({ name: 'Jim' });
+    const docRef = doc(client.fireWrapper.dbGetCollection('users'), id);
+    await setDoc(docRef, { name: 'Jim' });
 
     const previousUser = {
       id,
@@ -61,7 +63,7 @@ describe('api methods', () => {
       client
     );
 
-    const res = await docRef.get();
+    const res = await getDoc(docRef);
     expect(res.exists).toBeTruthy();
     expect(res.data()).toMatchObject({
       firstName: 'JOHN',

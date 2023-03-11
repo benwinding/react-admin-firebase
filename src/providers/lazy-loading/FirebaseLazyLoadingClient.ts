@@ -1,8 +1,4 @@
-import {
-  FireStoreCollectionRef,
-  FireStoreDocumentSnapshot,
-} from 'misc/firebase-models';
-import { FireClient } from 'providers/database';
+import { getCountFromServer, getDocs } from 'firebase/firestore';
 import {
   log,
   messageTypes,
@@ -10,14 +6,14 @@ import {
   recursivelyMapStorageUrls,
 } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
-import { IResource, ResourceManager } from '../database/ResourceManager';
+import { FireClient, IResource, ResourceManager } from '../database';
 import { RAFirebaseOptions } from '../options';
 import {
   getFullParamsForQuery,
   getNextPageParams,
   paramsToQuery,
 } from './paramsToQuery';
-import { clearQueryCursors, setQueryCursor } from './queryCursors';
+import { setQueryCursor } from './queryCursors';
 
 export class FirebaseLazyLoadingClient {
   constructor(
@@ -38,14 +34,14 @@ export class FirebaseLazyLoadingClient {
 
     log('apiGetListLazy', { resourceName, params });
 
-    const query = await paramsToQuery(
+    const { noPagination, withPagination } = await paramsToQuery(
       r.collection,
       params,
       resourceName,
       this.client.flogger
     );
 
-    const snapshots = await query.get();
+    const snapshots = await getDocs(withPagination);
 
     const resultsCount = snapshots.docs.length;
     if (!resultsCount) {
@@ -56,27 +52,15 @@ export class FirebaseLazyLoadingClient {
     }
     this.client.flogger.logDocument(resultsCount)();
 
-    const data = snapshots.docs.map((doc) => parseFireStoreDocument<T>(doc));
+    // tslint:disable-next-line
+    const data = snapshots.docs.map((d) => parseFireStoreDocument<T>(d));
+
     const nextPageCursor = snapshots.docs[snapshots.docs.length - 1];
     // After fetching documents save queryCursor for next page
     setQueryCursor(nextPageCursor, getNextPageParams(params), resourceName);
     // Hardcoded to allow next pages, as we don't have total number of items
-    let total = 9000;
 
-    // Check for next pages
-    // If it's last page, we can count all items and disable going to next page
-    const isOnLastPage = await this.checkIfOnLastPage(
-      r.collection,
-      params,
-      resourceName,
-      nextPageCursor
-    );
-
-    if (isOnLastPage) {
-      const { page, perPage } = params.pagination;
-      total = (page - 1) * perPage + data.length;
-      log('apiGetListLazy', { message: `It's last page of collection.` });
-    }
+    let total = await getCountFromServer(noPagination);
 
     if (this.options.relativeFilePaths) {
       const parsedData = await Promise.all(
@@ -99,7 +83,7 @@ export class FirebaseLazyLoadingClient {
 
       return {
         data: parsedData,
-        total,
+        total: total.data().count,
       };
     }
 
@@ -109,7 +93,7 @@ export class FirebaseLazyLoadingClient {
       collectionPath: r.collection.path,
     });
 
-    return { data, total };
+    return { data, total: total.data().count };
   }
 
   public async apiGetManyReference(
@@ -134,14 +118,14 @@ export class FirebaseLazyLoadingClient {
       !!this.options.softDelete
     );
 
-    const query = await paramsToQuery(
+    const { withPagination } = await paramsToQuery(
       r.collection,
       params,
       resourceName,
       this.client.flogger
     );
 
-    const snapshots = await query.get();
+    const snapshots = await getDocs(withPagination);
     const resultsCount = snapshots.docs.length;
     this.client.flogger.logDocument(resultsCount)();
     const data = snapshots.docs.map(parseFireStoreDocument);
@@ -176,41 +160,6 @@ export class FirebaseLazyLoadingClient {
       collectionPath: r.collection.path,
     });
     return { data, total: data.length };
-  }
-
-  private async checkIfOnLastPage<TParams extends messageTypes.IParamsGetList>(
-    collection: FireStoreCollectionRef,
-    params: TParams,
-    resourceName: string,
-    nextPageCursor: FireStoreDocumentSnapshot
-  ): Promise<boolean> {
-    const query = await paramsToQuery(
-      collection,
-      params,
-      resourceName,
-      this.client.flogger,
-      {
-        filters: true,
-        sort: true,
-      }
-    );
-    if (!nextPageCursor) {
-      throw new Error('Page cursor was empty...');
-    }
-    const nextElementSnapshot = await query
-      .startAfter(nextPageCursor)
-      .limit(1)
-      .get();
-
-    if (!nextElementSnapshot.empty) {
-      // this.incrementFirebaseReadsCounter(1);
-    }
-
-    return nextElementSnapshot.empty;
-  }
-
-  public clearQueryCursors(resourceName: string) {
-    clearQueryCursors(resourceName);
   }
 
   private async tryGetResource(

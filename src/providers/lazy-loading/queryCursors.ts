@@ -1,4 +1,15 @@
 import {
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  QueryConstraint,
+  startAfter,
+  startAt,
+} from 'firebase/firestore';
+import { ref } from 'firebase/storage';
+import {
   FireStoreCollectionRef,
   FireStoreDocumentSnapshot,
   FireStoreQuery,
@@ -6,12 +17,12 @@ import {
 import { IFirestoreLogger, messageTypes } from '../../misc';
 
 export function setQueryCursor(
-  doc: FireStoreDocumentSnapshot,
+  document: FireStoreDocumentSnapshot,
   params: messageTypes.IParamsGetList,
   resourceName: string
 ) {
   const key = btoa(JSON.stringify({ ...params, resourceName }));
-  localStorage.setItem(key, doc.id);
+  localStorage.setItem(key, document.id);
 
   const allCursorsKey = `ra-firebase-cursor-keys_${resourceName}`;
   const localCursorKeys = localStorage.getItem(allCursorsKey);
@@ -36,11 +47,10 @@ export async function getQueryCursor(
     return false;
   }
 
-  const doc = await collection.doc(docId).get();
+  const docSnapshot = await getDoc(doc(collection, docId));
   flogger.logDocument(1)();
-  if (doc.exists) {
-    // incrementFirebaseReadsCounter(1);
-    return doc;
+  if (docSnapshot.exists()) {
+    return docSnapshot;
   }
   return false;
 }
@@ -57,7 +67,7 @@ export function clearQueryCursors(resourceName: string) {
 
 export async function findLastQueryCursor(
   collection: FireStoreCollectionRef,
-  queryBase: FireStoreQuery,
+  queryConstraints: QueryConstraint[],
   params: messageTypes.IParamsGetList,
   resourceName: string,
   flogger: IFirestoreLogger
@@ -84,19 +94,22 @@ export async function findLastQueryCursor(
       flogger
     );
   }
-  const limit = (page - currentPage) * perPage;
+  const pageLimit = (page - currentPage) * perPage;
   const isFirst = currentPage === 1;
 
   function getQuery() {
     if (isFirst) {
-      return queryBase.limit(limit);
+      return query(collection, ...[...queryConstraints, limit(pageLimit)]);
     } else {
-      return queryBase.startAt(lastQueryCursor).limit(limit);
+      return query(
+        collection,
+        ...[...queryConstraints, startAfter(lastQueryCursor), limit(pageLimit)]
+      );
     }
   }
 
   const newQuery = getQuery();
-  const snapshots = await newQuery.get();
+  const snapshots = await getDocs(newQuery);
   const docsLength = snapshots.docs.length;
   flogger.logDocument(docsLength)();
   const lastDocIndex = docsLength - 1;
