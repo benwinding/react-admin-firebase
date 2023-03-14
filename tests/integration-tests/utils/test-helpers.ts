@@ -1,9 +1,10 @@
 import { initializeTestEnvironment } from '@firebase/rules-unit-testing';
+import firebase from 'firebase/compat';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import { RAFirebaseOptions } from '../../../src';
 import { IFirestoreLogger } from '../../../src/misc';
-import { FireApp, FireStore } from '../../../src/misc/firebase-models';
-import { IFirebaseWrapper } from '../../../src/providers/database/firebase/IFirebaseWrapper';
-import { FireClient } from '../../../src/providers/database/FireClient';
-import { RAFirebaseOptions } from '../../../src/providers/options';
+import { FireStore } from '../../../src/misc/firebase-models';
+import { FireClient, IFirebaseWrapper } from '../../../src/providers/database';
 import { FirebaseWrapperStub } from './FirebaseWrapperStub';
 
 function makeSafeId(projectId: string): string {
@@ -31,15 +32,14 @@ export async function initFireWrapper(
     projectId: safeId,
     firestore: { host: 'localhost', port: 8080 },
   };
-  const enivornment = await initializeTestEnvironment(testOptions);
-  const context = enivornment.unauthenticatedContext();
-  const fire: IFirebaseWrapper = new FirebaseWrapperStub(
-    // Slight (inconseqential) mismatch between test API and actual API
-    context.firestore() as FireStore,
-    context as FireApp,
+  const environment = await initializeTestEnvironment(testOptions);
+  const context = environment.unauthenticatedContext();
+  return new FirebaseWrapperStub(
+    // Slight (inconsequential) mismatch between test API and actual API
+    context.firestore(),
+    context.storage(),
     rafOptions
   );
-  return fire;
 }
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -50,19 +50,18 @@ export async function createDoc(
   docName: string,
   obj: {}
 ): Promise<void> {
-  await db.collection(collectionName).doc(docName).set(obj);
+  await setDoc(doc(collection(db, collectionName), docName), obj);
 }
 
 export async function getDocsFromCollection(
-  db: FireStore,
+  db: FireStore | firebase.firestore.Firestore,
   collectionName: string
 ): Promise<any[]> {
-  const allDocs = await db.collection(collectionName).get();
-  const docsData = await Promise.all(
-    allDocs.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
+  const allDocs = await getDocs(collection(db as FireStore, collectionName));
+  return Promise.all(
+    allDocs.docs.map((d) => ({
+      ...d.data(),
+      id: d.id,
     }))
   );
-  return docsData;
 }

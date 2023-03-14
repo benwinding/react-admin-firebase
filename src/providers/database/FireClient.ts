@@ -1,10 +1,10 @@
+import { doc } from 'firebase/firestore';
 import { get, set } from 'lodash';
 import {
   AddCreatedByFields,
   AddUpdatedByFields,
   dispatch,
   IFirestoreLogger,
-  joinPaths,
   log,
   logError,
   parseStoragePath,
@@ -51,7 +51,7 @@ export class FireClient {
     if (!data) {
       return data;
     }
-    const docPath = r.collection.doc(id).path;
+    const docPath = doc(r.collection, id).path;
 
     const result = translateDocToFirestore(data);
     const uploads = result.uploads;

@@ -1,6 +1,6 @@
+import firebase from 'firebase/compat';
 import {
   FireApp,
-  FireAuth,
   FireAuthUserCredentials,
   FireStorage,
   FireStoragePutFileResult,
@@ -34,13 +34,11 @@ export interface IFirebaseWrapper {
   serverTimestamp(): FireStoreTimeStamp | Date;
 
   // Deprecated methods
+  /** @deprecated */
+  fireStorage(): FireStorage | firebase.storage.Storage;
 
   /** @deprecated */
-  auth(): FireAuth;
-  /** @deprecated */
-  storage(): FireStorage;
-  /** @deprecated */
-  db(): FireStore;
+  db(): FireStore | firebase.firestore.Firestore;
   /** @deprecated */
   GetApp(): FireApp;
   /** @deprecated */

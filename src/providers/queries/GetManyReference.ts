@@ -44,10 +44,10 @@ export async function GetManyReference<T extends ra.Record>(
   const total = permittedData.length;
 
   if (options.relativeFilePaths) {
-    const dataWithUrls = await Promise.all(
+    const fetchedData = await Promise.all(
       permittedData.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
     );
-    return { data: dataWithUrls, total };
+    return { data: fetchedData, total };
   }
 
   return { data: dataPage, total };

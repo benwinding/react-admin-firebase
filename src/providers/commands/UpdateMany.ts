@@ -1,6 +1,7 @@
+import { doc, updateDoc } from 'firebase/firestore';
 import { log } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
-import { FireClient } from '../database/FireClient';
+import { FireClient } from '../database';
 
 export async function UpdateMany(
   resourceName: string,
@@ -25,7 +26,7 @@ export async function UpdateMany(
         docObj,
         idStr
       );
-      await r.collection.doc(idStr).update(docObjTransformed);
+      await updateDoc(doc(r.collection, idStr), docObjTransformed);
       return {
         ...data,
         id: idStr,

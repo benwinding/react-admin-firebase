@@ -1,3 +1,4 @@
+import { getDocs } from 'firebase/firestore';
 import { Create } from '../../src/providers/commands';
 import { getDocsFromCollection, MakeMockClient } from './utils/test-helpers';
 
@@ -28,6 +29,7 @@ describe('ApiCreate', () => {
 
     expect(first.hasOwnProperty('MY_CREATED_BY')).toBeTruthy();
   }, 100000);
+  // tslint:disable-next-line:max-line-length
   test('FireClient create doc with transformToDb function provided', async () => {
     const client = await MakeMockClient({
       logging: true,
@@ -53,11 +55,10 @@ describe('ApiCreate', () => {
     };
 
     await Create('users', { data: newUser }, client);
-    const users = (await client.fireWrapper.dbGetCollection('users').get())
-      .docs;
+    const users = await getDocs(client.fireWrapper.dbGetCollection('users'));
 
-    expect(users.length).toBe(1);
-    expect(users[0].data()).toMatchObject({
+    expect(users.docs.length).toBe(1);
+    expect(users.docs[0].data()).toMatchObject({
       firstName: 'JOHN',
       lastName: 'Last',
       age: 20,

@@ -20,6 +20,6 @@ export function parseFireStoreDocument<T extends ra.Record>(
   const result = translateDocFromFirestore(data);
   const dataWithRefs = applyRefDocs(result.parsedDoc, result.refdocs);
   // React Admin requires an id field on every document,
-  // So we can just using the firestore document id
+  // So we can just use the firestore document id
   return { id: doc.id, ...dataWithRefs } as T;
 }

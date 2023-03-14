@@ -22,7 +22,7 @@
     "@types/react": "^18.0.9",
     "@types/react-router-dom": "^5.3.3",
     "@types/rx": "^4.1.1",
-    "firebase": "^9.8.1",
+    "firebase": "^9.15.0",
     "firebase-tools": "11.x",
     "gulp": "^4.0.2",
     "jest": "^23.6.0",

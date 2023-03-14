@@ -1,8 +1,27 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
-import { log } from 'misc';
+import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  getAuth,
+  inMemoryPersistence,
+  onAuthStateChanged,
+  Persistence,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
+import {
+  collection,
+  doc,
+  getFirestore,
+  serverTimestamp as firestoreServerTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from 'firebase/storage';
 import {
   FireApp,
   FireAuth,
@@ -15,12 +34,15 @@ import {
   FireUploadTaskSnapshot,
   FireUser,
 } from 'misc/firebase-models';
-import { RAFirebaseOptions } from 'providers/options';
+import { log } from '../../../misc';
+import { RAFirebaseOptions } from '../../options';
 import { IFirebaseWrapper } from './IFirebaseWrapper';
 
 export class FirebaseWrapper implements IFirebaseWrapper {
-  private firestore: FireStore;
-  private app: FireApp;
+  private readonly app: FireApp;
+  private readonly firestore: FireStore;
+  private readonly storage: FireStorage;
+  private readonly auth: FireAuth;
   public options: RAFirebaseOptions;
 
   constructor(inputOptions: RAFirebaseOptions | undefined, firebaseConfig: {}) {
@@ -30,20 +52,22 @@ export class FirebaseWrapper implements IFirebaseWrapper {
       firebaseConfig,
       optionsSafe
     );
-    this.firestore = this.app.firestore();
+    this.firestore = getFirestore(this.app);
+    this.storage = getStorage(this.app);
+    this.auth = getAuth(this.app);
   }
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
-    return this.firestore.collection(absolutePath);
+    return collection(this.firestore, absolutePath);
   }
   dbCreateBatch(): FireStoreBatch {
-    return this.firestore.batch();
+    return writeBatch(this.firestore);
   }
   dbMakeNewId(): string {
-    return this.firestore.collection('collections').doc().id;
+    return doc(collection(this.firestore, 'collections')).id;
   }
 
   public OnUserLogout(callBack: (u: FireUser | null) => any) {
-    this.app.auth().onAuthStateChanged((user) => {
+    this.auth.onAuthStateChanged((user) => {
       const isLoggedOut = !user;
       log('FirebaseWrapper.OnUserLogout', { user, isLoggedOut });
       if (isLoggedOut) {
@@ -52,13 +76,15 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     });
   }
   putFile(storagePath: string, rawFile: any): FireStoragePutFileResult {
-    const task = this.app.storage().ref(storagePath).put(rawFile);
+    const task = uploadBytesResumable(ref(this.storage, storagePath), rawFile);
     const taskResult = new Promise<FireUploadTaskSnapshot>((res, rej) =>
       task.then(res).catch(rej)
     );
+
     const downloadUrl = taskResult
-      .then((t) => t.ref.getDownloadURL())
+      .then((t) => getDownloadURL(t.ref))
       .then((url) => url as string);
+
     return {
       task,
       taskResult,
@@ -66,29 +92,31 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     };
   }
   async getStorageDownloadUrl(fieldSrc: string): Promise<string> {
-    return this.app.storage().ref(fieldSrc).getDownloadURL();
+    return getDownloadURL(ref(this.storage, fieldSrc));
   }
   public serverTimestamp() {
     // This line doesn't work for some reason, might be firebase sdk.
-    return firebase.firestore.FieldValue.serverTimestamp();
+    return firestoreServerTimestamp();
   }
+
   async authSetPersistence(persistenceInput: 'session' | 'local' | 'none') {
-    let persistenceResolved: string;
+    let persistenceResolved: Persistence;
     switch (persistenceInput) {
       case 'local':
-        persistenceResolved = firebase.auth.Auth.Persistence.LOCAL;
+        persistenceResolved = browserLocalPersistence;
         break;
       case 'none':
-        persistenceResolved = firebase.auth.Auth.Persistence.NONE;
+        persistenceResolved = inMemoryPersistence;
         break;
       case 'session':
       default:
-        persistenceResolved = firebase.auth.Auth.Persistence.SESSION;
+        persistenceResolved = browserSessionPersistence;
         break;
     }
+
     log('setPersistence', { persistenceInput, persistenceResolved });
-    return this.app
-      .auth()
+
+    return this.auth
       .setPersistence(persistenceResolved)
       .catch((error) => console.error(error));
   }
@@ -96,19 +124,17 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     email: string,
     password: string
   ): Promise<FireAuthUserCredentials> {
-    const user = await this.app
-      .auth()
-      .signInWithEmailAndPassword(email, password);
+    const user = await signInWithEmailAndPassword(this.auth, email, password);
     return user;
   }
   async authSignOut(): Promise<void> {
-    return this.app.auth().signOut();
+    return signOut(this.auth);
   }
   async authGetUserLoggedIn(): Promise<FireUser> {
     return new Promise((resolve, reject) => {
-      const auth = this.app.auth();
+      const auth = this.auth;
       if (auth.currentUser) return resolve(auth.currentUser);
-      const unsubscribe = this.app.auth().onAuthStateChanged((user) => {
+      const unsubscribe = onAuthStateChanged(this.auth, (user) => {
         unsubscribe();
         if (user) {
           resolve(user);
@@ -123,13 +149,10 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   }
 
   /** @deprecated */
-  public auth(): FireAuth {
-    return this.app.auth();
+  public fireStorage(): FireStorage {
+    return this.storage;
   }
-  /** @deprecated */
-  public storage(): FireStorage {
-    return this.app.storage();
-  }
+
   /** @deprecated */
   public GetApp(): FireApp {
     return this.app;
@@ -143,14 +166,17 @@ export class FirebaseWrapper implements IFirebaseWrapper {
 function ObtainFirebaseApp(
   firebaseConfig: {},
   options: RAFirebaseOptions
-): firebase.app.App {
+): FirebaseApp {
   if (options.app) {
     return options.app;
   }
-  const isInitialized = !!firebase.apps?.length;
+  const apps = getApps();
+
+  const isInitialized = !!apps?.length;
+
   if (isInitialized) {
-    return firebase.app();
+    return getApp();
   } else {
-    return firebase.initializeApp(firebaseConfig);
+    return initializeApp(firebaseConfig);
   }
 }

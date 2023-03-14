@@ -1,6 +1,7 @@
+import { doc, updateDoc } from 'firebase/firestore';
 import { log, logError } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
-import { FireClient } from '../database/FireClient';
+import { FireClient } from '../database';
 
 export async function DeleteManySoft(
   resourceName: string,
@@ -16,12 +17,9 @@ export async function DeleteManySoft(
       const idStr = id + '';
       const docObj = { deleted: true };
       await client.addUpdatedByFields(docObj);
-      r.collection
-        .doc(idStr)
-        .update(docObj)
-        .catch((error) => {
-          logError('apiSoftDeleteMany error', { error });
-        });
+      updateDoc(doc(r.collection, idStr), docObj).catch((error) => {
+        logError('apiSoftDeleteMany error', { error });
+      });
       return idStr;
     })
   );

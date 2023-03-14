@@ -1,4 +1,5 @@
-import { FireStoreCollectionRef } from 'misc/firebase-models';
+import { doc, getDoc, getDocs } from 'firebase/firestore';
+import { FireStoreCollectionRef, FireStoreQuery } from 'misc/firebase-models';
 import {
   getAbsolutePath,
   IFirestoreLogger,
@@ -88,19 +89,20 @@ export class ResourceManager {
     await this.initPath(relativePath);
     const resource = this.resources[relativePath];
 
-    const collection = resource.collection;
-    const query = this.applyQuery(collection, collectionQuery);
-    const newDocs = await query.get();
+    const collectionRef = resource.collection;
+    const collectionOrQuery = this.applyQuery(collectionRef, collectionQuery);
+    const newDocs = await getDocs(collectionOrQuery);
 
-    resource.list = newDocs.docs.map((doc) =>
-      parseFireStoreDocument<IResourceItem>(doc)
+    newDocs.forEach((d) =>
+      resource.list.push(parseFireStoreDocument<IResourceItem>(d))
     );
+
     const count = newDocs.docs.length;
     this.flogger.logDocument(count)();
     log('resourceManager.RefreshResource', {
       newDocs,
       resource,
-      collectionPath: collection.path,
+      collectionPath: collectionRef.path,
     });
   }
 
@@ -108,7 +110,7 @@ export class ResourceManager {
     await this.initPath(relativePath);
     const resource = this.GetResource(relativePath);
     this.flogger.logDocument(1)();
-    const docSnap = await resource.collection.doc(docId).get();
+    const docSnap = await getDoc(doc(resource.collection, docId));
     if (!docSnap.exists) {
       throw new Error('react-admin-firebase: No id found matching: ' + docId);
     }
@@ -179,7 +181,7 @@ export class ResourceManager {
   private applyQuery(
     collection: FireStoreCollectionRef,
     collectionQuery?: messageTypes.CollectionQueryType
-  ): FireStoreCollectionRef {
+  ): FireStoreCollectionRef | FireStoreQuery {
     const collRef = collectionQuery ? collectionQuery(collection) : collection;
 
     log('resourceManager.applyQuery() ...', {

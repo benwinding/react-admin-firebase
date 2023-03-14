@@ -1,3 +1,4 @@
+import { getDownloadURL, ref } from 'firebase/storage';
 import { has, set } from 'lodash';
 import { IFirebaseWrapper } from 'providers/database';
 import { FireStoreDocumentRef } from './firebase-models';
@@ -56,9 +57,12 @@ export function recusivelyCheckObjectValue(
   }
   const isDocumentReference = isInputADocReference(input);
   if (isDocumentReference) {
-    const ref = input as FireStoreDocumentRef;
-    result.refdocs.push({ fieldPath: fieldPath, refDocPath: ref.path });
-    return ref.id;
+    const documentReference = input as FireStoreDocumentRef;
+    result.refdocs.push({
+      fieldPath: fieldPath,
+      refDocPath: documentReference.path,
+    });
+    return documentReference.id;
   }
   const isObject = typeof input === 'object';
   if (isObject) {
@@ -98,10 +102,9 @@ export const recursivelyMapStorageUrls = async (
   const isFileField = has(fieldValue, 'src');
   if (isFileField) {
     try {
-      const src = await fireWrapper
-        .storage()
-        .ref(fieldValue.src)
-        .getDownloadURL();
+      const src = await getDownloadURL(
+        ref(fireWrapper.fireStorage(), fieldValue.src)
+      );
       return {
         ...fieldValue,
         src,

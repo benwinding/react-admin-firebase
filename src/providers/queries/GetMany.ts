@@ -1,3 +1,4 @@
+import { doc, getDoc } from 'firebase/firestore';
 import { log, recursivelyMapStorageUrls } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
 import { FireClient } from '../database/FireClient';
@@ -14,10 +15,10 @@ export async function GetMany<T extends ra.Record>(
   const matchDocSnaps = await Promise.all(
     ids.map((idObj) => {
       if (typeof idObj === 'string') {
-        return r.collection.doc(idObj).get();
+        return getDoc(doc(r.collection, idObj));
       }
       // Will get and resolve reference documents into the current doc
-      return r.collection.doc((idObj as any)['___refid']).get();
+      return getDoc(doc(r.collection, (idObj as any)['___refid']));
     })
   );
   client.flogger.logDocument(ids.length)();
@@ -29,7 +30,7 @@ export async function GetMany<T extends ra.Record>(
     : matches;
   if (options.relativeFilePaths) {
     const data = await Promise.all(
-      permittedData.map((doc) => recursivelyMapStorageUrls(fireWrapper, doc))
+      permittedData.map((d) => recursivelyMapStorageUrls(fireWrapper, d))
     );
     return {
       data,

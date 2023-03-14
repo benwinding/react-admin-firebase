@@ -1,3 +1,4 @@
+import { deleteDoc, doc } from 'firebase/firestore';
 import { log } from '../../misc';
 import * as ra from '../../misc/react-admin-models';
 import { FireClient } from '../database/FireClient';
@@ -16,7 +17,8 @@ export async function Delete<T extends ra.Record>(
   log('apiDelete', { resourceName, resource: r, params });
   try {
     const id = params.id + '';
-    await r.collection.doc(id).delete();
+
+    await deleteDoc(doc(r.collection, id));
   } catch (error) {
     throw new Error(error as any);
   }
