@@ -103,7 +103,7 @@ export const recursivelyMapStorageUrls = async (
   if (isFileField) {
     try {
       const src = await getDownloadURL(
-        ref(fireWrapper.fireStorage(), fieldValue.src)
+        ref(fireWrapper.storage(), fieldValue.src)
       );
       return {
         ...fieldValue,

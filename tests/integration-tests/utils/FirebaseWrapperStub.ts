@@ -1,8 +1,10 @@
+import { getAuth } from 'firebase/auth';
 import { collection, doc, writeBatch } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { RAFirebaseOptions } from '../../../src';
 import {
   FireApp,
+  FireAuth,
   FireAuthUserCredentials,
   FireStorage,
   FireStoragePutFileResult,
@@ -16,8 +18,8 @@ import { IFirebaseWrapper } from '../../../src/providers/database';
 
 export class FirebaseWrapperStub implements IFirebaseWrapper {
   constructor(
-    private firestore: FireStore | any,
-    private storage: FireStorage,
+    private _firestore: FireStore | any,
+    private _storage: FireStorage,
     public options: RAFirebaseOptions
   ) {}
 
@@ -26,13 +28,13 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   }
 
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
-    return collection(this.firestore, absolutePath);
+    return collection(this._firestore, absolutePath);
   }
   dbCreateBatch(): FireStoreBatch {
-    return writeBatch(this.firestore);
+    return writeBatch(this._firestore);
   }
   dbMakeNewId(): string {
-    return doc(collection(this.firestore, 'collections')).id;
+    return doc(collection(this._firestore, 'collections')).id;
   }
 
   // tslint:disable-next-line:no-empty
@@ -41,7 +43,7 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
     storagePath: string,
     rawFile: any
   ): Promise<FireStoragePutFileResult> => {
-    const task = uploadBytesResumable(ref(this.storage, storagePath), rawFile);
+    const task = uploadBytesResumable(ref(this._storage, storagePath), rawFile);
     const taskResult = new Promise<FireUploadTaskSnapshot>((res, rej) =>
       task.then(res).catch(rej)
     );
@@ -55,7 +57,7 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
     };
   };
   async getStorageDownloadUrl(fieldSrc: string): Promise<string> {
-    return getDownloadURL(ref(this.storage, fieldSrc));
+    return getDownloadURL(ref(this._storage, fieldSrc));
   }
   authSetPersistence(
     persistenceInput: 'session' | 'local' | 'none'
@@ -81,12 +83,16 @@ export class FirebaseWrapperStub implements IFirebaseWrapper {
   // Deprecated methods
 
   /** @deprecated */
-  fireStorage(): FireStorage {
-    return this.storage;
+  auth(): FireAuth {
+    return getAuth(this.GetApp());
+  }
+  /** @deprecated */
+  storage(): FireStorage {
+    return this._storage;
   }
   /** @deprecated */
   db(): FireStore {
-    return this.firestore;
+    return this._firestore;
   }
   /** @deprecated */
   GetUserLogin(): Promise<FireUser> {

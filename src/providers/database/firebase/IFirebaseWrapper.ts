@@ -1,6 +1,7 @@
 import firebase from 'firebase/compat';
 import {
   FireApp,
+  FireAuth,
   FireAuthUserCredentials,
   FireStorage,
   FireStoragePutFileResult,
@@ -35,8 +36,9 @@ export interface IFirebaseWrapper {
 
   // Deprecated methods
   /** @deprecated */
-  fireStorage(): FireStorage | firebase.storage.Storage;
-
+  auth(): FireAuth;
+  /** @deprecated */
+  storage(): FireStorage;
   /** @deprecated */
   db(): FireStore | firebase.firestore.Firestore;
   /** @deprecated */

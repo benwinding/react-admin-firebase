@@ -39,35 +39,35 @@ import { RAFirebaseOptions } from '../../options';
 import { IFirebaseWrapper } from './IFirebaseWrapper';
 
 export class FirebaseWrapper implements IFirebaseWrapper {
-  private readonly app: FireApp;
-  private readonly firestore: FireStore;
-  private readonly storage: FireStorage;
-  private readonly auth: FireAuth;
+  private readonly _app: FireApp;
+  private readonly _firestore: FireStore;
+  private readonly _storage: FireStorage;
+  private readonly _auth: FireAuth;
   public options: RAFirebaseOptions;
 
   constructor(inputOptions: RAFirebaseOptions | undefined, firebaseConfig: {}) {
     const optionsSafe = inputOptions || {};
     this.options = optionsSafe;
-    this.app = (window as any)['_app'] = ObtainFirebaseApp(
+    this._app = (window as any)['_app'] = ObtainFirebaseApp(
       firebaseConfig,
       optionsSafe
     );
-    this.firestore = getFirestore(this.app);
-    this.storage = getStorage(this.app);
-    this.auth = getAuth(this.app);
+    this._firestore = getFirestore(this._app);
+    this._storage = getStorage(this._app);
+    this._auth = getAuth(this._app);
   }
   dbGetCollection(absolutePath: string): FireStoreCollectionRef {
-    return collection(this.firestore, absolutePath);
+    return collection(this._firestore, absolutePath);
   }
   dbCreateBatch(): FireStoreBatch {
-    return writeBatch(this.firestore);
+    return writeBatch(this._firestore);
   }
   dbMakeNewId(): string {
-    return doc(collection(this.firestore, 'collections')).id;
+    return doc(collection(this._firestore, 'collections')).id;
   }
 
   public OnUserLogout(callBack: (u: FireUser | null) => any) {
-    this.auth.onAuthStateChanged((user) => {
+    this._auth.onAuthStateChanged((user) => {
       const isLoggedOut = !user;
       log('FirebaseWrapper.OnUserLogout', { user, isLoggedOut });
       if (isLoggedOut) {
@@ -76,7 +76,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     });
   }
   putFile(storagePath: string, rawFile: any): FireStoragePutFileResult {
-    const task = uploadBytesResumable(ref(this.storage, storagePath), rawFile);
+    const task = uploadBytesResumable(ref(this._storage, storagePath), rawFile);
     const taskResult = new Promise<FireUploadTaskSnapshot>((res, rej) =>
       task.then(res).catch(rej)
     );
@@ -92,7 +92,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     };
   }
   async getStorageDownloadUrl(fieldSrc: string): Promise<string> {
-    return getDownloadURL(ref(this.storage, fieldSrc));
+    return getDownloadURL(ref(this._storage, fieldSrc));
   }
   public serverTimestamp() {
     // This line doesn't work for some reason, might be firebase sdk.
@@ -116,7 +116,7 @@ export class FirebaseWrapper implements IFirebaseWrapper {
 
     log('setPersistence', { persistenceInput, persistenceResolved });
 
-    return this.auth
+    return this._auth
       .setPersistence(persistenceResolved)
       .catch((error) => console.error(error));
   }
@@ -124,17 +124,17 @@ export class FirebaseWrapper implements IFirebaseWrapper {
     email: string,
     password: string
   ): Promise<FireAuthUserCredentials> {
-    const user = await signInWithEmailAndPassword(this.auth, email, password);
+    const user = await signInWithEmailAndPassword(this._auth, email, password);
     return user;
   }
   async authSignOut(): Promise<void> {
-    return signOut(this.auth);
+    return signOut(this._auth);
   }
   async authGetUserLoggedIn(): Promise<FireUser> {
     return new Promise((resolve, reject) => {
-      const auth = this.auth;
+      const auth = this._auth;
       if (auth.currentUser) return resolve(auth.currentUser);
-      const unsubscribe = onAuthStateChanged(this.auth, (user) => {
+      const unsubscribe = onAuthStateChanged(this._auth, (user) => {
         unsubscribe();
         if (user) {
           resolve(user);
@@ -149,17 +149,20 @@ export class FirebaseWrapper implements IFirebaseWrapper {
   }
 
   /** @deprecated */
-  public fireStorage(): FireStorage {
-    return this.storage;
+  public auth(): FireAuth {
+    return this._auth;
   }
-
+  /** @deprecated */
+  public storage(): FireStorage {
+    return this._storage;
+  }
   /** @deprecated */
   public GetApp(): FireApp {
-    return this.app;
+    return this._app;
   }
   /** @deprecated */
   public db(): FireStore {
-    return this.firestore;
+    return this._firestore;
   }
 }
 
