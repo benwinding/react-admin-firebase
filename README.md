@@ -178,7 +178,7 @@ To get the currently logged in user run `const user = await authProvider.checkAu
 
 ## Realtime Updates!
 
-NOTE: Realtime updates were removed in `react-admin` v3.x (see https://github.com/marmelab/react-admin/pull/3908). As such, `react-admin-firebase` v3.x also does not support Realtime Updates. However, much of the original code used for this functionalaity in `react-admin` v2.x remains - including the documentation below. For updates on the implementation of realtime please follow these issues:
+NOTE: Realtime updates were removed in `react-admin` v3.x (see https://github.com/marmelab/react-admin/pull/3908). As such, `react-admin-firebase` v3.x also does not support Realtime Updates. However, much of the original code used for this functionality in `react-admin` v2.x remains - including the documentation below. For updates on the implementation of realtime please follow these issues:
 - https://github.com/benwinding/react-admin-firebase/issues/49
 - https://github.com/benwinding/react-admin-firebase/issues/57
 
