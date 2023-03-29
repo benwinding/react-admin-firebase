@@ -1,5 +1,6 @@
 import { getDownloadURL, ref } from 'firebase/storage';
-import { has, set } from 'lodash';
+import has from 'lodash.has';
+import set from 'lodash.set';
 import { IFirebaseWrapper } from 'providers/database';
 import { FireStoreDocumentRef } from './firebase-models';
 import { REF_INDENTIFIER } from './internal.models';
