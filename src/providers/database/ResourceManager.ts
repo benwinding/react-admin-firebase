@@ -6,13 +6,12 @@ import {
   log,
   logWarn,
   messageTypes,
-  parseFireStoreDocument
+  parseFireStoreDocument,
 } from '../../misc';
 import { RAFirebaseOptions } from '../options';
 import { IFirebaseWrapper } from './firebase/IFirebaseWrapper';
 
 type IResourceItem = {} & { id: string; deleted?: boolean };
-
 export interface IResource {
   path: string;
   pathAbsolute: string;
@@ -60,7 +59,7 @@ export class ResourceManager {
   ): Promise<IResource> {
     log('resourceManager.TryGetResourcePromise', {
       relativePath,
-      collectionQuery
+      collectionQuery,
     });
     await this.initPath(relativePath);
 
@@ -79,7 +78,7 @@ export class ResourceManager {
   ) {
     if (this.options?.lazyLoading?.enabled) {
       logWarn('resourceManager.RefreshResource', {
-        warn: 'RefreshResource is not available in lazy loading mode'
+        warn: 'RefreshResource is not available in lazy loading mode',
       });
       throw new Error(
         'react-admin-firebase: RefreshResource is not available in lazy loading mode'
@@ -104,7 +103,7 @@ export class ResourceManager {
     log('resourceManager.RefreshResource', {
       newDocs,
       resource,
-      collectionPath: collectionRef.path
+      collectionPath: collectionRef.path,
     });
   }
 
@@ -122,7 +121,7 @@ export class ResourceManager {
       resource,
       docId,
       docSnap,
-      result
+      result,
     });
     return result;
   }
@@ -133,7 +132,7 @@ export class ResourceManager {
     const hasBeenInited = !!this.resources[relativePath];
     log('resourceManager.initPath()', {
       absolutePath,
-      hasBeenInited
+      hasBeenInited,
     });
     if (hasBeenInited) {
       log('resourceManager.initPath() has been initialized already...');
@@ -145,14 +144,14 @@ export class ResourceManager {
       collection,
       list,
       path: relativePath,
-      pathAbsolute: absolutePath
+      pathAbsolute: absolutePath,
     };
     this.resources[relativePath] = resource;
     log('resourceManager.initPath() setting resource...', {
       resource,
       allResources: this.resources,
       collection: collection,
-      collectionPath: collection.path
+      collectionPath: collection.path,
     });
   }
 
@@ -171,7 +170,6 @@ export class ResourceManager {
       return 'annonymous user';
     }
   }
-
   private async getCurrentUserId() {
     const user = await this.fireWrapper.authGetUserLoggedIn();
     if (user) {
@@ -190,7 +188,7 @@ export class ResourceManager {
     log('resourceManager.applyQuery() ...', {
       collection,
       collectionQuery: (collectionQuery || '-').toString(),
-      collRef
+      collRef,
     });
     return collRef;
   }
