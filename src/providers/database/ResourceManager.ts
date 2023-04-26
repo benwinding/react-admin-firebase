@@ -93,6 +93,7 @@ export class ResourceManager {
     const collectionOrQuery = this.applyQuery(collectionRef, collectionQuery);
     const newDocs = await getDocs(collectionOrQuery);
 
+    resource.list = [];
     newDocs.forEach((d) =>
       resource.list.push(parseFireStoreDocument<IResourceItem>(d))
     );
