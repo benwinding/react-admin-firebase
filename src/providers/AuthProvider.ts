@@ -36,7 +36,7 @@ class AuthClient {
         return user;
       } catch (e) {
         log('HandleAuthLogin: invalid credentials', { params });
-        throw new Error('Login error: invalid credentials');
+        throw e;
       }
     } else {
       return this.getUserLogin();
