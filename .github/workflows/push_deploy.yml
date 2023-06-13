@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
       - name: Cache node_modules
         id: cache-modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.OS }}-build-${{ hashFiles('package.json') }}
@@ -26,7 +26,7 @@ jobs:
       - name: Check tests pass
         run: yarn test
       - name: Upload lib build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build-lib
           path: dist
@@ -38,16 +38,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
         node-version: 16.14.2
-    - uses: actions/cache@v1
+    - uses: actions/cache@v3
       id: cache-modules
       with:
         path: node_modules
         key: ${{ runner.OS }}-deploy-${{ hashFiles('package.json') }}
     - name: Download build-lib
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: build-lib
         path: dist
@@ -64,10 +64,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
         node-version: 16.14.2
-    - uses: actions/cache@v1
+    - uses: actions/cache@v3
       id: cache-modules
       with:
         path: src-demo/node_modules
@@ -80,7 +80,7 @@ jobs:
       working-directory: ./src-demo
     - name: Deploy to GH Pages 🚀
       if: github.ref == 'refs/heads/master'
-      uses: JamesIves/github-pages-deploy-action@releases/v3
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BRANCH: gh-pages # The branch the action should deploy to.
