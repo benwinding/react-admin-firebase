@@ -55,7 +55,7 @@ jobs:
       run: git config --global --add safe.directory "/github/workspace"
     - name: Deploy to npm! 🚀 (if master branch)
       if: github.ref == 'refs/heads/master'
-      uses: mikeal/merge-release@master
+      uses: benwinding/merge-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
