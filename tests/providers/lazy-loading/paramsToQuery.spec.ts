@@ -1,5 +1,5 @@
-import { getFiltersConstraints } from '../../../src/providers/lazy-loading/paramsToQuery';
 import { QueryConstraintType } from '@firebase/firestore';
+import { getFiltersConstraints } from '../../../src/providers/lazy-loading/paramsToQuery';
 
 describe('getFiltersConstraints', () => {
   it('should return where filter with array-contains-any operator when filter value is array', () => {
