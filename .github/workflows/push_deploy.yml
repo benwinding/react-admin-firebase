@@ -51,6 +51,8 @@ jobs:
       with:
         name: build-lib
         path: dist
+    - name: Fix git error
+      run: git config --global --add safe.directory "/github/workspace"
     - name: Deploy to npm! 🚀 (if master branch)
       if: github.ref == 'refs/heads/master'
       uses: mikeal/merge-release@master
