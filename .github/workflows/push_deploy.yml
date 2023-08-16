@@ -53,7 +53,7 @@ jobs:
         path: dist
     - name: Deploy to npm! 🚀 (if master branch)
       if: github.ref == 'refs/heads/master'
-      uses: benwinding/merge-release@fix-master
+      uses: benwinding/merge-release@e0e3e53924f252ebe0fc52dced2c253de984452a
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
