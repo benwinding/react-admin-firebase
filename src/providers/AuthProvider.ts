@@ -8,8 +8,10 @@ import { messageTypes } from './../misc/messageTypes';
 import { IFirebaseWrapper } from './database';
 import { FirebaseWrapper } from './database/firebase/FirebaseWrapper';
 import { RAFirebaseOptions } from './options';
+import jwt_decode from "jwt-decode";
 
 class AuthClient {
+  
   private fireWrapper: IFirebaseWrapper;
 
   constructor(firebaseConfig: {}, optionsInput?: RAFirebaseOptions) {
@@ -23,9 +25,11 @@ class AuthClient {
     return this.fireWrapper.authSetPersistence(persistenceInput);
   }
 
-  public async HandleAuthLogin(params: { username: string; password: string }) {
-    const { username, password } = params;
-
+  public async HandleAuthLogin(params: { username: string; password: string, tenant?: string }) {
+    const { username, password, tenant } = params;
+	if (tenant) {
+	  this.fireWrapper.auth().tenantId = tenant;
+	}
     if (username && password) {
       try {
         const user = await this.fireWrapper.authSigninEmailPassword(
@@ -182,6 +186,21 @@ class AuthClient {
       return null;
     }
   }
+  
+  public async HandleGetTenant() {
+    try {
+      const user = await this.getUserLogin();
+      // @ts-ignore
+      const token = await user.getIdTokenResult();
+	  const decodedToken:any = jwt_decode(token.token);
+	  return decodedToken["firebase"]["tenant"];
+    } catch (e) {
+      log('HandleGetTenant: no user is logged in or tokenResult error', {
+        e,
+      });
+      return null;
+    }
+  }
 }
 
 export function AuthProvider(
@@ -207,6 +226,7 @@ export function AuthProvider(
     getJWTSignInProvider: () => auth.HandleGetJWTSignInProvider(),
     getJWTClaims: () => auth.HandleGetPermissions(),
     getJWTToken: () => auth.HandleGetJWTToken(),
+	getTenant: () => auth.HandleGetTenant(),
   };
   return provider;
 }
@@ -219,6 +239,7 @@ export type ReactAdminFirebaseAuthProvider = RaAuthProvider & {
   getJWTSignInProvider: () => Promise<string | null>;
   getJWTClaims: () => Promise<{ [key: string]: any } | null>;
   getJWTToken: () => Promise<string | null>;
+  getTenant: () => Promise<string | null>;
 };
 
 function VerifyAuthProviderArgs(
