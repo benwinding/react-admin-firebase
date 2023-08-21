@@ -34,9 +34,14 @@ class AuthClient {
         );
         log('HandleAuthLogin: user sucessfully logged in', { user });
         return user;
-      } catch (e) {
-        log('HandleAuthLogin: invalid credentials', { params });
-        throw new Error('Login error: invalid credentials');
+      } catch (e: any) {
+        if (e.code == 'auth/multi-factor-auth-required') {
+          log('HandleAuthLogin: second factor challenge required', { params });
+          throw e;
+        } else {
+          log('HandleAuthLogin: invalid credentials', { params });
+          throw new Error('Login error: invalid credentials');
+        }
       }
     } else {
       return this.getUserLogin();
