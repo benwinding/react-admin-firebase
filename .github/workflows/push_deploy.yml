@@ -41,7 +41,7 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: 20.18.1
-    - uses: actions/cache@v1
+    - uses: actions/cache@v3
       id: cache-modules
       with:
         path: node_modules
@@ -67,7 +67,7 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: 20.18.1
-    - uses: actions/cache@v1
+    - uses: actions/cache@v3
       id: cache-modules
       with:
         path: src-demo/node_modules
