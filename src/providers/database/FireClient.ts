@@ -1,5 +1,6 @@
 import { doc } from 'firebase/firestore';
-import { get, set } from 'lodash';
+import get from 'lodash/get';
+import set from 'lodash/set';
 import {
   AddCreatedByFields,
   AddUpdatedByFields,

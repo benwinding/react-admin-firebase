@@ -1,4 +1,5 @@
-import { get, isEmpty } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
 import { getFieldReferences, SearchObj } from './objectFlatten';
 
 export function sortArray(
