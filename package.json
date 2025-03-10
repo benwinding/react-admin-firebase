@@ -10,14 +10,20 @@
     "react-router-dom": "5.x || 6.x"
   },
   "dependencies": {
-    "lodash": "4.x",
+    "lodash.get": "4.x",
+    "lodash.has": "4.x",
+    "lodash.set": "4.x",
+    "lodash.isempty": "4.x",
     "path-browserify": "^1.0.0",
     "rxjs": "^6.5.x"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^2.0.2",
     "@types/jest": "^24.0.13",
-    "@types/lodash": "^4.14.150",
+    "@types/lodash.get": "^4.4.7",
+    "@types/lodash.has": "^4.5.7",
+    "@types/lodash.set": "^4.3.7",
+    "@types/lodash.isempty": "^4.4.7",
     "@types/node": "^10.9.4",
     "@types/react": "^18.0.9",
     "@types/react-router-dom": "^5.3.3",
